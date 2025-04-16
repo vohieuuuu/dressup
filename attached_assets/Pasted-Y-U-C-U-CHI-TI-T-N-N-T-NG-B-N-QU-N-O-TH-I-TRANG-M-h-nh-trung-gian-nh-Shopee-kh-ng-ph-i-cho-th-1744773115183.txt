@@ -1,0 +1,112 @@
+YÊU CẦU CHI TIẾT: NỀN TẢNG BÁN QUẦN ÁO THỜI TRANG
+(Mô hình trung gian như Shopee, không phải cho thuê)
+
+1. Tổng quan
+Mục đích: Web trung gian kết nối người bán (seller) và người mua (buyer) trong lĩnh vực thời trang.
+
+Khác biệt:
+
+Chỉ tập trung vào quần áo thời trang (nam/nữ).
+
+Hỗ trợ đa kênh bán hàng: Cá nhân, cửa hàng nhỏ, thương hiệu.
+
+Tích hợp quản lý kho, vận chuyển, và xử lý tranh chấp.
+
+2. Chức năng chính
+2.1. Người dùng (User)
+Đăng ký/Đăng nhập:
+
+Email/SĐT, MXH (Google/Facebook), xác thực OTP.
+
+Phân loại: Người mua hoặc Người bán.
+
+Hồ sơ cá nhân:
+
+Avatar, địa chỉ, lịch sử mua/bán.
+
+Ví điện tử:
+
+Nạp/rút tiền, liên kết ngân hàng.
+
+2.2. Người bán (Seller)
+Đăng sản phẩm:
+
+Ảnh (tối thiểu 3 ảnh), video, mô tả (chất liệu, size, màu).
+
+Giá bán, khuyến mãi (giảm giá %, voucher).
+
+Quản lý kho: Số lượng, cập nhật hàng hết.
+
+Quản lý đơn hàng:
+
+Xác nhận/hủy đơn, in hóa đơn.
+
+Tích hợp API vận chuyển (Giao Hàng Nhanh, Viettel Post).
+
+Thống kê:
+
+Doanh thu, đơn hàng thành công, tỷ lệ hủy.
+
+2.3. Người mua (Buyer)
+Tìm kiếm & Lọc:
+
+Theo từ khóa, danh mục (váy, áo thun, quần jeans).
+
+Lọc giá, size, màu, đánh giá.
+
+Giỏ hàng & Thanh toán:
+
+Thêm vào giỏ, áp dụng mã giảm giá.
+
+Thanh toán online (VNPay, Momo) hoặc COD.
+
+Theo dõi đơn hàng:
+
+Trạng thái: Đã đặt, đang giao, đã nhận.
+
+2.4. Hệ thống trung gian (Admin)
+Quản lý người dùng:
+
+Duyệt tài khoản người bán, khóa vi phạm.
+
+Kiểm duyệt sản phẩm:
+
+Chặn sản phẩm không đúng chính sách (hàng fake, ảnh không rõ ràng).
+
+Xử lý tranh chấp:
+
+Hòa giải khi người mua/người bán có mâu thuẫn.
+
+Thống kê toàn hệ thống:
+
+Tổng đơn hàng, doanh thu, tỷ lệ hoàn tiền.
+
+3. Giao diện (UI/UX) Ưu tiên
+3.1. Trang chủ (Homepage)
+Navbar: Logo, search bar, giỏ hàng, thông báo.
+
+Banner quảng cáo: Slide ảnh khuyến mãi.
+
+Danh mục nổi bật: Áo, quần, váy, phụ kiện.
+
+Sản phẩm trending: Grid hiển thị ảnh, giá, rating.
+
+3.2. Trang chi tiết sản phẩm
+Ảnh zoom, giá bán, nút "Thêm vào giỏ".
+
+Tab mô tả + đánh giá (kèm ảnh người dùng).
+
+Gợi ý sản phẩm tương tự.
+
+3.3. Trang đăng bán (Seller Dashboard)
+Form upload ảnh, điền thông tin sản phẩm.
+
+Xem trước (preview) trước khi đăng.
+
+3.4. Trang thanh toán
+Tổng giá, chọn địa chỉ giao hàng.
+
+Chọn phương thức thanh toán.
+
+4. Công nghệ đề xuất
+Frontend: React.js/Vue.js + Tailwind CSS.
