@@ -1,4 +1,212 @@
-export const products = [
+export const sellers = [
+  {
+    userId: 2,
+    shopName: "Fashion Paradise",
+    shopLogo: "https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3",
+    description: "Cửa hàng thời trang cao cấp, cung cấp những mẫu quần áo mới nhất theo xu hướng.",
+    rating: 4.8,
+    reviewCount: 1250,
+    productCount: 24,
+    shopType: "official",
+    isVerified: true,
+    address: "123 Nguyễn Trãi, Quận 1, TP.HCM",
+    phone: "0901234567",
+    email: "fashionparadise@gmail.com",
+    mainCategory: "Áo thun",
+    bannerImage: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 3,
+    shopName: "Trendy Store",
+    shopLogo: "https://images.unsplash.com/photo-1589363360147-4f2d51541551?ixlib=rb-4.0.3",
+    description: "Shop thời trang trẻ trung dành cho giới trẻ, luôn cập nhật xu hướng mới nhất.",
+    rating: 4.6,
+    reviewCount: 980,
+    productCount: 18,
+    shopType: "preferred",
+    isVerified: true,
+    address: "45 Lê Lợi, Quận 1, TP.HCM",
+    phone: "0912345678",
+    email: "trendystore@gmail.com",
+    mainCategory: "Áo sơ mi",
+    bannerImage: "https://images.unsplash.com/photo-1523381294911-8d3cead13475?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 4,
+    shopName: "Elegance Boutique",
+    shopLogo: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3",
+    description: "Cửa hàng thời trang thanh lịch cao cấp dành cho phụ nữ hiện đại.",
+    rating: 4.9,
+    reviewCount: 1530,
+    productCount: 22,
+    shopType: "official",
+    isVerified: true,
+    address: "78 Đồng Khởi, Quận 1, TP.HCM",
+    phone: "0923456789",
+    email: "eleganceboutique@gmail.com",
+    mainCategory: "Váy đầm",
+    bannerImage: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 5,
+    shopName: "Urban Style",
+    shopLogo: "https://images.unsplash.com/photo-1507680434567-5739c80be1ac?ixlib=rb-4.0.3",
+    description: "Thời trang đường phố sành điệu, phong cách hiện đại cho cả nam và nữ.",
+    rating: 4.7,
+    reviewCount: 1150,
+    productCount: 20,
+    shopType: "preferred",
+    isVerified: true,
+    address: "25 Huỳnh Thúc Kháng, Quận 1, TP.HCM",
+    phone: "0934567890",
+    email: "urbanstyle@gmail.com",
+    mainCategory: "Quần jean",
+    bannerImage: "https://images.unsplash.com/photo-1503341504253-dff4815485f1?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 6,
+    shopName: "Luxe Fashion",
+    shopLogo: "https://images.unsplash.com/photo-1537832816519-689ad163238b?ixlib=rb-4.0.3",
+    description: "Cửa hàng thời trang cao cấp với các thiết kế độc quyền, sang trọng.",
+    rating: 4.9,
+    reviewCount: 860,
+    productCount: 16,
+    shopType: "official",
+    isVerified: true,
+    address: "100 Nguyễn Huệ, Quận 1, TP.HCM",
+    phone: "0945678901",
+    email: "luxefashion@gmail.com",
+    mainCategory: "Váy đầm",
+    bannerImage: "https://images.unsplash.com/photo-1555529771-122e5d9f2341?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 7,
+    shopName: "Vintage Collection",
+    shopLogo: "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3",
+    description: "Shop thời trang vintage, tái hiện phong cách cổ điển với cách điệu hiện đại.",
+    rating: 4.5,
+    reviewCount: 720,
+    productCount: 14,
+    shopType: "normal",
+    isVerified: true,
+    address: "56 Trần Hưng Đạo, Quận 1, TP.HCM",
+    phone: "0956789012",
+    email: "vintagecollection@gmail.com",
+    mainCategory: "Áo sơ mi",
+    bannerImage: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 8,
+    shopName: "Minimalist Store",
+    shopLogo: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3",
+    description: "Thời trang tối giản, đơn giản nhưng tinh tế, phù hợp với phong cách hiện đại.",
+    rating: 4.7,
+    reviewCount: 890,
+    productCount: 17,
+    shopType: "preferred",
+    isVerified: true,
+    address: "32 Lý Tự Trọng, Quận 1, TP.HCM",
+    phone: "0967890123",
+    email: "minimaliststore@gmail.com",
+    mainCategory: "Áo thun",
+    bannerImage: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 9,
+    shopName: "Sporty Life",
+    shopLogo: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?ixlib=rb-4.0.3",
+    description: "Cửa hàng thời trang thể thao, năng động, phù hợp cho người yêu thể thao và cuộc sống năng động.",
+    rating: 4.6,
+    reviewCount: 750,
+    productCount: 15,
+    shopType: "normal",
+    isVerified: true,
+    address: "15 Nguyễn Du, Quận 1, TP.HCM",
+    phone: "0978901234",
+    email: "sportylife@gmail.com",
+    mainCategory: "Thể thao",
+    bannerImage: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 10,
+    shopName: "Eco Clothes",
+    shopLogo: "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?ixlib=rb-4.0.3",
+    description: "Thời trang thân thiện với môi trường, sử dụng vật liệu tái chế và hữu cơ.",
+    rating: 4.8,
+    reviewCount: 650,
+    productCount: 13,
+    shopType: "preferred",
+    isVerified: true,
+    address: "89 Hai Bà Trưng, Quận 1, TP.HCM",
+    phone: "0989012345",
+    email: "ecoclothes@gmail.com",
+    mainCategory: "Áo thun",
+    bannerImage: "https://images.unsplash.com/photo-1511556820780-d912e42b4980?ixlib=rb-4.0.3"
+  },
+  {
+    userId: 11,
+    shopName: "Kids Fashion",
+    shopLogo: "https://images.unsplash.com/photo-1626609636042-46da2103153c?ixlib=rb-4.0.3",
+    description: "Cửa hàng thời trang dành cho trẻ em, đa dạng sản phẩm từ sơ sinh đến teenager.",
+    rating: 4.9,
+    reviewCount: 920,
+    productCount: 19,
+    shopType: "official",
+    isVerified: true,
+    address: "44 Lê Thánh Tôn, Quận 1, TP.HCM",
+    phone: "0990123456",
+    email: "kidsfashion@gmail.com",
+    mainCategory: "Thời trang trẻ em",
+    bannerImage: "https://images.unsplash.com/photo-1626784215021-2faa68a1a4c5?ixlib=rb-4.0.3"
+  }
+];
+
+export const categories = [
+  {
+    name: "Áo thun",
+    slug: "ao-thun",
+    image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3"
+  },
+  {
+    name: "Áo sơ mi",
+    slug: "ao-so-mi",
+    image: "https://images.unsplash.com/photo-1598961942613-ba897716405b?ixlib=rb-4.0.3"
+  },
+  {
+    name: "Quần jean",
+    slug: "quan-jean",
+    image: "https://images.unsplash.com/photo-1548883354-94bcfe321cbb?ixlib=rb-4.0.3"
+  },
+  {
+    name: "Váy đầm",
+    slug: "vay-dam",
+    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?ixlib=rb-4.0.3"
+  },
+  {
+    name: "Giày",
+    slug: "giay",
+    image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?ixlib=rb-4.0.3"
+  },
+  {
+    name: "Phụ kiện",
+    slug: "phu-kien",
+    image: "https://images.unsplash.com/photo-1583292650898-7298fa6cf312?ixlib=rb-4.0.3"
+  },
+  {
+    name: "Thời trang trẻ em",
+    slug: "thoi-trang-tre-em",
+    image: "https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?ixlib=rb-4.0.3"
+  },
+  {
+    name: "Thể thao",
+    slug: "the-thao",
+    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3"
+  }
+];
+
+// Import script cập nhật sellerId
+// Tạo dữ liệu sản phẩm
+const productsData = [
   // Áo thun (10 sản phẩm)
   {
     name: "Áo thun basic nam cổ tròn",
