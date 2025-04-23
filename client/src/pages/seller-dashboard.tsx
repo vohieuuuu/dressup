@@ -102,22 +102,18 @@ export default function SellerDashboard() {
   
   console.log("User info:", user);
   
-  // Get seller products
+  // Get seller by user ID first
+  const { data: sellerInfo, isLoading: isLoadingSeller } = useQuery({
+    queryKey: ['/api/seller-by-user', user?.id],
+    enabled: !!user && user.role === 'seller',
+  });
+  
+  console.log("Seller info:", sellerInfo);
+  
+  // Get seller products once we have the seller info
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["/api/seller/products", user?.id],
-    queryFn: async () => {
-      // Use the user ID to fetch the seller's products
-      console.log(`Đang tải sản phẩm của người bán: ${user?.id}`);
-      const response = await fetch(`/api/sellers/${user?.id}/products`);
-      if (!response.ok) {
-        console.error(`Lỗi khi tải sản phẩm: ${response.status} ${response.statusText}`);
-        throw new Error("Failed to fetch products");
-      }
-      const data = await response.json();
-      console.log("Sản phẩm của người bán:", data);
-      return data;
-    },
-    enabled: !!user && user.role === "seller",
+    queryKey: ["/api/products", { sellerId: sellerInfo?.id }],
+    enabled: !!sellerInfo?.id,
   });
   
   // Get orders for seller
@@ -134,7 +130,8 @@ export default function SellerDashboard() {
       return apiRequest("POST", "/api/products", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/seller/products"] });
+      // Update the correct query key that includes the sellerId
+      queryClient.invalidateQueries({ queryKey: ["/api/products", { sellerId: sellerInfo?.id }] });
       toast({
         title: "Thành công",
         description: "Sản phẩm đã được tạo thành công.",
@@ -156,7 +153,8 @@ export default function SellerDashboard() {
       return apiRequest("PUT", `/api/admin/products/${id}`, data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/seller/products"] });
+      // Update the correct query key that includes the sellerId
+      queryClient.invalidateQueries({ queryKey: ["/api/products", { sellerId: sellerInfo?.id }] });
       toast({
         title: "Thành công",
         description: "Sản phẩm đã được cập nhật thành công.",
@@ -178,7 +176,8 @@ export default function SellerDashboard() {
       return apiRequest("DELETE", `/api/admin/products/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/seller/products"] });
+      // Update the correct query key that includes the sellerId
+      queryClient.invalidateQueries({ queryKey: ["/api/products", { sellerId: sellerInfo?.id }] });
       toast({
         title: "Thành công",
         description: "Sản phẩm đã được xóa thành công.",
