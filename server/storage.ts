@@ -455,12 +455,32 @@ export class MemStorage implements IStorage {
       fullName: "Admin User",
       phone: "1234567890"
     });
+    
+    // Tạo user mua hàng
+    const buyerUser = await this.createUser({
+      username: "khachhang",
+      password: "$2b$10$X4kv7j5ZcG39WgogSl16sOGBvgfFzY1RfcJAhOvS9oMKDJgUdVhRm", // "password123"
+      email: "khachhang@example.com",
+      role: "buyer",
+      fullName: "Khách Hàng",
+      phone: "0912345678"
+    });
+    
+    // Tạo user bán hàng (Fashion Paradise)
+    const sellerFashionParadise = await this.createUser({
+      username: "fashionparadise",
+      password: "$2b$10$X4kv7j5ZcG39WgogSl16sOGBvgfFzY1RfcJAhOvS9oMKDJgUdVhRm", // "password123"
+      email: "fashionparadise@example.com",
+      role: "seller",
+      fullName: "Fashion Paradise",
+      phone: "0987654321"
+    });
 
     // Create demo shops
     // Tạo gian hàng mẫu với dữ liệu chi tiết
     const shopData = [
       {
-        userId: 2,
+        userId: sellerFashionParadise.id, // Link shop với tài khoản người bán đã tạo
         shopName: "Fashion Paradise",
         shopLogo: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?ixlib=rb-4.0.3",
         shopDescription: "Chuyên đầm, váy, áo kiểu nữ",
