@@ -27,11 +27,11 @@ export function Header() {
 
   const categories = [
     { name: "Trang chủ", path: "/" },
-    { name: "Áo Nam", path: "/?category=ao-nam" },
-    { name: "Quần Nam", path: "/?category=quan-nam" },
-    { name: "Áo Nữ", path: "/?category=ao-nu" },
-    { name: "Quần Nữ", path: "/?category=quan-nu" },
-    { name: "Váy Đầm", path: "/?category=vay-dam" },
+    { name: "Áo thun", path: "/?category=ao-thun" },
+    { name: "Áo sơ mi", path: "/?category=ao-so-mi" },
+    { name: "Quần jean", path: "/?category=quan-jean" },
+    { name: "Váy đầm", path: "/?category=vay-dam" },
+    { name: "Giày", path: "/?category=giay" },
     { name: "Phụ kiện", path: "/?category=phu-kien" },
     { name: "Khuyến mãi", path: "/?sale=true" },
     { name: "Xu hướng", path: "/?trending=true" },
