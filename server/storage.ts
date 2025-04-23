@@ -470,6 +470,264 @@ export class MemStorage implements IStorage {
       };
       this.categories.set(id, category);
     }
+    
+    // Import more demo products directly
+    // Áo thun products
+    const additionalProducts = [
+      // Áo thun
+      {
+        name: "Áo thun basic nam cổ tròn",
+        description: "Áo thun nam chất liệu cotton 100%, kiểu dáng basic, dễ phối đồ.",
+        price: 189000,
+        discountPrice: 129000,
+        category: "Áo thun",
+        subcategory: "Áo thun nam",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?ixlib=rb-4.0.3"],
+        colors: ["Đen", "Trắng", "Xám", "Xanh navy"],
+        sizes: ["S", "M", "L", "XL", "XXL"],
+        stock: 100,
+        isFeatured: true,
+        isFlashSale: true,
+        flashSaleDiscount: 30
+      },
+      {
+        name: "Áo thun nữ form rộng",
+        description: "Áo thun nữ form rộng phong cách Hàn Quốc, chất vải mềm mại thoáng mát.",
+        price: 159000,
+        discountPrice: 99000,
+        category: "Áo thun",
+        subcategory: "Áo thun nữ",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1618354691438-25bc04584c23?ixlib=rb-4.0.3"],
+        colors: ["Trắng", "Hồng", "Xanh mint", "Vàng nhạt"],
+        sizes: ["S", "M", "L"],
+        stock: 80,
+        isFeatured: false,
+        isFlashSale: true,
+        flashSaleDiscount: 35
+      },
+      {
+        name: "Áo thun nam in họa tiết",
+        description: "Áo thun nam in họa tiết thời trang, chất liệu cotton cao cấp.",
+        price: 220000,
+        discountPrice: 165000,
+        category: "Áo thun",
+        subcategory: "Áo thun nam",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3"],
+        colors: ["Đen", "Trắng", "Xanh dương"],
+        sizes: ["M", "L", "XL"],
+        stock: 60,
+        isFeatured: true,
+        isFlashSale: false,
+        flashSaleDiscount: null
+      },
+      {
+        name: "Áo thun oversize unisex",
+        description: "Áo thun oversize unisex form rộng thụng phong cách Hàn Quốc.",
+        price: 199000,
+        discountPrice: 149000,
+        category: "Áo thun",
+        subcategory: "Áo thun unisex",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3"],
+        colors: ["Đen", "Trắng", "Xám"],
+        sizes: ["M", "L", "XL"],
+        stock: 75,
+        isFeatured: false,
+        isFlashSale: true,
+        flashSaleDiscount: 25
+      },
+      
+      // Áo sơ mi
+      {
+        name: "Áo sơ mi nam dài tay trắng công sở",
+        description: "Áo sơ mi nam trắng chất liệu cotton cao cấp, kiểu dáng công sở.",
+        price: 329000,
+        discountPrice: 259000,
+        category: "Áo sơ mi",
+        subcategory: "Áo sơ mi nam",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?ixlib=rb-4.0.3"],
+        colors: ["Trắng"],
+        sizes: ["M", "L", "XL", "XXL"],
+        stock: 80,
+        isFeatured: true,
+        isFlashSale: false,
+        flashSaleDiscount: null
+      },
+      {
+        name: "Áo sơ mi nữ công sở cơ bản",
+        description: "Áo sơ mi nữ công sở form cơ bản, chất liệu mềm mại.",
+        price: 289000,
+        discountPrice: 229000,
+        category: "Áo sơ mi",
+        subcategory: "Áo sơ mi nữ",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1559807015-e5fe4e5484d9?ixlib=rb-4.0.3"],
+        colors: ["Trắng", "Xanh nhạt", "Hồng nhạt"],
+        sizes: ["S", "M", "L", "XL"],
+        stock: 70,
+        isFeatured: false,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      
+      // Quần jean
+      {
+        name: "Quần jean nam skinny",
+        description: "Quần jean nam skinny ôm dáng, màu xanh đậm, thích hợp mọi dáng người.",
+        price: 459000,
+        discountPrice: 359000,
+        category: "Quần jean",
+        subcategory: "Quần jean nam",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1582418702059-97ebafb35d09?ixlib=rb-4.0.3"],
+        colors: ["Xanh đậm", "Xanh nhạt", "Đen"],
+        sizes: ["29", "30", "31", "32", "33", "34"],
+        stock: 70,
+        isFeatured: true,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      {
+        name: "Quần jean nữ ống rộng",
+        description: "Quần jean nữ ống rộng dáng suông, phong cách Hàn Quốc.",
+        price: 429000,
+        discountPrice: 329000,
+        category: "Quần jean",
+        subcategory: "Quần jean nữ",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1541099649105-f69ad21f3246?ixlib=rb-4.0.3"],
+        colors: ["Xanh nhạt", "Xanh trung", "Trắng"],
+        sizes: ["26", "27", "28", "29", "30"],
+        stock: 60,
+        isFeatured: false,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      
+      // Váy đầm
+      {
+        name: "Đầm suông nữ công sở",
+        description: "Đầm suông nữ thanh lịch, kiểu dáng đơn giản, phù hợp môi trường công sở.",
+        price: 499000,
+        discountPrice: 399000,
+        category: "Váy đầm",
+        subcategory: "Đầm công sở",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1596783074918-c84cb06531ca?ixlib=rb-4.0.3"],
+        colors: ["Đen", "Xanh navy", "Đỏ đô"],
+        sizes: ["S", "M", "L", "XL"],
+        stock: 60,
+        isFeatured: true,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      {
+        name: "Váy hoa nữ mùa hè",
+        description: "Váy hoa nữ thiết kế nhẹ nhàng, thoáng mát, phù hợp mùa hè.",
+        price: 429000,
+        discountPrice: 329000,
+        category: "Váy đầm",
+        subcategory: "Váy hoa",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?ixlib=rb-4.0.3"],
+        colors: ["Họa tiết hoa"],
+        sizes: ["S", "M", "L"],
+        stock: 50,
+        isFeatured: false,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      
+      // Giày
+      {
+        name: "Giày thể thao nam",
+        description: "Giày thể thao nam phong cách năng động, đế mềm êm chân.",
+        price: 699000,
+        discountPrice: 549000,
+        category: "Giày",
+        subcategory: "Giày thể thao nam",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?ixlib=rb-4.0.3"],
+        colors: ["Trắng", "Đen", "Xám"],
+        sizes: ["39", "40", "41", "42", "43"],
+        stock: 60,
+        isFeatured: true,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      {
+        name: "Giày thể thao nữ",
+        description: "Giày thể thao nữ nhẹ, êm, thoáng khí, phù hợp đi chơi, tập thể dục.",
+        price: 649000,
+        discountPrice: 499000,
+        category: "Giày",
+        subcategory: "Giày thể thao nữ",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?ixlib=rb-4.0.3"],
+        colors: ["Trắng", "Hồng", "Xanh mint"],
+        sizes: ["35", "36", "37", "38", "39"],
+        stock: 55,
+        isFeatured: false,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      
+      // Phụ kiện
+      {
+        name: "Túi xách nữ thời trang",
+        description: "Túi xách nữ thiết kế thời trang, sang trọng, chất liệu da cao cấp.",
+        price: 799000,
+        discountPrice: 649000,
+        category: "Phụ kiện",
+        subcategory: "Túi xách",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1597843797341-728c4b43c0b0?ixlib=rb-4.0.3"],
+        colors: ["Đen", "Nâu", "Đỏ đô"],
+        sizes: [],
+        stock: 30,
+        isFeatured: true,
+        isFlashSale: true,
+        flashSaleDiscount: 20
+      },
+      {
+        name: "Ví nam da thật",
+        description: "Ví nam chất liệu da thật cao cấp, thiết kế tinh tế, sang trọng.",
+        price: 559000,
+        discountPrice: 459000,
+        category: "Phụ kiện",
+        subcategory: "Ví",
+        sellerId: 1,
+        images: ["https://images.unsplash.com/photo-1606751296969-d7b0585d0c07?ixlib=rb-4.0.3"],
+        colors: ["Đen", "Nâu"],
+        sizes: [],
+        stock: 40,
+        isFeatured: false,
+        isFlashSale: false,
+        flashSaleDiscount: null
+      }
+    ];
+    
+    // Add more demo products
+    for (const productData of additionalProducts) {
+      const now = new Date();
+      const id = this.currentId.products++;
+      const product: Product = {
+        ...productData,
+        id,
+        rating: 0,
+        reviewCount: 0,
+        soldCount: 0,
+        createdAt: now,
+        updatedAt: now
+      };
+      this.products.set(id, product);
+    }
+    
+    console.log(`Added ${additionalProducts.length} additional demo products`);
 
     // Create demo seller
     const sellerUser = await this.createUser({
