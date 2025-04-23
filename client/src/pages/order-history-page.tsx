@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { Header } from "@/components/common/Header";
-import { Footer } from "@/components/common/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -94,18 +92,14 @@ export default function OrderHistoryPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-1 container mx-auto py-8 px-4">
-          <div className="flex items-center justify-center min-h-[50vh]">
-            <div className="animate-spin mr-2">
-              <RefreshCw size={24} />
-            </div>
-            <span>Đang tải đơn hàng...</span>
+      <main className="flex-1 container mx-auto py-8 px-4">
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="animate-spin mr-2">
+            <RefreshCw size={24} />
           </div>
-        </main>
-        <Footer />
-      </div>
+          <span>Đang tải đơn hàng...</span>
+        </div>
+      </main>
     );
   }
 
@@ -130,15 +124,12 @@ export default function OrderHistoryPage() {
   });
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      
-      <main className="flex-1 container mx-auto py-8 px-4">
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Lịch sử đơn hàng</h1>
-            <p className="text-muted-foreground">Xem và quản lý tất cả đơn hàng của bạn</p>
-          </div>
+    <main className="flex-1 container mx-auto py-8 px-4">
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Lịch sử đơn hàng</h1>
+          <p className="text-muted-foreground">Xem và quản lý tất cả đơn hàng của bạn</p>
+        </div>
           
           <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full md:w-auto">
@@ -310,8 +301,5 @@ export default function OrderHistoryPage() {
           </Tabs>
         </div>
       </main>
-      
-      <Footer />
-    </div>
   );
 }
