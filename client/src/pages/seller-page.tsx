@@ -161,19 +161,19 @@ export default function SellerPage() {
               TẤT CẢ SẢN PHẨM
             </button>
             <button className="py-3 px-5 font-medium text-gray-500 hover:text-primary">
-              Đầu Đọc Thẻ Nhớ
+              Áo Thun
             </button>
             <button className="py-3 px-5 font-medium text-gray-500 hover:text-primary">
-              Quạt Mini
+              Áo Sơ Mi
             </button>
             <button className="py-3 px-5 font-medium text-gray-500 hover:text-primary">
-              Sạc Dự Phòng
+              Quần Jean
             </button>
             <button className="py-3 px-5 font-medium text-gray-500 hover:text-primary">
-              Máy Ảnh Mini
+              Váy Đầm
             </button>
             <button className="py-3 px-5 font-medium text-gray-500 hover:text-primary">
-              Chuột Không Dây
+              Phụ Kiện
             </button>
           </div>
         </div>
