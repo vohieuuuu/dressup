@@ -47,6 +47,7 @@ export default function SellerPage() {
   const { data: seller, isLoading: isSellerLoading } = useQuery<Seller>({
     queryKey: [`/api/sellers/${sellerId}`],
     enabled: Boolean(sellerId),
+    retry: 3, // Try up to 3 times if the request fails
   });
 
   const { data: products = [], isLoading: isProductsLoading } = useQuery<Product[]>({
@@ -72,9 +73,18 @@ export default function SellerPage() {
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     if (filters.sort === "price-asc") return a.price - b.price;
     if (filters.sort === "price-desc") return b.price - a.price;
-    if (filters.sort === "popular") return b.soldCount - a.soldCount;
-    // newest is default
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    
+    // Handle safely for popular sort when soldCount could be null
+    if (filters.sort === "popular") {
+      const aSold = a.soldCount || 0;
+      const bSold = b.soldCount || 0;
+      return bSold - aSold;
+    }
+    
+    // Handle safely for dates that could be null
+    const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return bDate - aDate;
   });
 
   const categories = [...new Set(products.map(p => p.category))];
