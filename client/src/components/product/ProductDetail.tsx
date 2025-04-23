@@ -119,6 +119,26 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
           {/* Product Info */}
           <div>
             <h1 className="text-xl font-semibold mb-2">{product.name}</h1>
+            
+            {/* Shop Info */}
+            <div className="flex items-center mb-3 bg-gray-50 p-2 rounded-lg">
+              <div className="w-10 h-10 rounded-full overflow-hidden mr-2">
+                <img src="https://via.placeholder.com/40" alt="Shop logo" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <Link href={`/seller/${product.sellerId}`} className="text-sm font-medium hover:text-primary">
+                  Shop của người bán
+                </Link>
+                <div className="flex items-center text-xs text-gray-500">
+                  <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
+                  <span>4.9</span>
+                </div>
+              </div>
+              <Link href={`/seller/${product.sellerId}`} className="ml-auto text-xs text-primary border border-primary rounded-full px-3 py-1 hover:bg-primary/5">
+                Xem Shop
+              </Link>
+            </div>
+            
             <div className="flex items-center space-x-2 mb-4">
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
