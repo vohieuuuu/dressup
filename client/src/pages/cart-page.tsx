@@ -203,15 +203,19 @@ export default function CartPage() {
     }
   };
   
-  if (!user) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow container mx-auto px-4 py-12">
-          <div className="max-w-md mx-auto text-center">
-            <ShoppingBag className="h-16 w-16 mx-auto text-primary mb-4" />
-            <h1 className="text-2xl font-bold mb-4">Giỏ hàng của bạn</h1>
-            <p className="text-gray-600 mb-8">Vui lòng đăng nhập để xem giỏ hàng của bạn</p>
+  // Khởi tạo layout cơ bản
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <h1 className="text-2xl font-bold mb-8">Giỏ hàng của bạn</h1>
+
+        {/* Kiểm tra trạng thái đăng nhập */}
+        {!user ? (
+          <div className="bg-white p-8 rounded-lg shadow-sm text-center">
+            <ShoppingBag className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+            <h2 className="text-xl font-semibold mb-2">Vui lòng đăng nhập</h2>
+            <p className="text-gray-600 mb-6">Bạn cần đăng nhập để xem giỏ hàng của mình</p>
             <div className="flex justify-center gap-4">
               <Link href="/auth">
                 <Button>Đăng nhập</Button>
@@ -221,33 +225,11 @@ export default function CartPage() {
               </Link>
             </div>
           </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-grow container mx-auto px-4 py-12">
+        ) : isLoading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-  
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-8">Giỏ hàng của bạn</h1>
-        
-        {cartItems.length === 0 ? (
+        ) : cartItems.length === 0 ? (
           <div className="bg-white p-8 rounded-lg shadow-sm text-center">
             <ShoppingBag className="h-16 w-16 mx-auto text-gray-300 mb-4" />
             <h2 className="text-xl font-semibold mb-2">Giỏ hàng của bạn đang trống</h2>
