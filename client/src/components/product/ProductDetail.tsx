@@ -35,6 +35,7 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
         const response = await fetch(`/api/sellers/${product.sellerId}`);
         if (response.ok) {
           const data = await response.json();
+          console.log("Fetched seller info:", data);
           setSellerInfo(data);
         }
       } catch (error) {
@@ -151,7 +152,7 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
               </div>
               <div>
                 <Link href={`/seller/${product.sellerId}`} className="text-sm font-medium hover:text-primary">
-                  {sellerInfo?.shopName || "Shop của người bán"}
+                  {sellerInfo?.shopName || "Đang tải..."}
                 </Link>
                 <div className="flex items-center text-xs text-gray-500">
                   <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
