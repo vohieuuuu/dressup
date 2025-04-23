@@ -120,8 +120,6 @@ export default function SellerDashboard() {
   const { data: orders = [], isLoading: isLoadingOrders } = useQuery({
     queryKey: ["/api/seller/orders"],
     enabled: !!user && user.role === "seller" && activeTab === "orders",
-    // Temporarily return empty array since we don't have this endpoint yet
-    queryFn: async () => [],
   });
   
   // Create product mutation
