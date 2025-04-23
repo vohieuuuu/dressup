@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { SellerRegisterModal } from "@/components/seller/SellerRegisterModal";
 import { ShoppingCart } from "@/components/cart/ShoppingCart";
+import logoSrc from "/public/assets/logo.svg";
 
 export function Header() {
   const [location] = useLocation();
@@ -87,7 +88,7 @@ export function Header() {
         {/* Main Header */}
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center">
-            <span className="text-primary text-2xl font-heading font-bold">Dress<span className="text-secondary">Up</span></span>
+            <img src={logoSrc} alt="DressUp Logo" className="h-16 w-auto" />
           </Link>
           
           {/* Search Bar */}
