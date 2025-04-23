@@ -410,11 +410,14 @@ export class MemStorage implements IStorage {
   
   async createOrder(
     insertOrder: InsertOrder, 
-    items: { productId: number, quantity: number, color?: string, size?: string }[]
+    items: { productId: number, quantity: number, price?: number, color?: string, size?: string }[]
   ): Promise<Order> {
     if (items.length === 0) {
       throw new Error("Order must have at least one item");
     }
+    
+    console.log("Creating order with data:", JSON.stringify(insertOrder, null, 2));
+    console.log("Order items:", JSON.stringify(items, null, 2));
     
     // Create the order
     const id = this.currentId.orders++;
@@ -423,7 +426,11 @@ export class MemStorage implements IStorage {
       ...insertOrder,
       id,
       status: "pending",
-      paymentStatus: "pending",
+      paymentStatus: insertOrder.paymentStatus || "pending",
+      recipientName: insertOrder.recipientName || "",
+      recipientPhone: insertOrder.recipientPhone || "",
+      notes: insertOrder.notes || "",
+      shippingFee: insertOrder.shippingFee || 30000,
       trackingNumber: null,
       shippingMethod: insertOrder.shippingMethod || "Standard",
       estimatedDelivery: null,

@@ -150,28 +150,57 @@ export default function CartPage() {
       return;
     }
     
-    // Prepare order items
-    const items = cartItems.map(item => ({
-      productId: item.product.id,
-      quantity: item.quantity,
-      price: item.product.discountPrice || item.product.price,
-      color: item.color,
-      size: item.size
-    }));
-    
-    // Create order
-    placeOrderMutation.mutate({
-      totalAmount: total,
-      shippingAddress,
-      recipientName,
-      recipientPhone,
-      notes,
-      shippingFee,
-      paymentMethod,
-      paymentStatus: paymentMethod === "cod" ? "pending" : "pending",
-      items,
-      sellerId: items[0].product.sellerId // For now, we only support single-seller orders
-    });
+    try {
+      // Log validation info
+      console.log("Validating order data...");
+      console.log("Recipient name:", recipientName);
+      console.log("Recipient phone:", recipientPhone);
+      console.log("Shipping address:", shippingAddress);
+      console.log("Payment method:", paymentMethod);
+      console.log("Cart items count:", cartItems.length);
+      
+      // Prepare order items
+      const items = cartItems.map(item => ({
+        productId: item.product.id,
+        quantity: item.quantity,
+        price: item.product.discountPrice || item.product.price,
+        color: item.color,
+        size: item.size
+      }));
+      
+      // Get seller ID from first product (for now, single-seller orders only)
+      const sellerId = cartItems[0]?.product?.sellerId;
+      
+      if (!sellerId) {
+        throw new Error("Seller ID is missing from products");
+      }
+      
+      // Prepare order data
+      const orderData = {
+        totalAmount: total,
+        shippingAddress,
+        recipientName,
+        recipientPhone,
+        notes,
+        shippingFee,
+        paymentMethod,
+        paymentStatus: paymentMethod === "cod" ? "pending" : "pending",
+        items,
+        sellerId
+      };
+      
+      console.log("Placing order with data:", JSON.stringify(orderData, null, 2));
+      
+      // Create order
+      placeOrderMutation.mutate(orderData);
+    } catch (error) {
+      console.error("Order preparation error:", error);
+      toast({
+        title: "Lỗi chuẩn bị đơn hàng",
+        description: (error as Error).message || "Có lỗi xảy ra khi chuẩn bị đơn hàng.",
+        variant: "destructive",
+      });
+    }
   };
   
   if (!user) {
