@@ -28,8 +28,9 @@ function Router() {
           <Route path="/auth" component={AuthPage} />
           <Route path="/product/:id" component={ProductPage} />
           <Route path="/seller/:id" component={SellerPage} />
+          <Route path="/profile" component={SellerPage} />
           <ProtectedRoute path="/cart" component={CartPage} />
-          <ProtectedRoute path="/seller" component={SellerDashboard} />
+          <ProtectedRoute path="/seller-dashboard" component={SellerDashboard} />
           <ProtectedRoute path="/admin" component={AdminDashboard} />
           <Route component={NotFound} />
         </Switch>

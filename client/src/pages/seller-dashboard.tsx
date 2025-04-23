@@ -104,14 +104,18 @@ export default function SellerDashboard() {
   
   // Get seller products
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["/api/seller/products"],
+    queryKey: ["/api/seller/products", user?.id],
     queryFn: async () => {
       // Use the user ID to fetch the seller's products
+      console.log(`Đang tải sản phẩm của người bán: ${user?.id}`);
       const response = await fetch(`/api/sellers/${user?.id}/products`);
       if (!response.ok) {
+        console.error(`Lỗi khi tải sản phẩm: ${response.status} ${response.statusText}`);
         throw new Error("Failed to fetch products");
       }
-      return response.json();
+      const data = await response.json();
+      console.log("Sản phẩm của người bán:", data);
+      return data;
     },
     enabled: !!user && user.role === "seller",
   });
