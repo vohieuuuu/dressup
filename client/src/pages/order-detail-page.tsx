@@ -121,7 +121,7 @@ const OrderTrackingStatus = ({ status, returnRequested }: { status: string, retu
 
   if (status === "returned" || returnRequested) {
     return (
-      <Alert variant="warning" className="mb-6 border-orange-200 text-orange-800 bg-orange-50">
+      <Alert className="mb-6 border-orange-200 text-orange-800 bg-orange-50">
         <RefreshCw className="h-4 w-4" />
         <AlertTitle>Yêu cầu trả hàng</AlertTitle>
         <AlertDescription>
