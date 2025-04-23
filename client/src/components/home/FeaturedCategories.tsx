@@ -25,8 +25,7 @@ export function FeaturedCategories() {
         <h2 className="heading text-2xl font-semibold mb-6">Danh mục nổi bật</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {displayCategories.map((category) => (
-            <Link key={category.id} href={`/?category=${category.slug}`}>
-              <a className="group">
+            <Link key={category.id} href={`/category/${category.slug}`} className="group">
                 <div className="bg-neutral-100 rounded-lg overflow-hidden aspect-square relative">
                   <img 
                     src={category.image} 
@@ -35,7 +34,6 @@ export function FeaturedCategories() {
                   />
                 </div>
                 <p className="mt-2 text-center font-medium">{category.name}</p>
-              </a>
             </Link>
           ))}
         </div>

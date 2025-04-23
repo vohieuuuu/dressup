@@ -34,8 +34,16 @@ export default function HomePage() {
     setIsBrowser(true);
   }, []);
   
-  // Parse URL parameters
+  // Parse URL parameters from both query string and path params
   useEffect(() => {
+    // Check for category in URL path (/category/:slug)
+    const match = location.match(/^\/category\/([^/]+)/);
+    if (match) {
+      setCategorySlug(match[1]);
+      return;
+    }
+    
+    // Check for category in query string (?category=...)
     const params = new URLSearchParams(window.location.search);
     const category = params.get("category");
     if (category) {
