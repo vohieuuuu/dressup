@@ -11,6 +11,7 @@ import AuthPage from "@/pages/auth-page";
 import ProductPage from "@/pages/product-page";
 import CartPage from "@/pages/cart-page";
 import SellerDashboard from "@/pages/seller-dashboard";
+import SellerPage from "@/pages/seller-page";
 import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
 
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/category/:slug" component={HomePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/product/:id" component={ProductPage} />
+      <Route path="/seller/:id" component={SellerPage} />
       <ProtectedRoute path="/cart" component={CartPage} />
       <ProtectedRoute path="/seller" component={SellerDashboard} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
