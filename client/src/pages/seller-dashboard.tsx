@@ -257,7 +257,6 @@ export default function SellerDashboard() {
   if (!user || user.role !== "seller") {
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
         <main className="flex-grow container mx-auto px-4 py-12">
           <div className="max-w-md mx-auto text-center">
             <div className="bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -270,14 +269,12 @@ export default function SellerDashboard() {
             <Button onClick={() => window.history.back()}>Quay lại</Button>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
   
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-grow bg-gray-50">
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-8">
