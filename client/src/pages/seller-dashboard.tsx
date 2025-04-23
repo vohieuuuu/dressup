@@ -498,13 +498,53 @@ export default function SellerDashboard() {
                       </p>
                     </div>
                   ) : (
-                    <div className="text-center py-12">
-                      <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Đang phát triển</h3>
-                      <p className="text-gray-500">
-                        Tính năng quản lý đơn hàng đang được phát triển. Vui lòng quay lại sau.
-                      </p>
-                    </div>
+                    <Table>
+                      <TableCaption>Danh sách đơn hàng của bạn</TableCaption>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Mã đơn</TableHead>
+                          <TableHead>Khách hàng</TableHead>
+                          <TableHead>Ngày đặt</TableHead>
+                          <TableHead>Tổng tiền</TableHead>
+                          <TableHead>Trạng thái</TableHead>
+                          <TableHead>Thao tác</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {orders.map((order) => (
+                          <TableRow key={order.id}>
+                            <TableCell className="font-medium">#{order.id}</TableCell>
+                            <TableCell>
+                              {order.recipientName}<br/>
+                              <span className="text-xs text-gray-500">{order.recipientPhone}</span>
+                            </TableCell>
+                            <TableCell>
+                              {new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {order.totalAmount.toLocaleString()}đ
+                            </TableCell>
+                            <TableCell>
+                              {order.status === 'pending' && <Badge variant="outline">Chờ xác nhận</Badge>}
+                              {order.status === 'processing' && <Badge variant="secondary">Đang xử lý</Badge>}
+                              {order.status === 'shipped' && <Badge variant="secondary">Đang giao</Badge>}
+                              {order.status === 'delivered' && <Badge className="bg-green-500">Đã giao</Badge>}
+                              {order.status === 'cancelled' && <Badge variant="destructive">Đã hủy</Badge>}
+                              {order.status === 'returned' && <Badge variant="destructive">Đã trả hàng</Badge>}
+                            </TableCell>
+                            <TableCell>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => window.open(`/order/${order.id}`, '_blank')}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
                   )}
                 </CardContent>
               </Card>
