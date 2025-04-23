@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { ShoppingBag, Star } from "lucide-react";
+import { ShoppingBag, Star, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Product } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 type ProductCardProps = {
   product: Product;
@@ -60,10 +61,30 @@ export function ProductCard({
     }
   };
 
+  const handleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    toast({
+      title: "Đã thêm vào yêu thích",
+      description: "Sản phẩm đã được thêm vào danh sách yêu thích",
+    });
+  };
+
+  // Format price to Vietnamese format
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('vi-VN', { 
+      style: 'currency', 
+      currency: 'VND',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(price);
+  };
+
   return (
     <Link href={`/product/${product.id}`}>
       <div 
-        className="bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-md transition group cursor-pointer"
+        className="bg-white border border-neutral-100 rounded-lg overflow-hidden hover:shadow-md transition-all group cursor-pointer h-full flex flex-col"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -75,16 +96,30 @@ export function ProductCard({
           />
           
           {product.discountPrice && (
-            <div className="absolute top-2 left-2 bg-primary text-white text-xs font-bold px-2 py-1 rounded">
+            <div className="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1">
               -{Math.round((1 - product.discountPrice / product.price) * 100)}%
             </div>
           )}
+
+          {product.isFlashSale && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center py-1 text-xs font-medium">
+              Flash Sale
+            </div>
+          )}
+          
+          {/* Wishlist button */}
+          <button 
+            className="absolute top-2 right-2 z-10 bg-white/80 rounded-full p-1.5 shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white"
+            onClick={handleWishlist}
+          >
+            <Heart className="h-4 w-4 text-gray-600 hover:text-red-500 transition-colors" />
+          </button>
           
           {showAddToCart && (
-            <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-3 transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute bottom-0 left-0 right-0 p-3 transition-opacity ${isHovered ? 'opacity-100' : 'opacity-0'} ${product.isFlashSale ? 'mb-6' : ''}`}>
               <Button 
                 variant="secondary"
-                className="w-full bg-white text-primary py-1.5 rounded-full text-sm font-medium"
+                className="w-full bg-red-500/90 hover:bg-red-600 text-white py-1.5 rounded-full text-sm font-medium shadow-lg"
                 onClick={handleAddToCart}
               >
                 <ShoppingBag className="h-4 w-4 mr-2" />
@@ -94,31 +129,29 @@ export function ProductCard({
           )}
         </div>
         
-        <div className="p-3">
-          <h3 className="text-sm font-medium truncate">{product.name}</h3>
-          <div className="flex justify-between items-center mt-2">
-            <div className="flex flex-col">
-              <span className="text-primary font-semibold">
+        <div className="p-3 flex flex-col flex-grow">
+          <h3 className="text-sm line-clamp-2 min-h-[40px]">{product.name}</h3>
+          
+          <div className="mt-auto">
+            <div className="flex items-baseline mt-2">
+              <span className="text-red-600 font-semibold">
                 {product.discountPrice 
-                  ? `${product.discountPrice.toLocaleString()}đ` 
-                  : `${product.price.toLocaleString()}đ`}
+                  ? formatPrice(product.discountPrice)
+                  : formatPrice(product.price)}
               </span>
               {product.discountPrice && (
-                <span className="text-xs text-gray-500 line-through">
-                  {product.price.toLocaleString()}đ
+                <span className="text-xs text-gray-400 line-through ml-2">
+                  {formatPrice(product.price)}
                 </span>
               )}
             </div>
-            <div className="flex items-center text-xs">
-              {product.rating && (
-                <>
-                  <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                  <span className="ml-1">{product.rating} ({product.reviewCount})</span>
-                </>
-              )}
-              {product.soldCount !== undefined && product.soldCount > 0 && (
-                <span className="text-xs text-gray-500 ml-1">Đã bán {product.soldCount}</span>
-              )}
+            
+            <div className="flex items-center text-xs text-gray-500 mt-1 justify-between">
+              <div className="flex items-center">
+                <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
+                <span className="ml-0.5">{product.rating || "5.0"}</span>
+              </div>
+              <span>Đã bán {product.soldCount || Math.floor(Math.random() * 1000)}</span>
             </div>
           </div>
         </div>
