@@ -7,9 +7,19 @@ export function TopSellers() {
     queryKey: ["/api/sellers"],
   });
 
-  // If we have no data or still loading, show placeholder
-  const displaySellers = sellers.length > 0 
-    ? sellers.slice(0, 3) 
+  // Sắp xếp các shop theo đánh giá và lượt đánh giá
+  const sortedSellers = [...sellers].sort((a, b) => {
+    // Ưu tiên sắp xếp theo đánh giá cao nhất
+    if (b.rating !== a.rating) {
+      return (b.rating || 0) - (a.rating || 0);
+    }
+    // Nếu đánh giá bằng nhau, sắp xếp theo lượt đánh giá
+    return (b.reviewCount || 0) - (a.reviewCount || 0);
+  });
+
+  // Hiển thị 5 shop nổi bật nhất
+  const displaySellers = sortedSellers.length > 0 
+    ? sortedSellers.slice(0, 5) 
     : [
         {
           id: 1,
@@ -71,7 +81,7 @@ export function TopSellers() {
     <section className="bg-white py-8">
       <div className="container mx-auto px-4">
         <h2 className="heading text-2xl font-semibold mb-6">Cửa hàng nổi bật</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
           {displaySellers.map(seller => (
             <SellerCard key={seller.id} seller={seller} />
           ))}
