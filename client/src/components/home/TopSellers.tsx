@@ -7,10 +7,31 @@ export function TopSellers() {
     queryKey: ["/api/sellers"],
   });
 
+  // Lọc bỏ các shop trùng lặp dựa trên shopName và chỉ giữ lại shop có rating > 0
+  const uniqueSellers = [...sellers].reduce((acc, current) => {
+    // Kiểm tra nếu đã có shop này trong danh sách (dựa vào tên shop)
+    const duplicate = acc.find(item => item.shopName === current.shopName);
+    
+    // Nếu chưa có hoặc shop hiện tại có rating cao hơn, giữ lại shop hiện tại
+    if (!duplicate || (current.rating && current.rating > (duplicate.rating || 0))) {
+      // Nếu đã có shop trùng lặp, xóa bỏ nó
+      if (duplicate) {
+        const index = acc.findIndex(item => item.shopName === current.shopName);
+        if (index > -1) {
+          acc.splice(index, 1);
+        }
+      }
+      // Thêm shop hiện tại vào danh sách
+      acc.push(current);
+    }
+    
+    return acc;
+  }, [] as Seller[]);
+  
   // Sắp xếp các shop theo đánh giá và lượt đánh giá
-  const sortedSellers = [...sellers].sort((a, b) => {
+  const sortedSellers = [...uniqueSellers].sort((a, b) => {
     // Ưu tiên sắp xếp theo đánh giá cao nhất
-    if (b.rating !== a.rating) {
+    if ((b.rating || 0) !== (a.rating || 0)) {
       return (b.rating || 0) - (a.rating || 0);
     }
     // Nếu đánh giá bằng nhau, sắp xếp theo lượt đánh giá
