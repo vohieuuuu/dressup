@@ -123,7 +123,7 @@ export function Header() {
             </button>
             <Link href={user ? "/profile" : "/auth"} className="flex items-center space-x-1">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={user?.avatar} />
+                <AvatarImage src={user?.avatar || undefined} />
                 <AvatarFallback>
                   <User className="h-4 w-4" />
                 </AvatarFallback>

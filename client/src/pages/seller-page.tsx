@@ -22,10 +22,15 @@ export default function SellerPage() {
     enabled: Boolean(user?.id && user.role === 'seller'),
   });
   
-  // If we're on the seller profile page and have the user's seller ID, use it
-  if (sellerByUser && path === "/seller-dashboard") {
-    sellerId = sellerByUser.id;
-    console.log("Đang xem trang hồ sơ của người bán:", sellerByUser);
+  // Always fetch seller information for the current URL ID if it's available
+  if (sellerId) {
+    console.log("Đang tải thông tin của Shop ID:", sellerId);
+  } else {
+    // Otherwise check if we should use the current user's seller ID
+    if (sellerByUser) {
+      sellerId = sellerByUser.id;
+      console.log("Đang xem trang hồ sơ của người bán:", sellerByUser);
+    }
   }
   
   console.log("Path:", path, "SellerId:", sellerId, "User:", user?.id, "Role:", user?.role);
