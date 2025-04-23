@@ -257,13 +257,20 @@ export class MemStorage implements IStorage {
   async createSeller(insertSeller: InsertSeller): Promise<Seller> {
     const id = this.currentId.sellers++;
     const now = new Date();
+    
+    // Giữ lại các thuộc tính nếu đã được cung cấp
+    const rating = 'rating' in insertSeller ? insertSeller.rating as number : 0;
+    const reviewCount = 'reviewCount' in insertSeller ? insertSeller.reviewCount as number : 0;
+    const productCount = 'productCount' in insertSeller ? insertSeller.productCount as number : 0;
+    const isVerified = 'isVerified' in insertSeller ? insertSeller.isVerified as boolean : false;
+    
     const seller: Seller = {
       ...insertSeller,
       id,
-      isVerified: false,
-      rating: 0,
-      reviewCount: 0,
-      productCount: 0,
+      isVerified: isVerified,
+      rating: rating,
+      reviewCount: reviewCount,
+      productCount: productCount,
       createdAt: now,
       updatedAt: now
     };
@@ -450,6 +457,7 @@ export class MemStorage implements IStorage {
     });
 
     // Create demo shops
+    // Tạo gian hàng mẫu với dữ liệu chi tiết
     const shopData = [
       {
         userId: 2,
@@ -463,7 +471,7 @@ export class MemStorage implements IStorage {
         shopBanner: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3",
         rating: 4.9,
         reviewCount: 156,
-        productCount: 10,
+        productCount: 24,
         isVerified: true
       },
       {
@@ -478,7 +486,7 @@ export class MemStorage implements IStorage {
         shopBanner: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-4.0.3",
         rating: 4.8,
         reviewCount: 124,
-        productCount: 8,
+        productCount: 18,
         isVerified: true
       },
       {
@@ -493,7 +501,7 @@ export class MemStorage implements IStorage {
         shopBanner: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?ixlib=rb-4.0.3",
         rating: 4.7,
         reviewCount: 98,
-        productCount: 12,
+        productCount: 32,
         isVerified: true
       },
       {
@@ -508,7 +516,7 @@ export class MemStorage implements IStorage {
         shopBanner: "https://images.unsplash.com/photo-1470092306007-055b6797ca72?ixlib=rb-4.0.3",
         rating: 4.9,
         reviewCount: 210,
-        productCount: 15,
+        productCount: 45,
         isVerified: true
       },
       {
@@ -523,7 +531,7 @@ export class MemStorage implements IStorage {
         shopBanner: "https://images.unsplash.com/photo-1519415943484-9fa1873496d4?ixlib=rb-4.0.3",
         rating: 4.6,
         reviewCount: 178,
-        productCount: 20,
+        productCount: 60,
         isVerified: true
       }
     ];
