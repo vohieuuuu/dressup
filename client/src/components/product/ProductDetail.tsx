@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -7,6 +7,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 import { Minus, Plus, ShoppingBag, Star, X } from "lucide-react";
 
 interface ProductDetailProps {
@@ -26,6 +27,25 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
   );
   const [quantity, setQuantity] = useState(1);
   const [mainImage, setMainImage] = useState(product.images[0]);
+  const [sellerInfo, setSellerInfo] = useState<any>(null);
+  
+  useEffect(() => {
+    const fetchSellerInfo = async () => {
+      try {
+        const response = await fetch(`/api/sellers/${product.sellerId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSellerInfo(data);
+        }
+      } catch (error) {
+        console.error("Error fetching seller info:", error);
+      }
+    };
+    
+    if (product.sellerId) {
+      fetchSellerInfo();
+    }
+  }, [product.sellerId]);
 
   const handleQuantityChange = (delta: number) => {
     const newQuantity = Math.max(1, Math.min(product.stock, quantity + delta));
@@ -123,15 +143,19 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
             {/* Shop Info */}
             <div className="flex items-center mb-3 bg-gray-50 p-2 rounded-lg">
               <div className="w-10 h-10 rounded-full overflow-hidden mr-2">
-                <img src="https://via.placeholder.com/40" alt="Shop logo" className="w-full h-full object-cover" />
+                <img 
+                  src={sellerInfo?.avatar || "https://via.placeholder.com/40"} 
+                  alt={sellerInfo?.shopName || "Shop logo"} 
+                  className="w-full h-full object-cover" 
+                />
               </div>
               <div>
                 <Link href={`/seller/${product.sellerId}`} className="text-sm font-medium hover:text-primary">
-                  Shop của người bán
+                  {sellerInfo?.shopName || "Shop của người bán"}
                 </Link>
                 <div className="flex items-center text-xs text-gray-500">
                   <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
-                  <span>4.9</span>
+                  <span>{sellerInfo?.rating || "4.9"}</span>
                 </div>
               </div>
               <Link href={`/seller/${product.sellerId}`} className="ml-auto text-xs text-primary border border-primary rounded-full px-3 py-1 hover:bg-primary/5">

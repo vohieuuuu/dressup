@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { ShoppingBag, Star, Heart } from "lucide-react";
+import { ShoppingBag, Star, Heart, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -22,6 +22,24 @@ export function ProductCard({
   const { user } = useAuth();
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
+  const [sellerInfo, setSellerInfo] = useState<any>(null);
+  
+  useEffect(() => {
+    // Fetch seller information if product has a sellerId
+    if (product.sellerId) {
+      fetch(`/api/sellers/${product.sellerId}`)
+        .then(response => {
+          if (response.ok) return response.json();
+          throw new Error('Failed to fetch seller info');
+        })
+        .then(data => {
+          setSellerInfo(data);
+        })
+        .catch(error => {
+          console.error("Error fetching seller info:", error);
+        });
+    }
+  }, [product.sellerId]);
   
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -131,6 +149,16 @@ export function ProductCard({
         
         <div className="p-3 flex flex-col flex-grow">
           <h3 className="text-sm line-clamp-2 min-h-[40px]">{product.name}</h3>
+          
+          {/* Shop name */}
+          {sellerInfo && (
+            <div className="mt-1 flex items-center text-xs text-gray-500">
+              <Store className="h-3 w-3 mr-1" />
+              <Link href={`/seller/${product.sellerId}`} onClick={(e) => e.stopPropagation()}>
+                <span className="hover:text-primary hover:underline">{sellerInfo.shopName}</span>
+              </Link>
+            </div>
+          )}
           
           <div className="mt-auto">
             <div className="flex items-baseline mt-2">
