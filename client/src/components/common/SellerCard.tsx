@@ -38,13 +38,13 @@ export function SellerCard({ seller }: SellerCardProps) {
         <p className="text-sm text-gray-500 mt-1">{seller.shopDescription}</p>
         <div className="flex items-center justify-between mt-4">
           <span className="text-sm">{seller.productCount || 0} sản phẩm</span>
-          <a href={`/seller/${seller.id}`}>
+          <Link href={`/seller/${seller.id}`}>
             <Button 
               className="elegant-gradient text-white px-4 py-1.5 rounded-md text-sm font-medium shadow-sm hover:shadow-md transition duration-300"
             >
               Xem Shop
             </Button>
-          </a>
+          </Link>
         </div>
       </div>
     </div>
