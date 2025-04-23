@@ -34,8 +34,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
-      return await res.json();
+      try {
+        console.log("Đang đăng nhập với:", credentials);
+        const res = await apiRequest("POST", "/api/login", credentials);
+        if (!res.ok) {
+          console.error("Lỗi đăng nhập:", res.status, res.statusText);
+          throw new Error("Tên đăng nhập hoặc mật khẩu không đúng");
+        }
+        const userData = await res.json();
+        console.log("Đăng nhập thành công:", userData);
+        return userData;
+      } catch (error) {
+        console.error("Lỗi đăng nhập:", error);
+        throw error;
+      }
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
@@ -45,9 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     },
     onError: (error: Error) => {
+      console.error("Lỗi sau khi đăng nhập:", error);
       toast({
         title: "Đăng nhập thất bại",
-        description: error.message,
+        description: error.message || "Đã xảy ra lỗi khi đăng nhập",
         variant: "destructive",
       });
     },
