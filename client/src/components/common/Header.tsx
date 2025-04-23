@@ -60,7 +60,7 @@ export function Header() {
             {user ? (
               <>
                 {user.role === "seller" && (
-                  <Link href="/seller" className="hover:text-primary">
+                  <Link href="/seller-dashboard" className="hover:text-primary">
                     Kênh người bán
                   </Link>
                 )}

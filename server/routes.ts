@@ -11,7 +11,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Products
   app.get("/api/products", async (req, res) => {
     try {
-      const { category, search, flashSale, featured } = req.query;
+      const { category, search, flashSale, featured, sellerId } = req.query;
+      
+      // If sellerId is specified, use getProductsBySeller
+      if (sellerId) {
+        const sellerProducts = await storage.getProductsBySeller(Number(sellerId));
+        console.log(`Found ${sellerProducts.length} products for seller ID ${sellerId}`);
+        return res.json(sellerProducts);
+      }
+      
+      // Otherwise use regular getProducts with filters
       const products = await storage.getProducts({
         category: category as string,
         search: search as string,
@@ -20,6 +29,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.json(products);
     } catch (error) {
+      console.error("Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
     }
   });
@@ -81,6 +91,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json(seller);
     } catch (error) {
+      res.status(500).json({ message: "Failed to fetch seller" });
+    }
+  });
+  
+  // Get seller by user ID
+  app.get("/api/seller-by-user", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    try {
+      const seller = await storage.getSellerByUserId(req.user.id);
+      if (!seller) {
+        return res.status(404).json({ message: "Seller not found for this user" });
+      }
+      res.json(seller);
+    } catch (error) {
+      console.error("Failed to fetch seller by user ID:", error);
       res.status(500).json({ message: "Failed to fetch seller" });
     }
   });

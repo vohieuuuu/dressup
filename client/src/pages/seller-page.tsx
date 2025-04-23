@@ -4,12 +4,31 @@ import { Seller, Product } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/common/ProductCard";
 import { Star, Mail, Phone, MapPin, ShoppingBag, Heart, MessageCircle, UserCheck, Calendar, Clock, Package, Tag, Search } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function SellerPage() {
+  const { user } = useAuth();
+  
   // Extract sellerId from URL path
   const path = window.location.pathname;
   const match = path.match(/\/seller\/(\d+)/);
-  const sellerId = match ? parseInt(match[1]) : 0;
+  
+  // Use the logged in seller ID if on profile page
+  let sellerId = match ? parseInt(match[1]) : 0;
+  
+  // Get seller by user ID query
+  const { data: sellerByUser, isLoading: isSellerByUserLoading } = useQuery<Seller>({
+    queryKey: ['/api/seller-by-user', user?.id],
+    enabled: Boolean(user?.id && user.role === 'seller'),
+  });
+  
+  // If we're on the seller profile page and have the user's seller ID, use it
+  if (sellerByUser && path === "/seller-dashboard") {
+    sellerId = sellerByUser.id;
+    console.log("Đang xem trang hồ sơ của người bán:", sellerByUser);
+  }
+  
+  console.log("Path:", path, "SellerId:", sellerId, "User:", user?.id, "Role:", user?.role);
   
   // Search term for shop products
   const [searchTerm, setSearchTerm] = useState("");
