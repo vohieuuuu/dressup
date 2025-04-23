@@ -25,6 +25,7 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showProductDetail, setShowProductDetail] = useState(false);
+  const [sellerInfo, setSellerInfo] = useState<any>(null);
   
   const { data: product, isLoading } = useQuery({
     queryKey: [`/api/products/${id}`],
@@ -35,6 +36,24 @@ export default function ProductPage() {
     queryKey: ["/api/products", { category: product?.category }],
     enabled: !!product?.category,
   });
+  
+  // Fetch seller information
+  useEffect(() => {
+    if (product?.sellerId) {
+      fetch(`/api/sellers/${product.sellerId}`)
+        .then(response => {
+          if (response.ok) return response.json();
+          throw new Error('Failed to fetch seller info');
+        })
+        .then(data => {
+          console.log("Product page - Fetched seller info:", data);
+          setSellerInfo(data);
+        })
+        .catch(error => {
+          console.error("Error fetching seller info:", error);
+        });
+    }
+  }, [product?.sellerId]);
   
   const handleQuantityChange = (delta: number) => {
     if (!product) return;
@@ -349,18 +368,31 @@ export default function ProductPage() {
             <div className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center">
                 <div className="w-12 h-12 rounded-full bg-gray-200 overflow-hidden">
-                  <img src="https://via.placeholder.com/48" alt="Seller" className="w-full h-full object-cover" />
+                  <img 
+                    src={sellerInfo?.shopLogo || "https://via.placeholder.com/48"} 
+                    alt={sellerInfo?.shopName || "Shop logo"} 
+                    className="w-full h-full object-cover" 
+                  />
                 </div>
                 <div className="ml-3 flex-grow">
-                  <h3 className="font-medium">Shop của người bán</h3>
+                  <h3 className="font-medium">{sellerInfo?.shopName || "Đang tải..."}</h3>
                   <div className="flex items-center text-xs text-gray-500">
                     <Star className="h-3 w-3 text-yellow-400 fill-yellow-400 mr-1" />
-                    <span>4.8 | </span>
-                    <span className="ml-1">Sản phẩm: 120 | </span>
-                    <span className="ml-1">Đã tham gia: 2 năm</span>
+                    <span>{sellerInfo?.rating || "0"} | </span>
+                    <span className="ml-1">Sản phẩm: {sellerInfo?.productCount || "0"} | </span>
+                    <span className="ml-1">Đã tham gia: {sellerInfo ? "2 năm" : "0 năm"}</span>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/10">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-primary border-primary hover:bg-primary/10"
+                  onClick={() => {
+                    if (product.sellerId) {
+                      window.location.href = `/seller/${product.sellerId}`;
+                    }
+                  }}
+                >
                   Xem Shop
                 </Button>
               </div>

@@ -155,9 +155,16 @@ export function ProductCard({
           {sellerInfo && (
             <div className="mt-1 flex items-center text-xs text-gray-500">
               <Store className="h-3 w-3 mr-1" />
-              <Link href={`/seller/${product.sellerId}`} onClick={(e) => e.stopPropagation()}>
-                <span className="hover:text-primary hover:underline">{sellerInfo.shopName}</span>
-              </Link>
+              <span 
+                className="hover:text-primary hover:underline cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.location.href = `/seller/${product.sellerId}`;
+                }}
+              >
+                {sellerInfo.shopName}
+              </span>
             </div>
           )}
           
