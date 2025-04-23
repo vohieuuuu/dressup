@@ -313,9 +313,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Seller not found for this user" });
       }
       
+      // Add debug logs
+      console.log("Seller ID:", seller.id);
+      console.log("User ID:", req.user.id);
+      
+      // Lấy tất cả các đơn hàng và log ra để debug
+      const allOrders = Array.from(storage.orders.values());
+      console.log("All Orders:", allOrders.map(o => ({ id: o.id, sellerId: o.sellerId })));
+      
       const orders = await storage.getOrdersBySeller(seller.id);
+      console.log("Orders for seller", seller.id, ":", orders.length ? orders : "No orders found");
+      
       res.json(orders);
     } catch (error) {
+      console.error("Error fetching seller orders:", error);
       res.status(500).json({ message: "Failed to fetch seller orders" });
     }
   });

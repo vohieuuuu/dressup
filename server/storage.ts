@@ -15,6 +15,9 @@ const MemoryStore = createMemoryStore(session);
 export interface IStorage {
   sessionStore: session.SessionStore;
   
+  // Để debug, lộ Map orders ra
+  orders: Map<number, Order>;
+  
   // User
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -24,7 +27,7 @@ export interface IStorage {
   getUsers(): Promise<User[]>;
   
   // Product
-  getProducts(filters?: { category?: string, search?: string, flashSale?: boolean, featured?: boolean }): Promise<Product[]>;
+  getProducts(filters?: { category?: string, search?: string, flashSale?: boolean, featured?: boolean, showOutOfStock?: boolean }): Promise<Product[]>;
   getProduct(id: number): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: number, product: Partial<Product>): Promise<Product>;
@@ -66,13 +69,13 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private products: Map<number, Product>;
-  private sellers: Map<number, Seller>;
-  private cartItems: Map<number, CartItem>;
-  private orders: Map<number, Order>;
-  private orderItems: Map<number, OrderItem>;
-  private categories: Map<number, Category>;
+  public users: Map<number, User>;
+  public products: Map<number, Product>;
+  public sellers: Map<number, Seller>;
+  public cartItems: Map<number, CartItem>;
+  public orders: Map<number, Order>;
+  public orderItems: Map<number, OrderItem>;
+  public categories: Map<number, Category>;
   
   sessionStore: session.SessionStore;
   currentId: { [key: string]: number };
