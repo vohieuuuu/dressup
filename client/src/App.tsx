@@ -19,6 +19,7 @@ import OrderHistoryPage from "@/pages/order-history-page";
 import OrderDetailPage from "@/pages/order-detail-page";
 import ReviewPage from "@/pages/review-page";
 import SellerOrdersPage from "@/pages/seller-orders-page";
+import ProfilePage from "@/pages/profile-page";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,7 +33,7 @@ function Router() {
           <Route path="/auth" component={AuthPage} />
           <Route path="/product/:id" component={ProductPage} />
           <Route path="/seller/:id" component={SellerPage} />
-          <Route path="/profile" component={SellerPage} />
+          <ProtectedRoute path="/profile" component={ProfilePage} />
           <ProtectedRoute path="/cart" component={CartPage} />
           <ProtectedRoute path="/seller-dashboard" component={SellerDashboard} />
           <ProtectedRoute path="/admin" component={AdminDashboard} />
