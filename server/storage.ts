@@ -139,7 +139,25 @@ export class MemStorage implements IStorage {
     
     if (filters) {
       if (filters.category) {
-        products = products.filter(p => p.category === filters.category);
+        // Get all categories to find the one with matching slug
+        const categories = await this.getCategories();
+        const matchingCategory = categories.find(c => c.slug === filters.category);
+        
+        if (matchingCategory) {
+          // Filter products by category name
+          products = products.filter(p => 
+            p.category.toLowerCase() === matchingCategory.name.toLowerCase() ||
+            (p.subcategory && p.subcategory.toLowerCase().includes(matchingCategory.name.toLowerCase()))
+          );
+        } else {
+          // If no matching category found, try direct comparison with category and subcategory
+          const categoryLower = filters.category.toLowerCase();
+          products = products.filter(p => 
+            p.category.toLowerCase() === categoryLower ||
+            p.category.toLowerCase().includes(categoryLower) ||
+            (p.subcategory && p.subcategory.toLowerCase().includes(categoryLower))
+          );
+        }
       }
       
       if (filters.search) {
