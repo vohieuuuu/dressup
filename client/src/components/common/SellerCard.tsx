@@ -9,7 +9,7 @@ interface SellerCardProps {
 
 export function SellerCard({ seller }: SellerCardProps) {
   return (
-    <div className="bg-white border border-neutral-200 rounded-lg overflow-hidden hover:shadow-md transition">
+    <div className="luxury-card overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative h-36">
         <img 
           src={seller.shopBanner || "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3"} 
@@ -17,7 +17,7 @@ export function SellerCard({ seller }: SellerCardProps) {
           className="w-full h-full object-cover"
         />
         <div className="absolute -bottom-8 left-4">
-          <div className="border-4 border-white rounded-full w-20 h-20 overflow-hidden bg-white">
+          <div className="border-4 border-white rounded-full w-20 h-20 overflow-hidden bg-white shadow-md">
             <img 
               src={seller.shopLogo || "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?ixlib=rb-4.0.3"} 
               alt={`${seller.shopName} logo`} 
@@ -38,14 +38,13 @@ export function SellerCard({ seller }: SellerCardProps) {
         <p className="text-sm text-gray-500 mt-1">{seller.shopDescription}</p>
         <div className="flex items-center justify-between mt-4">
           <span className="text-sm">{seller.productCount || 0} sản phẩm</span>
-          <Link href={`/seller/${seller.id}`}>
+          <a href={`/seller/${seller.id}`}>
             <Button 
-              variant="outline" 
-              className="px-4 py-1.5 border border-primary text-primary rounded-full text-sm font-medium hover:bg-primary hover:text-white transition"
+              className="elegant-gradient text-white px-4 py-1.5 rounded-md text-sm font-medium shadow-sm hover:shadow-md transition duration-300"
             >
               Xem Shop
             </Button>
-          </Link>
+          </a>
         </div>
       </div>
     </div>
