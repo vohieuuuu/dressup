@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertProductSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
+import { insertProductSchema, insertCartItemSchema, insertOrderSchema, insertSellerSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
@@ -183,7 +183,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Orders
+  // Orders - Buyer Interface
   app.get("/api/orders", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -196,7 +196,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
+  
+  // Get specific order
+  app.get("/api/orders/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
+    try {
+      const order = await storage.getOrder(parseInt(req.params.id));
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Check if the user is allowed to access this order
+      if (order.userId !== req.user.id && 
+          order.sellerId !== req.user.id && 
+          req.user.role !== "admin") {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      res.json(order);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch order details" });
+    }
+  });
+
+  // Create a new order
   app.post("/api/orders", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -211,6 +238,194 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(order);
     } catch (error) {
       res.status(400).json({ message: "Invalid order data" });
+    }
+  });
+  
+  // Request a return
+  app.post("/api/orders/:id/return", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const order = await storage.getOrder(parseInt(req.params.id));
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Only the buyer can request a return
+      if (order.userId !== req.user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const updatedOrder = await storage.requestReturn(parseInt(req.params.id), req.body.reason);
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to request return", error: (error as Error).message });
+    }
+  });
+  
+  // Submit a review for an order item
+  app.post("/api/order-items/:id/review", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      // First verify that the order item belongs to the user
+      const orderItemId = parseInt(req.params.id);
+      
+      const orderItem = await storage.addReview(orderItemId, {
+        rating: req.body.rating,
+        reviewText: req.body.reviewText
+      });
+      
+      res.json(orderItem);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to submit review", error: (error as Error).message });
+    }
+  });
+  
+  // Seller Interface - Get seller orders
+  app.get("/api/seller/orders", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== "seller") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      // Get the seller associated with this user
+      const seller = await storage.getSellerByUserId(req.user.id);
+      
+      if (!seller) {
+        return res.status(404).json({ message: "Seller not found for this user" });
+      }
+      
+      const orders = await storage.getOrdersBySeller(seller.id);
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch seller orders" });
+    }
+  });
+  
+  // Update order status (seller)
+  app.patch("/api/seller/orders/:id/status", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== "seller") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const orderId = parseInt(req.params.id);
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Get the seller associated with this user
+      const seller = await storage.getSellerByUserId(req.user.id);
+      
+      if (!seller || order.sellerId !== seller.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const updatedOrder = await storage.updateOrderStatus(orderId, req.body.status);
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update order status" });
+    }
+  });
+  
+  // Update tracking information (seller)
+  app.patch("/api/seller/orders/:id/tracking", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== "seller") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const orderId = parseInt(req.params.id);
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Get the seller associated with this user
+      const seller = await storage.getSellerByUserId(req.user.id);
+      
+      if (!seller || order.sellerId !== seller.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const updatedOrder = await storage.updateTrackingInfo(orderId, {
+        trackingNumber: req.body.trackingNumber,
+        shippingMethod: req.body.shippingMethod,
+        estimatedDelivery: req.body.estimatedDelivery ? new Date(req.body.estimatedDelivery) : undefined
+      });
+      
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to update tracking information" });
+    }
+  });
+  
+  // Mark order as delivered (seller)
+  app.patch("/api/seller/orders/:id/delivered", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== "seller") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const orderId = parseInt(req.params.id);
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Get the seller associated with this user
+      const seller = await storage.getSellerByUserId(req.user.id);
+      
+      if (!seller || order.sellerId !== seller.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const updatedOrder = await storage.markOrderDelivered(orderId);
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to mark order as delivered" });
+    }
+  });
+  
+  // Process return request (seller)
+  app.patch("/api/seller/orders/:id/return", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== "seller") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const orderId = parseInt(req.params.id);
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Get the seller associated with this user
+      const seller = await storage.getSellerByUserId(req.user.id);
+      
+      if (!seller || order.sellerId !== seller.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      if (!order.returnRequested) {
+        return res.status(400).json({ message: "This order has no return request" });
+      }
+      
+      const updatedOrder = await storage.processReturn(orderId, req.body.status);
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to process return request" });
     }
   });
 

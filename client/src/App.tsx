@@ -15,6 +15,10 @@ import CartPage from "@/pages/cart-page";
 import SellerDashboard from "@/pages/seller-dashboard";
 import SellerPage from "@/pages/seller-page";
 import AdminDashboard from "@/pages/admin-dashboard";
+import OrderHistoryPage from "@/pages/order-history-page";
+import OrderDetailPage from "@/pages/order-detail-page";
+import ReviewPage from "@/pages/review-page";
+import SellerOrdersPage from "@/pages/seller-orders-page";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -32,6 +36,13 @@ function Router() {
           <ProtectedRoute path="/cart" component={CartPage} />
           <ProtectedRoute path="/seller-dashboard" component={SellerDashboard} />
           <ProtectedRoute path="/admin" component={AdminDashboard} />
+          
+          {/* Quản lý đơn hàng */}
+          <ProtectedRoute path="/orders" component={OrderHistoryPage} />
+          <ProtectedRoute path="/orders/:id" component={OrderDetailPage} />
+          <ProtectedRoute path="/review/:id" component={ReviewPage} />
+          <ProtectedRoute path="/seller-orders" component={SellerOrdersPage} />
+          
           <Route component={NotFound} />
         </Switch>
       </main>
