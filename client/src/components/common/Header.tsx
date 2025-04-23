@@ -87,7 +87,7 @@ export function Header() {
         {/* Main Header */}
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center">
-            <span className="text-primary text-2xl font-heading font-bold">Fashion<span className="text-secondary">Connect</span></span>
+            <span className="text-primary text-2xl font-heading font-bold">Dress<span className="text-secondary">Up</span></span>
           </Link>
           
           {/* Search Bar */}

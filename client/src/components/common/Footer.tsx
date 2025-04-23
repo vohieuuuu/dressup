@@ -13,29 +13,29 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-medium uppercase mb-4">DỊCH VỤ KHÁCH HÀNG</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="#" className="hover:text-primary">Trung Tâm Trợ Giúp Shopee</Link></li>
-              <li><Link href="#" className="hover:text-primary">Shopee Blog</Link></li>
-              <li><Link href="#" className="hover:text-primary">Shopee Mall</Link></li>
+              <li><Link href="#" className="hover:text-primary">Trung Tâm Trợ Giúp DressUp</Link></li>
+              <li><Link href="#" className="hover:text-primary">DressUp Blog</Link></li>
+              <li><Link href="#" className="hover:text-primary">DressUp Mall</Link></li>
               <li><Link href="#" className="hover:text-primary">Hướng Dẫn Mua Hàng/Đặt Hàng</Link></li>
               <li><Link href="#" className="hover:text-primary">Hướng Dẫn Bán Hàng</Link></li>
-              <li><Link href="#" className="hover:text-primary">Vì ShopeePlay</Link></li>
-              <li><Link href="#" className="hover:text-primary">Shopee Xu</Link></li>
+              <li><Link href="#" className="hover:text-primary">Vì DressUpPlay</Link></li>
+              <li><Link href="#" className="hover:text-primary">DressUp Xu</Link></li>
               <li><Link href="#" className="hover:text-primary">Đơn Hàng</Link></li>
               <li><Link href="#" className="hover:text-primary">Trả Hàng/Hoàn Tiền</Link></li>
-              <li><Link href="#" className="hover:text-primary">Liên Hệ Shopee</Link></li>
+              <li><Link href="#" className="hover:text-primary">Liên Hệ DressUp</Link></li>
               <li><Link href="#" className="hover:text-primary">Chính Sách Bảo Hành</Link></li>
             </ul>
           </div>
 
           {/* Về Shopee */}
           <div>
-            <h4 className="text-sm font-medium uppercase mb-4">SHOPEE VIỆT NAM</h4>
+            <h4 className="text-sm font-medium uppercase mb-4">DRESSUP VIỆT NAM</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="#" className="hover:text-primary">Về Shopee</Link></li>
+              <li><Link href="#" className="hover:text-primary">Về DressUp</Link></li>
               <li><Link href="#" className="hover:text-primary">Tuyển Dụng</Link></li>
-              <li><Link href="#" className="hover:text-primary">Điều Khoản Shopee</Link></li>
+              <li><Link href="#" className="hover:text-primary">Điều Khoản DressUp</Link></li>
               <li><Link href="#" className="hover:text-primary">Chính Sách Bảo Mật</Link></li>
-              <li><Link href="#" className="hover:text-primary">Shopee Mall</Link></li>
+              <li><Link href="#" className="hover:text-primary">DressUp Mall</Link></li>
               <li><Link href="#" className="hover:text-primary">Kênh Người Bán</Link></li>
               <li><Link href="#" className="hover:text-primary">Flash Sale</Link></li>
               <li><Link href="#" className="hover:text-primary">Tiếp Thị Liên Kết</Link></li>
@@ -92,7 +92,7 @@ export function Footer() {
 
           {/* Theo dõi */}
           <div>
-            <h4 className="text-sm font-medium uppercase mb-4">THEO DÕI SHOPEE</h4>
+            <h4 className="text-sm font-medium uppercase mb-4">THEO DÕI DRESSUP</h4>
             <ul className="space-y-3 text-sm">
               <li>
                 <Link href="#" className="flex items-center hover:text-primary">
@@ -117,7 +117,7 @@ export function Footer() {
 
           {/* App Download */}
           <div>
-            <h4 className="text-sm font-medium uppercase mb-4">TẢI ỨNG DỤNG SHOPEE</h4>
+            <h4 className="text-sm font-medium uppercase mb-4">TẢI ỨNG DỤNG DRESSUP</h4>
             <div className="flex space-x-2">
               <div className="bg-white p-2 rounded border">
                 <QrCode className="h-24 w-24" />
@@ -138,7 +138,7 @@ export function Footer() {
         </div>
         
         <div className="mt-10 pt-6 border-t border-gray-200 text-center text-gray-500 text-xs">
-          <p className="mb-3">© 2023 Shopee. Tất cả các quyền được bảo lưu.</p>
+          <p className="mb-3">© 2023 DressUp. Tất cả các quyền được bảo lưu.</p>
           <div className="flex flex-wrap justify-center gap-x-3 mb-4">
             <span>Quốc gia & Khu vực:</span>
             <a href="#" className="hover:text-primary">Singapore</a>|
@@ -168,11 +168,11 @@ export function Footer() {
           </div>
           
           <div className="text-xs text-gray-500 max-w-4xl mx-auto">
-            <p className="mb-2">Công ty TNHH Shopee</p>
-            <p className="mb-2">Địa chỉ: Tầng 4-5-6, Tòa nhà Capital Place, số 29 đường Liễu Giai, Phường Ngọc Khánh, Quận Ba Đình, Thành phố Hà Nội, Việt Nam. Tổng đài hỗ trợ: 19001221 - Email: cskh@hotro.shopee.vn</p>
+            <p className="mb-2">Công ty TNHH DressUp</p>
+            <p className="mb-2">Địa chỉ: Tầng 4-5-6, Tòa nhà Capital Place, số 29 đường Liễu Giai, Phường Ngọc Khánh, Quận Ba Đình, Thành phố Hà Nội, Việt Nam. Tổng đài hỗ trợ: 19001221 - Email: cskh@hotro.dressup.vn</p>
             <p className="mb-2">Chịu Trách Nhiệm Quản Lý Nội Dung: Nguyễn Đức Trí - Điện thoại liên hệ: 024 73081221 (ext 4678)</p>
             <p className="mb-2">Mã số doanh nghiệp: 0106773786 do Sở Kế hoạch & Đầu tư TP Hà Nội cấp lần đầu ngày 10/02/2015</p>
-            <p>© 2015 - Bản quyền thuộc về Công ty TNHH Shopee</p>
+            <p>© 2023 - Bản quyền thuộc về Công ty TNHH DressUp</p>
           </div>
         </div>
       </div>
