@@ -533,13 +533,135 @@ export default function SellerDashboard() {
                               {order.status === 'returned' && <Badge variant="destructive">Đã trả hàng</Badge>}
                             </TableCell>
                             <TableCell>
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                onClick={() => window.open(`/order/${order.id}`, '_blank')}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
+                              <div className="flex space-x-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => window.open(`/order/${order.id}`, '_blank')}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                {order.status === 'pending' && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="text-green-500 hover:text-green-700"
+                                    onClick={() => {
+                                      // Gọi API để cập nhật trạng thái đơn hàng
+                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
+                                        status: 'processing'
+                                      })
+                                        .then(() => {
+                                          // Cập nhật lại danh sách đơn hàng
+                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+                                          toast({
+                                            title: "Thành công",
+                                            description: "Đã xác nhận đơn hàng thành công",
+                                          });
+                                        })
+                                        .catch((error) => {
+                                          toast({
+                                            title: "Lỗi",
+                                            description: "Không thể xác nhận đơn hàng. Vui lòng thử lại sau.",
+                                            variant: "destructive",
+                                          });
+                                        });
+                                    }}
+                                  >
+                                    Xác nhận
+                                  </Button>
+                                )}
+                                {order.status === 'processing' && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="text-blue-500 hover:text-blue-700"
+                                    onClick={() => {
+                                      // Gọi API để cập nhật trạng thái đơn hàng
+                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
+                                        status: 'shipped'
+                                      })
+                                        .then(() => {
+                                          // Cập nhật lại danh sách đơn hàng
+                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+                                          toast({
+                                            title: "Thành công",
+                                            description: "Đã chuyển trạng thái đơn hàng sang đang giao thành công",
+                                          });
+                                        })
+                                        .catch((error) => {
+                                          toast({
+                                            title: "Lỗi",
+                                            description: "Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại sau.",
+                                            variant: "destructive",
+                                          });
+                                        });
+                                    }}
+                                  >
+                                    Giao hàng
+                                  </Button>
+                                )}
+                                {order.status === 'shipped' && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="text-purple-500 hover:text-purple-700"
+                                    onClick={() => {
+                                      // Gọi API để cập nhật trạng thái đơn hàng
+                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
+                                        status: 'delivered'
+                                      })
+                                        .then(() => {
+                                          // Cập nhật lại danh sách đơn hàng
+                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+                                          toast({
+                                            title: "Thành công",
+                                            description: "Đã chuyển trạng thái đơn hàng sang đã giao thành công",
+                                          });
+                                        })
+                                        .catch((error) => {
+                                          toast({
+                                            title: "Lỗi",
+                                            description: "Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại sau.",
+                                            variant: "destructive",
+                                          });
+                                        });
+                                    }}
+                                  >
+                                    Đã giao
+                                  </Button>
+                                )}
+                                {(order.status === 'pending' || order.status === 'processing') && (
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    className="text-red-500 hover:text-red-700"
+                                    onClick={() => {
+                                      // Gọi API để cập nhật trạng thái đơn hàng
+                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
+                                        status: 'cancelled'
+                                      })
+                                        .then(() => {
+                                          // Cập nhật lại danh sách đơn hàng
+                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+                                          toast({
+                                            title: "Thành công",
+                                            description: "Đã hủy đơn hàng thành công",
+                                          });
+                                        })
+                                        .catch((error) => {
+                                          toast({
+                                            title: "Lỗi",
+                                            description: "Không thể hủy đơn hàng. Vui lòng thử lại sau.",
+                                            variant: "destructive",
+                                          });
+                                        });
+                                    }}
+                                  >
+                                    Hủy
+                                  </Button>
+                                )}
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
