@@ -148,6 +148,9 @@ export class MemStorage implements IStorage {
   async getProducts(filters?: { category?: string, search?: string, flashSale?: boolean, featured?: boolean }): Promise<Product[]> {
     let products = Array.from(this.products.values());
     
+    // Lọc các sản phẩm đã hết hàng
+    products = products.filter(p => p.stock > 0);
+    
     if (filters) {
       if (filters.category) {
         // Get all categories to find the one with matching slug
@@ -185,6 +188,12 @@ export class MemStorage implements IStorage {
       
       if (filters.featured) {
         products = products.filter(p => p.isFeatured);
+      }
+      
+      // Nếu là admin hoặc seller xem sản phẩm của họ, hiển thị cả sản phẩm hết hàng
+      if (filters.showOutOfStock) {
+        products = Array.from(this.products.values());
+        // Tiếp tục áp dụng các bộ lọc khác
       }
     }
     
@@ -253,6 +262,7 @@ export class MemStorage implements IStorage {
   }
   
   async getProductsBySeller(sellerId: number): Promise<Product[]> {
+    // Hiển thị tất cả sản phẩm của người bán, bao gồm cả sản phẩm hết hàng
     return Array.from(this.products.values()).filter(p => p.sellerId === sellerId);
   }
 
@@ -469,8 +479,14 @@ export class MemStorage implements IStorage {
       };
       this.orderItems.set(orderItemId, orderItem);
       
-      // Update product sold count
+      // Kiểm tra tồn kho
+      if (product.stock < item.quantity) {
+        throw new Error(`Không đủ hàng tồn kho cho sản phẩm ${product.name}. Chỉ còn ${product.stock} sản phẩm.`);
+      }
+      
+      // Cập nhật số lượng đã bán và giảm tồn kho
       product.soldCount = (product.soldCount || 0) + item.quantity;
+      product.stock = product.stock - item.quantity;
       this.products.set(product.id, product);
     }
     

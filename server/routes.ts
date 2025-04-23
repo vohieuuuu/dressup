@@ -11,7 +11,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Products
   app.get("/api/products", async (req, res) => {
     try {
-      const { category, search, flashSale, featured, sellerId } = req.query;
+      const { category, search, flashSale, featured, sellerId, showOutOfStock } = req.query;
       
       // If sellerId is specified, use getProductsBySeller
       if (sellerId) {
@@ -26,6 +26,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         search: search as string,
         flashSale: flashSale === "true",
         featured: featured === "true",
+        showOutOfStock: showOutOfStock === "true" || (req.isAuthenticated() && req.user.role === "seller")
       });
       res.json(products);
     } catch (error) {
