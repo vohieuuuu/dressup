@@ -33,6 +33,7 @@ export function ProductCard({
           throw new Error('Failed to fetch seller info');
         })
         .then(data => {
+          console.log("ProductCard - Fetched seller info:", data);
           setSellerInfo(data);
         })
         .catch(error => {

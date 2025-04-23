@@ -145,7 +145,7 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
             <div className="flex items-center mb-3 bg-gray-50 p-2 rounded-lg">
               <div className="w-10 h-10 rounded-full overflow-hidden mr-2">
                 <img 
-                  src={sellerInfo?.avatar || "https://via.placeholder.com/40"} 
+                  src={sellerInfo?.shopLogo || "https://via.placeholder.com/40"} 
                   alt={sellerInfo?.shopName || "Shop logo"} 
                   className="w-full h-full object-cover" 
                 />
