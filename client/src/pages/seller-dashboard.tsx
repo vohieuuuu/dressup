@@ -100,6 +100,8 @@ export default function SellerDashboard() {
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   
+  console.log("User info:", user);
+  
   // Get seller products
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/seller/products"],
