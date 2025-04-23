@@ -125,7 +125,11 @@ export const orders = pgTable("orders", {
   sellerId: integer("seller_id").notNull(),
   status: text("status").notNull().default("pending"), // pending, confirmed, processing, shipped, delivered, completed, canceled, returned
   totalAmount: integer("total_amount").notNull(),
+  shippingFee: integer("shipping_fee"),
   shippingAddress: text("shipping_address").notNull(),
+  recipientName: text("recipient_name"),
+  recipientPhone: text("recipient_phone"),
+  notes: text("notes"),
   paymentMethod: text("payment_method").notNull(),
   paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, refunded, failed
   trackingNumber: text("tracking_number"),
@@ -146,7 +150,12 @@ export const insertOrderSchema = createInsertSchema(orders).pick({
   totalAmount: true,
   shippingAddress: true,
   paymentMethod: true,
+  paymentStatus: true,
   shippingMethod: true,
+  recipientName: true,
+  recipientPhone: true,
+  notes: true,
+  shippingFee: true,
 });
 
 // Order Item schema
