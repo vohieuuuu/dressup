@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { Button } from "@/components/ui/button";
@@ -7,16 +7,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Minus, Plus, ShoppingBag, Truck, CreditCard, CircleDollarSign } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Minus, Plus, ShoppingBag, Truck, CreditCard, CircleDollarSign, Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export default function CartPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [shippingAddress, setShippingAddress] = useState("");
+  const [recipientName, setRecipientName] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("");
+  const [notes, setNotes] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("cod");
   
   // Fetch cart items
@@ -69,6 +74,36 @@ export default function CartPage() {
   };
   
   // Place order
+  // Place order mutation
+  const placeOrderMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/orders", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Đặt hàng thành công",
+        description: "Đơn hàng của bạn đã được tạo thành công.",
+      });
+      
+      // Clear cart after successful order
+      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      
+      // Redirect to orders page
+      setTimeout(() => {
+        navigate("/orders");
+      }, 1500);
+    },
+    onError: (error: any) => {
+      console.error("Order error:", error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tạo đơn hàng. Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handlePlaceOrder = async () => {
     if (!user) {
       toast({
@@ -96,38 +131,47 @@ export default function CartPage() {
       });
       return;
     }
-    
-    try {
-      // Prepare order items
-      const items = cartItems.map(item => ({
-        productId: item.product.id,
-        quantity: item.quantity,
-        color: item.color,
-        size: item.size
-      }));
-      
-      // Create order
-      await apiRequest("POST", "/api/orders", {
-        totalAmount: total,
-        shippingAddress,
-        paymentMethod,
-        items
-      });
-      
+
+    if (!recipientName) {
       toast({
-        title: "Đặt hàng thành công",
-        description: "Đơn hàng của bạn đã được tạo thành công.",
-      });
-      
-      // Redirect to order confirmation or orders page
-      window.location.href = "/";
-    } catch (error) {
-      toast({
-        title: "Lỗi",
-        description: "Không thể tạo đơn hàng. Vui lòng thử lại sau.",
+        title: "Thiếu thông tin",
+        description: "Vui lòng nhập tên người nhận.",
         variant: "destructive",
       });
+      return;
     }
+
+    if (!recipientPhone) {
+      toast({
+        title: "Thiếu thông tin",
+        description: "Vui lòng nhập số điện thoại người nhận.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Prepare order items
+    const items = cartItems.map(item => ({
+      productId: item.product.id,
+      quantity: item.quantity,
+      price: item.product.discountPrice || item.product.price,
+      color: item.color,
+      size: item.size
+    }));
+    
+    // Create order
+    placeOrderMutation.mutate({
+      totalAmount: total,
+      shippingAddress,
+      recipientName,
+      recipientPhone,
+      notes,
+      shippingFee,
+      paymentMethod,
+      paymentStatus: paymentMethod === "cod" ? "pending" : "pending",
+      items,
+      sellerId: items[0].product.sellerId // For now, we only support single-seller orders
+    });
   };
   
   if (!user) {
@@ -280,12 +324,45 @@ export default function CartPage() {
                 
                 <div className="space-y-4">
                   <div>
+                    <Label htmlFor="recipient-name">Họ tên người nhận</Label>
+                    <Input 
+                      id="recipient-name" 
+                      placeholder="Nhập họ tên người nhận"
+                      value={recipientName}
+                      onChange={(e) => setRecipientName(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="recipient-phone">Số điện thoại</Label>
+                    <Input 
+                      id="recipient-phone" 
+                      placeholder="Nhập số điện thoại người nhận"
+                      value={recipientPhone}
+                      onChange={(e) => setRecipientPhone(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
                     <Label htmlFor="shipping-address">Địa chỉ giao hàng</Label>
                     <Input 
                       id="shipping-address" 
                       placeholder="Nhập địa chỉ giao hàng của bạn"
                       value={shippingAddress}
                       onChange={(e) => setShippingAddress(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="notes">Ghi chú đơn hàng (tùy chọn)</Label>
+                    <Textarea 
+                      id="notes" 
+                      placeholder="Nhập ghi chú cho đơn hàng nếu có"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
                       className="mt-1"
                     />
                   </div>
@@ -329,8 +406,16 @@ export default function CartPage() {
               <Button 
                 className="w-full py-6 text-lg"
                 onClick={handlePlaceOrder}
+                disabled={placeOrderMutation.isPending}
               >
-                Đặt hàng
+                {placeOrderMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Đang xử lý...
+                  </>
+                ) : (
+                  "Đặt hàng"
+                )}
               </Button>
             </div>
           </div>
