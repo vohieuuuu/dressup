@@ -446,10 +446,13 @@ export class MemStorage implements IStorage {
       return;
     }
 
+    // Mật khẩu đã được hash đúng cách với salt
+    const hashedPassword = "b8be6cae5215c93784d722413544f398ddf937d013b750e21c5fd21b6a018ddfd3605e12ed12ebedf368e444eeffcf3b019d14d07b9908da06ef28cd5ba73687.3e267fe53de579fbb8b5feb762cc0d4a";
+    
     // Create admin user
     const adminUser = await this.createUser({
       username: "admin",
-      password: "$2b$10$X4kv7j5ZcG39WgogSl16sOGBvgfFzY1RfcJAhOvS9oMKDJgUdVhRm", // "password123"
+      password: hashedPassword, // "password123"
       email: "admin@fashionconnect.com",
       role: "admin",
       fullName: "Admin User",
@@ -459,7 +462,7 @@ export class MemStorage implements IStorage {
     // Tạo user mua hàng
     const buyerUser = await this.createUser({
       username: "khachhang",
-      password: "$2b$10$X4kv7j5ZcG39WgogSl16sOGBvgfFzY1RfcJAhOvS9oMKDJgUdVhRm", // "password123"
+      password: hashedPassword, // "password123"
       email: "khachhang@example.com",
       role: "buyer",
       fullName: "Khách Hàng",
@@ -469,7 +472,7 @@ export class MemStorage implements IStorage {
     // Tạo user bán hàng (Fashion Paradise)
     const sellerFashionParadise = await this.createUser({
       username: "fashionparadise",
-      password: "$2b$10$X4kv7j5ZcG39WgogSl16sOGBvgfFzY1RfcJAhOvS9oMKDJgUdVhRm", // "password123"
+      password: hashedPassword, // "password123"
       email: "fashionparadise@example.com",
       role: "seller",
       fullName: "Fashion Paradise",
