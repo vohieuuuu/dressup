@@ -122,20 +122,31 @@ export const insertCartItemSchema = createInsertSchema(cartItems).pick({
 export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
-  status: text("status").notNull().default("pending"), // pending, processing, shipped, delivered, canceled
+  sellerId: integer("seller_id").notNull(),
+  status: text("status").notNull().default("pending"), // pending, confirmed, processing, shipped, delivered, completed, canceled, returned
   totalAmount: integer("total_amount").notNull(),
   shippingAddress: text("shipping_address").notNull(),
   paymentMethod: text("payment_method").notNull(),
-  paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, failed
+  paymentStatus: text("payment_status").notNull().default("pending"), // pending, paid, refunded, failed
+  trackingNumber: text("tracking_number"),
+  shippingMethod: text("shipping_method"),
+  estimatedDelivery: timestamp("estimated_delivery"),
+  actualDelivery: timestamp("actual_delivery"),
+  isRated: boolean("is_rated").default(false),
+  returnRequested: boolean("return_requested").default(false),
+  returnReason: text("return_reason"),
+  returnStatus: text("return_status"), // pending, approved, rejected, completed
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).pick({
   userId: true,
+  sellerId: true,
   totalAmount: true,
   shippingAddress: true,
   paymentMethod: true,
+  shippingMethod: true,
 });
 
 // Order Item schema
@@ -147,7 +158,12 @@ export const orderItems = pgTable("order_items", {
   price: integer("price").notNull(),
   color: text("color"),
   size: text("size"),
+  isReviewed: boolean("is_reviewed").default(false),
+  rating: integer("rating"),
+  reviewText: text("review_text"),
+  reviewDate: timestamp("review_date"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).pick({

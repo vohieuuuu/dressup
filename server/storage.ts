@@ -45,7 +45,18 @@ export interface IStorage {
   
   // Order
   getOrders(userId: number): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]>;
+  getOrdersBySeller(sellerId: number): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]>;
+  getOrder(id: number): Promise<(Order & { items: (OrderItem & { product: Product })[] }) | undefined>;
   createOrder(order: InsertOrder, items: { productId: number, quantity: number, color?: string, size?: string }[]): Promise<Order>;
+  updateOrderStatus(id: number, status: string): Promise<Order>;
+  updatePaymentStatus(id: number, status: string): Promise<Order>;
+  updateTrackingInfo(id: number, data: { trackingNumber?: string, shippingMethod?: string, estimatedDelivery?: Date }): Promise<Order>;
+  markOrderDelivered(id: number): Promise<Order>;
+  // Return management
+  requestReturn(orderId: number, reason: string): Promise<Order>;
+  processReturn(orderId: number, status: string): Promise<Order>;
+  // Reviews
+  addReview(orderItemId: number, data: { rating: number, reviewText: string }): Promise<OrderItem>;
   
   // Category
   getCategories(): Promise<Category[]>;
@@ -358,6 +369,26 @@ export class MemStorage implements IStorage {
     const orders = Array.from(this.orders.values())
       .filter(order => order.userId === userId);
     
+    return this._populateOrdersWithItems(orders);
+  }
+  
+  async getOrdersBySeller(sellerId: number): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
+    const orders = Array.from(this.orders.values())
+      .filter(order => order.sellerId === sellerId);
+    
+    return this._populateOrdersWithItems(orders);
+  }
+  
+  async getOrder(id: number): Promise<(Order & { items: (OrderItem & { product: Product })[] }) | undefined> {
+    const order = this.orders.get(id);
+    if (!order) return undefined;
+    
+    const orders = await this._populateOrdersWithItems([order]);
+    return orders[0];
+  }
+  
+  // Helper method to populate orders with their items
+  private async _populateOrdersWithItems(orders: Order[]): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
     return Promise.all(orders.map(async order => {
       const orderItems = Array.from(this.orderItems.values())
         .filter(item => item.orderId === order.id);
@@ -393,6 +424,14 @@ export class MemStorage implements IStorage {
       id,
       status: "pending",
       paymentStatus: "pending",
+      trackingNumber: null,
+      shippingMethod: insertOrder.shippingMethod || "Standard",
+      estimatedDelivery: null,
+      actualDelivery: null,
+      isRated: false,
+      returnRequested: false,
+      returnReason: null,
+      returnStatus: null,
       createdAt: now,
       updatedAt: now
     };
@@ -412,9 +451,14 @@ export class MemStorage implements IStorage {
         productId: item.productId,
         quantity: item.quantity,
         price: product.discountPrice || product.price,
-        color: item.color,
-        size: item.size,
-        createdAt: now
+        color: item.color || null,
+        size: item.size || null,
+        isReviewed: false,
+        rating: null,
+        reviewText: null,
+        reviewDate: null,
+        createdAt: now,
+        updatedAt: now
       };
       this.orderItems.set(orderItemId, orderItem);
       
@@ -432,6 +476,176 @@ export class MemStorage implements IStorage {
     }
     
     return order;
+  }
+  
+  async updateOrderStatus(id: number, status: string): Promise<Order> {
+    const order = this.orders.get(id);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    order.status = status;
+    order.updatedAt = new Date();
+    this.orders.set(id, order);
+    
+    return order;
+  }
+  
+  async updatePaymentStatus(id: number, status: string): Promise<Order> {
+    const order = this.orders.get(id);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    order.paymentStatus = status;
+    order.updatedAt = new Date();
+    this.orders.set(id, order);
+    
+    return order;
+  }
+  
+  async updateTrackingInfo(id: number, data: { trackingNumber?: string, shippingMethod?: string, estimatedDelivery?: Date }): Promise<Order> {
+    const order = this.orders.get(id);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    if (data.trackingNumber) {
+      order.trackingNumber = data.trackingNumber;
+    }
+    
+    if (data.shippingMethod) {
+      order.shippingMethod = data.shippingMethod;
+    }
+    
+    if (data.estimatedDelivery) {
+      order.estimatedDelivery = data.estimatedDelivery;
+    }
+    
+    order.updatedAt = new Date();
+    this.orders.set(id, order);
+    
+    return order;
+  }
+  
+  async markOrderDelivered(id: number): Promise<Order> {
+    const order = this.orders.get(id);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    order.status = "delivered";
+    order.actualDelivery = new Date();
+    order.updatedAt = new Date();
+    this.orders.set(id, order);
+    
+    return order;
+  }
+  
+  async requestReturn(orderId: number, reason: string): Promise<Order> {
+    const order = this.orders.get(orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    if (order.status !== "delivered" && order.status !== "completed") {
+      throw new Error("Order must be delivered or completed to request a return");
+    }
+    
+    order.returnRequested = true;
+    order.returnReason = reason;
+    order.returnStatus = "pending";
+    order.updatedAt = new Date();
+    this.orders.set(orderId, order);
+    
+    return order;
+  }
+  
+  async processReturn(orderId: number, status: string): Promise<Order> {
+    const order = this.orders.get(orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    if (!order.returnRequested) {
+      throw new Error("No return request for this order");
+    }
+    
+    order.returnStatus = status;
+    
+    if (status === "completed") {
+      order.status = "returned";
+      order.paymentStatus = "refunded";
+    }
+    
+    order.updatedAt = new Date();
+    this.orders.set(orderId, order);
+    
+    return order;
+  }
+  
+  async addReview(orderItemId: number, data: { rating: number, reviewText: string }): Promise<OrderItem> {
+    const orderItem = this.orderItems.get(orderItemId);
+    if (!orderItem) {
+      throw new Error("Order item not found");
+    }
+    
+    const order = this.orders.get(orderItem.orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    if (order.status !== "delivered" && order.status !== "completed") {
+      throw new Error("Order must be delivered or completed to add a review");
+    }
+    
+    // Update the order item with review data
+    orderItem.isReviewed = true;
+    orderItem.rating = data.rating;
+    orderItem.reviewText = data.reviewText;
+    orderItem.reviewDate = new Date();
+    orderItem.updatedAt = new Date();
+    this.orderItems.set(orderItemId, orderItem);
+    
+    // Update the product's rating and review count
+    const product = await this.getProduct(orderItem.productId);
+    if (product) {
+      // Calculate new average rating
+      const currentTotalRating = (product.rating || 0) * (product.reviewCount || 0);
+      const newReviewCount = (product.reviewCount || 0) + 1;
+      const newRating = (currentTotalRating + data.rating) / newReviewCount;
+      
+      product.rating = newRating;
+      product.reviewCount = newReviewCount;
+      product.updatedAt = new Date();
+      this.products.set(product.id, product);
+      
+      // Also update seller's rating if this is their first review or changed
+      const seller = await this.getSeller(product.sellerId);
+      if (seller) {
+        const sellerCurrentTotalRating = (seller.rating || 0) * (seller.reviewCount || 0);
+        const sellerNewReviewCount = (seller.reviewCount || 0) + 1;
+        const sellerNewRating = (sellerCurrentTotalRating + data.rating) / sellerNewReviewCount;
+        
+        seller.rating = sellerNewRating;
+        seller.reviewCount = sellerNewReviewCount;
+        seller.updatedAt = new Date();
+        this.sellers.set(seller.id, seller);
+      }
+    }
+    
+    // Check if all items in the order have been reviewed
+    const orderItems = Array.from(this.orderItems.values()).filter(item => item.orderId === order.id);
+    const allItemsReviewed = orderItems.every(item => item.isReviewed);
+    
+    if (allItemsReviewed) {
+      order.isRated = true;
+      order.status = "completed";
+      order.updatedAt = new Date();
+      this.orders.set(order.id, order);
+    }
+    
+    return orderItem;
   }
 
   // Category methods
