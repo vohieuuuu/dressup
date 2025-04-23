@@ -306,23 +306,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      // Get the seller associated with this user
-      const seller = await storage.getSellerByUserId(req.user.id);
+      // Lấy tất cả các seller thuộc về user này
+      const sellers = Array.from(storage.sellers.values())
+        .filter(s => s.userId === req.user.id);
       
-      if (!seller) {
+      if (sellers.length === 0) {
         return res.status(404).json({ message: "Seller not found for this user" });
       }
       
-      // Add debug logs
-      console.log("Seller ID:", seller.id);
+      // Log thông tin cho debug
       console.log("User ID:", req.user.id);
+      console.log("User Sellers:", sellers.map(s => ({ id: s.id, name: s.shopName })));
       
-      // Lấy tất cả các đơn hàng và log ra để debug
+      // Lấy tất cả ID của các shop thuộc về user này
+      const sellerIds = sellers.map(s => s.id);
+      console.log("Seller IDs:", sellerIds);
+      
+      // Lấy tất cả các đơn hàng thuộc về bất kỳ shop nào của user này
       const allOrders = Array.from(storage.orders.values());
-      console.log("All Orders:", allOrders.map(o => ({ id: o.id, sellerId: o.sellerId })));
+      const userShopOrders = allOrders.filter(order => sellerIds.includes(order.sellerId));
       
-      const orders = await storage.getOrdersBySeller(seller.id);
-      console.log("Orders for seller", seller.id, ":", orders.length ? orders : "No orders found");
+      console.log("All Orders:", allOrders.map(o => ({ id: o.id, sellerId: o.sellerId })));
+      console.log("User's Shop Orders:", userShopOrders.map(o => ({ id: o.id, sellerId: o.sellerId })));
+      
+      // Sử dụng phương thức nội bộ để thêm thông tin sản phẩm vào đơn hàng
+      // @ts-ignore - Chúng ta biết phương thức này tồn tại
+      const orders = await storage._populateOrdersWithItems(userShopOrders);
       
       res.json(orders);
     } catch (error) {
@@ -345,10 +354,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
       
-      // Get the seller associated with this user
-      const seller = await storage.getSellerByUserId(req.user.id);
+      // Lấy tất cả các seller thuộc về user này
+      const userSellers = Array.from(storage.sellers.values())
+        .filter(s => s.userId === req.user.id);
       
-      if (!seller || order.sellerId !== seller.id) {
+      // Lấy tất cả ID của các shop thuộc về user này
+      const userSellerIds = userSellers.map(s => s.id);
+      
+      // Kiểm tra xem đơn hàng có thuộc về các shop của user này không
+      if (!userSellerIds.includes(order.sellerId)) {
         return res.status(403).json({ message: "Access denied" });
       }
       
@@ -373,10 +387,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
       
-      // Get the seller associated with this user
-      const seller = await storage.getSellerByUserId(req.user.id);
+      // Lấy tất cả các seller thuộc về user này
+      const userSellers = Array.from(storage.sellers.values())
+        .filter(s => s.userId === req.user.id);
       
-      if (!seller || order.sellerId !== seller.id) {
+      // Lấy tất cả ID của các shop thuộc về user này
+      const userSellerIds = userSellers.map(s => s.id);
+      
+      // Kiểm tra xem đơn hàng có thuộc về các shop của user này không
+      if (!userSellerIds.includes(order.sellerId)) {
         return res.status(403).json({ message: "Access denied" });
       }
       
@@ -406,10 +425,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
       
-      // Get the seller associated with this user
-      const seller = await storage.getSellerByUserId(req.user.id);
+      // Lấy tất cả các seller thuộc về user này
+      const userSellers = Array.from(storage.sellers.values())
+        .filter(s => s.userId === req.user.id);
       
-      if (!seller || order.sellerId !== seller.id) {
+      // Lấy tất cả ID của các shop thuộc về user này
+      const userSellerIds = userSellers.map(s => s.id);
+      
+      // Kiểm tra xem đơn hàng có thuộc về các shop của user này không
+      if (!userSellerIds.includes(order.sellerId)) {
         return res.status(403).json({ message: "Access denied" });
       }
       
@@ -434,10 +458,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
       
-      // Get the seller associated with this user
-      const seller = await storage.getSellerByUserId(req.user.id);
+      // Lấy tất cả các seller thuộc về user này
+      const userSellers = Array.from(storage.sellers.values())
+        .filter(s => s.userId === req.user.id);
       
-      if (!seller || order.sellerId !== seller.id) {
+      // Lấy tất cả ID của các shop thuộc về user này
+      const userSellerIds = userSellers.map(s => s.id);
+      
+      // Kiểm tra xem đơn hàng có thuộc về các shop của user này không
+      if (!userSellerIds.includes(order.sellerId)) {
         return res.status(403).json({ message: "Access denied" });
       }
       

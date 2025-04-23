@@ -401,7 +401,7 @@ export class MemStorage implements IStorage {
   }
   
   // Helper method to populate orders with their items
-  private async _populateOrdersWithItems(orders: Order[]): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
+  async _populateOrdersWithItems(orders: Order[]): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
     return Promise.all(orders.map(async order => {
       const orderItems = Array.from(this.orderItems.values())
         .filter(item => item.orderId === order.id);
