@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { Header } from "@/components/common/Header";
-import { Footer } from "@/components/common/Footer";
+
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { FlashSale } from "@/components/home/FlashSale";
@@ -98,9 +97,8 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow">
+    <div className="min-h-screen">
+      <main>
         {categorySlug ? (
           <div className="bg-gray-50 min-h-screen">
             {/* Banner for category */}
@@ -316,7 +314,7 @@ export default function HomePage() {
           </>
         )}
       </main>
-      <Footer />
+
     </div>
   );
 }
