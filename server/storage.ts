@@ -449,6 +449,89 @@ export class MemStorage implements IStorage {
       phone: "1234567890"
     });
 
+    // Create demo shops
+    const shopData = [
+      {
+        userId: 2,
+        shopName: "Fashion Paradise",
+        shopLogo: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?ixlib=rb-4.0.3",
+        shopDescription: "Chuyên đầm, váy, áo kiểu nữ",
+        mainCategory: "Thời trang nữ",
+        address: "123 Fashion Street, Hanoi",
+        phone: "0987654321",
+        shopType: "small-business",
+        shopBanner: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3",
+        rating: 4.9,
+        reviewCount: 156,
+        productCount: 10,
+        isVerified: true
+      },
+      {
+        userId: 3,
+        shopName: "Men's Style",
+        shopLogo: "https://images.unsplash.com/photo-1495602787267-96ab76127c2a?ixlib=rb-4.0.3",
+        shopDescription: "Thời trang nam cao cấp",
+        mainCategory: "Thời trang nam",
+        address: "456 Style Avenue, HCMC",
+        phone: "0987654322",
+        shopType: "brand",
+        shopBanner: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-4.0.3",
+        rating: 4.8,
+        reviewCount: 124,
+        productCount: 8,
+        isVerified: true
+      },
+      {
+        userId: 4,
+        shopName: "Trend Accessories",
+        shopLogo: "https://images.unsplash.com/photo-1537832816519-689ad163238b?ixlib=rb-4.0.3",
+        shopDescription: "Phụ kiện thời trang cao cấp",
+        mainCategory: "Phụ kiện",
+        address: "789 Trend Blvd, Danang",
+        phone: "0987654323",
+        shopType: "individual",
+        shopBanner: "https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?ixlib=rb-4.0.3",
+        rating: 4.7,
+        reviewCount: 98,
+        productCount: 12,
+        isVerified: true
+      },
+      {
+        userId: 5,
+        shopName: "Elegant Dresses",
+        shopLogo: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?ixlib=rb-4.0.3",
+        shopDescription: "Váy đầm sang trọng cho mọi dịp",
+        mainCategory: "Váy đầm",
+        address: "101 Elegant Street, HCMC",
+        phone: "0987654324",
+        shopType: "official",
+        shopBanner: "https://images.unsplash.com/photo-1470092306007-055b6797ca72?ixlib=rb-4.0.3",
+        rating: 4.9,
+        reviewCount: 210,
+        productCount: 15,
+        isVerified: true
+      },
+      {
+        userId: 6,
+        shopName: "Shoe Haven",
+        shopLogo: "https://images.unsplash.com/photo-1512675828443-4f454c42253a?ixlib=rb-4.0.3",
+        shopDescription: "Giày dép thời trang cho mọi lứa tuổi",
+        mainCategory: "Giày",
+        address: "202 Footwear Avenue, Hanoi",
+        phone: "0987654325",
+        shopType: "brand",
+        shopBanner: "https://images.unsplash.com/photo-1519415943484-9fa1873496d4?ixlib=rb-4.0.3",
+        rating: 4.6,
+        reviewCount: 178,
+        productCount: 20,
+        isVerified: true
+      }
+    ];
+
+    for (const shopInfo of shopData) {
+      await this.createSeller(shopInfo);
+    }
+
     // Create demo categories
     const categories = [
       { name: "Áo thun", slug: "ao-thun", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?ixlib=rb-4.0.3" },
