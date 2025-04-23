@@ -204,7 +204,7 @@ export default function OrderDetailPage() {
       </div>
     );
   }
-
+  
   if (error || !order) {
     toast({
       title: "Lỗi",
@@ -229,14 +229,13 @@ export default function OrderDetailPage() {
       </div>
     );
   }
-
+    
   const statusInfo = getOrderStatusInfo(order.status);
   const seller = order.seller;
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      
       <main className="flex-1 container mx-auto py-8 px-4">
         <div className="space-y-6">
           <div className="flex items-center mb-6">
