@@ -49,11 +49,11 @@ export function HeroBanner() {
   return (
     <section className="bg-white py-4">
       <div className="container mx-auto px-4">
-        <div className="relative h-[280px] md:h-[400px] rounded-lg overflow-hidden">
+        <div className="relative h-[280px] md:h-[450px] rounded-xl overflow-hidden shadow-lg border border-neutral-100">
           {banners.map((banner, index) => (
             <div 
               key={banner.id}
-              className={`absolute inset-0 flex transition-opacity duration-500 ${index === activeIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+              className={`absolute inset-0 flex transition-all duration-700 ${index === activeIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
             >
               <img 
                 src={banner.image} 
@@ -61,14 +61,16 @@ export function HeroBanner() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
-                <div className="ml-8 md:ml-16 max-w-md text-white">
-                  <h1 className="text-3xl md:text-5xl font-accent font-bold mb-4">{banner.title}</h1>
-                  <p className="text-lg md:text-xl mb-6">{banner.description}</p>
-                  <Link href={banner.link}>
-                    <Button className="bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary/90 transition">
-                      Mua ngay
-                    </Button>
-                  </Link>
+                <div className="ml-8 md:ml-16 max-w-md">
+                  <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg border border-white/20 shadow-xl">
+                    <h1 className="elegant-text text-3xl md:text-5xl font-bold mb-4">{banner.title}</h1>
+                    <p className="text-white text-lg md:text-xl mb-6">{banner.description}</p>
+                    <Link href={banner.link}>
+                      <Button className="elegant-gradient text-white px-8 py-3 rounded-md font-semibold hover:shadow-lg transition duration-300 uppercase tracking-wider">
+                        Mua ngay
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -77,23 +79,23 @@ export function HeroBanner() {
           {/* Navigation arrows */}
           <button 
             onClick={handlePrevious}
-            className="absolute top-1/2 left-4 z-20 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition"
+            className="absolute top-1/2 left-4 z-20 -translate-y-1/2 bg-primary/20 hover:bg-primary/40 text-white p-3 rounded-full transition duration-300 hover:scale-110"
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
           <button 
             onClick={handleNext}
-            className="absolute top-1/2 right-4 z-20 -translate-y-1/2 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition"
+            className="absolute top-1/2 right-4 z-20 -translate-y-1/2 bg-primary/20 hover:bg-primary/40 text-white p-3 rounded-full transition duration-300 hover:scale-110"
           >
             <ChevronRight className="h-6 w-6" />
           </button>
           
           {/* Banner Navigation Dots */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
             {banners.map((_, index) => (
               <button 
                 key={index}
-                className={`w-3 h-3 rounded-full ${index === activeIndex ? 'bg-white/80' : 'bg-white/80 opacity-50'}`}
+                className={`h-2 rounded-full transition-all duration-300 ${index === activeIndex ? 'bg-primary w-8' : 'bg-white/60 w-3 hover:bg-white'}`}
                 onClick={() => setActiveIndex(index)}
               ></button>
             ))}

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { SellerRegisterModal } from "@/components/seller/SellerRegisterModal";
 import { ShoppingCart } from "@/components/cart/ShoppingCart";
-import logoSrc from "/public/assets/logo.svg";
+import logoSrc from "../../../src/assets/logo.svg";
 
 export function Header() {
   const [location] = useLocation();
