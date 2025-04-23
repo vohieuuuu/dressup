@@ -214,21 +214,43 @@ export default function SellerDashboard() {
   
   // Reset form when switching between add and edit
   const resetForm = () => {
-    form.reset({
-      name: editingProduct?.name || "",
-      description: editingProduct?.description || "",
-      price: editingProduct?.price || 0,
-      discountPrice: editingProduct?.discountPrice || null,
-      category: editingProduct?.category || "",
-      subcategory: editingProduct?.subcategory || "",
-      stock: editingProduct?.stock || 1,
-      isFeatured: editingProduct?.isFeatured || false,
-      isFlashSale: editingProduct?.isFlashSale || false,
-      flashSaleDiscount: editingProduct?.flashSaleDiscount || null,
-      colors: editingProduct?.colors ? (Array.isArray(editingProduct.colors) ? editingProduct.colors.join(", ") : String(editingProduct.colors)) : "",
-      sizes: editingProduct?.sizes ? (Array.isArray(editingProduct.sizes) ? editingProduct.sizes.join(", ") : String(editingProduct.sizes)) : "",
-      imageUrls: editingProduct?.images ? (Array.isArray(editingProduct.images) ? editingProduct.images.join("\n") : String(editingProduct.images)) : "",
-    });
+    // Lấy sản phẩm hiện tại đang chỉnh sửa để điền vào form
+    const currentProduct = editingProduct;
+    console.log("Resetting form with product:", currentProduct);
+    
+    if (currentProduct) {
+      form.reset({
+        name: currentProduct.name || "",
+        description: currentProduct.description || "",
+        price: currentProduct.price || 0,
+        discountPrice: currentProduct.discountPrice || null,
+        category: currentProduct.category || "",
+        subcategory: currentProduct.subcategory || "",
+        stock: currentProduct.stock || 1,
+        isFeatured: currentProduct.isFeatured || false,
+        isFlashSale: currentProduct.isFlashSale || false,
+        flashSaleDiscount: currentProduct.flashSaleDiscount || null,
+        colors: currentProduct.colors ? (Array.isArray(currentProduct.colors) ? currentProduct.colors.join(", ") : String(currentProduct.colors)) : "",
+        sizes: currentProduct.sizes ? (Array.isArray(currentProduct.sizes) ? currentProduct.sizes.join(", ") : String(currentProduct.sizes)) : "",
+        imageUrls: currentProduct.images ? (Array.isArray(currentProduct.images) ? currentProduct.images.join("\n") : String(currentProduct.images)) : "",
+      });
+    } else {
+      form.reset({
+        name: "",
+        description: "",
+        price: 0,
+        discountPrice: null,
+        category: "",
+        subcategory: "",
+        stock: 1,
+        isFeatured: false,
+        isFlashSale: false,
+        flashSaleDiscount: null,
+        colors: "",
+        sizes: "",
+        imageUrls: "",
+      });
+    }
   };
   
   // Handle form submission
@@ -400,8 +422,14 @@ export default function SellerDashboard() {
                                   variant="outline" 
                                   size="sm"
                                   onClick={() => {
+                                    console.log("Editing product:", product);
                                     setEditingProduct(product);
-                                    setTimeout(resetForm, 0);
+                                    // Sử dụng timeout để đảm bảo editingProduct đã được cập nhật
+                                    setTimeout(() => {
+                                      console.log("Timeout callback - editingProduct:", product);
+                                      resetForm();
+                                      console.log("Form reset with values:", form.getValues());
+                                    }, 100);
                                   }}
                                 >
                                   <Edit className="h-4 w-4" />
@@ -537,6 +565,9 @@ export default function SellerDashboard() {
           if (!open) {
             setIsAddingProduct(false);
             setEditingProduct(null);
+          } else if (editingProduct) {
+            // Nếu mở dialog trong chế độ chỉnh sửa, reset form với dữ liệu hiện tại
+            resetForm();
           }
         }}
       >
