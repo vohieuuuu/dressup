@@ -36,8 +36,8 @@ export function PopularProducts() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
           <h2 className="heading text-2xl font-semibold">Sản phẩm phổ biến</h2>
-          <Link href="/products">
-            <a className="text-primary font-medium">Xem tất cả &gt;</a>
+          <Link href="/products" className="text-primary font-medium">
+            Xem tất cả &gt;
           </Link>
         </div>
         

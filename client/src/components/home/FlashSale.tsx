@@ -70,8 +70,8 @@ export function FlashSale() {
               </span>
             </div>
           </div>
-          <Link href="/?sale=flash">
-            <a className="text-primary font-medium">Xem tất cả &gt;</a>
+          <Link href="/?sale=flash" className="text-primary font-medium">
+            Xem tất cả &gt;
           </Link>
         </div>
         
