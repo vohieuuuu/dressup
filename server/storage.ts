@@ -55,6 +55,8 @@ export interface IStorage {
   updatePaymentStatus(id: number, status: string): Promise<Order>;
   updateTrackingInfo(id: number, data: { trackingNumber?: string, shippingMethod?: string, estimatedDelivery?: Date }): Promise<Order>;
   markOrderDelivered(id: number): Promise<Order>;
+  // Buyer confirmation
+  confirmOrderDelivery(id: number): Promise<Order>;
   // Return management
   requestReturn(orderId: number, reason: string): Promise<Order>;
   processReturn(orderId: number, status: string): Promise<Order>;
@@ -562,6 +564,24 @@ export class MemStorage implements IStorage {
     
     order.status = "delivered";
     order.actualDelivery = new Date();
+    order.updatedAt = new Date();
+    this.orders.set(id, order);
+    
+    return order;
+  }
+  
+  async confirmOrderDelivery(id: number): Promise<Order> {
+    const order = this.orders.get(id);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    if (order.status !== "delivered") {
+      throw new Error("Order must be in 'delivered' status to confirm receipt");
+    }
+    
+    order.status = "completed";
+    order.completedAt = new Date();
     order.updatedAt = new Date();
     this.orders.set(id, order);
     

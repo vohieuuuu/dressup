@@ -253,6 +253,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Confirm order delivery (buyer confirms receipt)
+  app.post("/api/orders/:id/confirm-delivery", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const order = await storage.getOrder(parseInt(req.params.id));
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Only the buyer can confirm delivery
+      if (order.userId !== req.user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const updatedOrder = await storage.confirmOrderDelivery(parseInt(req.params.id));
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(400).json({ 
+        message: "Failed to confirm delivery", 
+        error: (error as Error).message 
+      });
+    }
+  });
+  
   // Request a return
   app.post("/api/orders/:id/return", async (req, res) => {
     if (!req.isAuthenticated()) {
