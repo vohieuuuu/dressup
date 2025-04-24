@@ -1972,12 +1972,24 @@ export class DatabaseStorage implements IStorage {
   
   // Demo data
   async initDemoData(): Promise<void> {
-    // Check if we already have data
+    // Check if we already have data in core tables
     const existingUsers = await db.select().from(users);
-    if (existingUsers.length > 0) {
+    const existingProducts = await db.select().from(products);
+    const existingSellers = await db.select().from(sellers);
+    
+    if (existingUsers.length > 0 && existingProducts.length > 0 && existingSellers.length > 0) {
       console.log('Demo data already exists, skipping initialization');
       return;
     }
+    
+    // Xóa dữ liệu cũ theo thứ tự đúng (tránh lỗi khóa ngoại)
+    await db.delete(orderItems);
+    await db.delete(orders);
+    await db.delete(cartItems);
+    await db.delete(products);
+    await db.delete(sellers);
+    await db.delete(categories);
+    await db.delete(users);
     
     console.log('Initializing demo data...');
     
@@ -2055,10 +2067,10 @@ export class DatabaseStorage implements IStorage {
     
     // 4. Add products
     // Get all sellers
-    const existingSellers = await db.select().from(sellers);
+    const allSellers = await db.select().from(sellers);
     
     // Add 10 products for each seller
-    for (const seller of existingSellers) {
+    for (const seller of allSellers) {
       // Example products for Fashion Paradise (thời trang nữ)
       if (seller.shopName === "Fashion Paradise") {
         const fashionProducts = [
@@ -2197,8 +2209,8 @@ export class DatabaseStorage implements IStorage {
     }
     
     // Update product counts for sellers
-    for (const seller of existingSellers) {
-      const productCount = await db.select({ count: db.count() })
+    for (const seller of allSellers) {
+      const productCount = await db.select({ count: sql`COUNT(*)` })
         .from(products)
         .where(eq(products.sellerId, seller.id));
         
