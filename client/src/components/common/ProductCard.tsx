@@ -114,11 +114,16 @@ export function ProductCard({
       >
         <div className="relative aspect-[3/4] overflow-hidden">
           {console.log("Rendering image src:", Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'No image')}
-          <img 
-            src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : ''} 
-            alt={product.name} 
-            className={`w-full h-full object-cover transition duration-300 ${isHovered ? 'scale-105' : ''}`}
-          />
+          <div 
+            className={`w-full h-full bg-contain bg-center bg-no-repeat transition duration-300 ${isHovered ? 'scale-105' : ''}`}
+            style={{
+              backgroundImage: `url(${Array.isArray(product.images) && product.images.length > 0 ? 
+                // Sử dụng proxy để tránh CORS
+                `https://images.weserv.nl/?url=${encodeURIComponent(product.images[0])}&default=error&output=jpg` 
+                : ''
+              })`
+            }}
+          ></div>
           
           {product.discountPrice && (
             <div className="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1">

@@ -112,11 +112,16 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
           {/* Product Images */}
           <div>
             <div className="bg-neutral-100 rounded-lg overflow-hidden mb-3">
-              <img 
-                src={mainImage} 
-                alt={product.name} 
-                className="w-full h-[400px] object-cover"
-              />
+              <div 
+                className="w-full h-[400px] bg-cover bg-center bg-no-repeat" 
+                style={{
+                  backgroundImage: `url(${
+                    mainImage 
+                      ? `https://images.weserv.nl/?url=${encodeURIComponent(mainImage)}&default=error&output=jpg`
+                      : ''
+                  })`
+                }}
+              ></div>
             </div>
             <div className="flex space-x-2 overflow-x-auto">
               {product.images.map((image, index) => (
@@ -127,11 +132,15 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
                   }`}
                   onClick={() => setMainImage(image)}
                 >
-                  <img 
-                    src={image} 
-                    alt={`Thumbnail ${index + 1}`} 
-                    className="w-full h-full object-cover"
-                  />
+                  <div 
+                    className="w-full h-full bg-cover bg-center bg-no-repeat"
+                    style={{
+                      backgroundImage: `url(${image 
+                        ? `https://images.weserv.nl/?url=${encodeURIComponent(image)}&default=error&output=jpg&width=80&height=80` 
+                        : ''
+                      })`
+                    }}
+                  ></div>
                 </button>
               ))}
             </div>
