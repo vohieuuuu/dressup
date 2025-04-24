@@ -1422,12 +1422,46 @@ export class DatabaseStorage implements IStorage {
       }
     }
     
-    return selectQuery;
+    // Lấy dữ liệu sau khi áp dụng các điều kiện
+    const result = await selectQuery;
+    
+    // Xử lý các trường JSON cho mỗi sản phẩm
+    return result.map(product => {
+      return {
+        ...product,
+        // Chuyển đổi các trường từ chuỗi JSON thành mảng JavaScript
+        images: typeof product.images === 'string' 
+          ? JSON.parse(product.images) 
+          : (product.images || []),
+        colors: typeof product.colors === 'string' 
+          ? JSON.parse(product.colors) 
+          : (product.colors || []),
+        sizes: typeof product.sizes === 'string' 
+          ? JSON.parse(product.sizes) 
+          : (product.sizes || [])
+      };
+    });
   }
   
   async getProduct(id: number): Promise<Product | undefined> {
     const [product] = await db.select().from(products).where(eq(products.id, id));
-    return product;
+    
+    if (!product) return undefined;
+    
+    // Xử lý các trường JSON
+    return {
+      ...product,
+      // Chuyển đổi các trường từ chuỗi JSON thành mảng JavaScript
+      images: typeof product.images === 'string' 
+        ? JSON.parse(product.images) 
+        : (product.images || []),
+      colors: typeof product.colors === 'string' 
+        ? JSON.parse(product.colors) 
+        : (product.colors || []),
+      sizes: typeof product.sizes === 'string' 
+        ? JSON.parse(product.sizes) 
+        : (product.sizes || [])
+    };
   }
   
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
@@ -1531,9 +1565,26 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getProductsBySeller(sellerId: number): Promise<Product[]> {
-    return db.select()
+    const results = await db.select()
       .from(products)
       .where(eq(products.sellerId, sellerId));
+      
+    // Xử lý các trường JSON
+    return results.map(product => {
+      return {
+        ...product,
+        // Chuyển đổi các trường từ chuỗi JSON thành mảng JavaScript
+        images: typeof product.images === 'string' 
+          ? JSON.parse(product.images) 
+          : (product.images || []),
+        colors: typeof product.colors === 'string' 
+          ? JSON.parse(product.colors) 
+          : (product.colors || []),
+        sizes: typeof product.sizes === 'string' 
+          ? JSON.parse(product.sizes) 
+          : (product.sizes || [])
+      };
+    });
   }
 
   // Seller methods
@@ -1603,9 +1654,23 @@ export class DatabaseStorage implements IStorage {
         .where(eq(products.id, item.productId));
         
       if (product) {
+        // Xử lý các trường JSON trong sản phẩm
+        const processedProduct = {
+          ...product,
+          images: typeof product.images === 'string' 
+            ? JSON.parse(product.images) 
+            : (product.images || []),
+          colors: typeof product.colors === 'string' 
+            ? JSON.parse(product.colors) 
+            : (product.colors || []),
+          sizes: typeof product.sizes === 'string' 
+            ? JSON.parse(product.sizes) 
+            : (product.sizes || [])
+        };
+        
         result.push({
           ...item,
-          product
+          product: processedProduct
         });
       }
     }
