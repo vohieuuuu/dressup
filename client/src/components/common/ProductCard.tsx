@@ -100,6 +100,11 @@ export function ProductCard({
     }).format(price);
   };
 
+  // Debug hiển thị thông tin về images
+  console.log("ProductCard - product images: ", product.images);
+  console.log("ProductCard - product images type: ", typeof product.images);
+  console.log("ProductCard - is array: ", Array.isArray(product.images));
+  
   return (
     <Link href={`/product/${product.id}`}>
       <div 
@@ -108,6 +113,7 @@ export function ProductCard({
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative aspect-[3/4] overflow-hidden">
+          {console.log("Rendering image src:", Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'No image')}
           <img 
             src={Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : ''} 
             alt={product.name} 
