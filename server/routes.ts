@@ -14,21 +14,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { category, search, flashSale, featured, sellerId, showOutOfStock } = req.query;
       
       // If sellerId is specified, use getProductsBySeller
+      let products;
       if (sellerId) {
-        const sellerProducts = await storage.getProductsBySeller(Number(sellerId));
-        console.log(`Found ${sellerProducts.length} products for seller ID ${sellerId}`);
-        return res.json(sellerProducts);
+        products = await storage.getProductsBySeller(Number(sellerId));
+        console.log(`Found ${products.length} products for seller ID ${sellerId}`);
+      } else {
+        // Otherwise use regular getProducts with filters
+        products = await storage.getProducts({
+          category: category as string,
+          search: search as string,
+          flashSale: flashSale === "true",
+          featured: featured === "true",
+          showOutOfStock: showOutOfStock === "true" || (req.isAuthenticated() && req.user.role === "seller")
+        });
       }
       
-      // Otherwise use regular getProducts with filters
-      const products = await storage.getProducts({
-        category: category as string,
-        search: search as string,
-        flashSale: flashSale === "true",
-        featured: featured === "true",
-        showOutOfStock: showOutOfStock === "true" || (req.isAuthenticated() && req.user.role === "seller")
-      });
-      res.json(products);
+      // Parse JSON fields
+      const processedProducts = products.map(product => ({
+        ...product,
+        images: typeof product.images === 'string' ? JSON.parse(product.images) : product.images,
+        colors: typeof product.colors === 'string' ? JSON.parse(product.colors) : product.colors,
+        sizes: typeof product.sizes === 'string' ? JSON.parse(product.sizes) : product.sizes
+      }));
+      
+      res.json(processedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
@@ -41,8 +50,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      res.json(product);
+      
+      // Parse JSON fields
+      const processedProduct = {
+        ...product,
+        images: typeof product.images === 'string' ? JSON.parse(product.images) : product.images,
+        colors: typeof product.colors === 'string' ? JSON.parse(product.colors) : product.colors,
+        sizes: typeof product.sizes === 'string' ? JSON.parse(product.sizes) : product.sizes
+      };
+      
+      res.json(processedProduct);
     } catch (error) {
+      console.error("Error fetching product:", error);
       res.status(500).json({ message: "Failed to fetch product" });
     }
   });
@@ -117,8 +136,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/sellers/:id/products", async (req, res) => {
     try {
       const products = await storage.getProductsBySeller(parseInt(req.params.id));
-      res.json(products);
+      
+      // Parse JSON fields
+      const processedProducts = products.map(product => ({
+        ...product,
+        images: typeof product.images === 'string' ? JSON.parse(product.images) : product.images,
+        colors: typeof product.colors === 'string' ? JSON.parse(product.colors) : product.colors,
+        sizes: typeof product.sizes === 'string' ? JSON.parse(product.sizes) : product.sizes
+      }));
+      
+      res.json(processedProducts);
     } catch (error) {
+      console.error("Error fetching seller products:", error);
       res.status(500).json({ message: "Failed to fetch seller products" });
     }
   });
@@ -131,8 +160,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const cartItems = await storage.getCartItems(req.user.id);
-      res.json(cartItems);
+      
+      // Parse product JSON fields in each cart item
+      const processedItems = cartItems.map(item => ({
+        ...item,
+        product: {
+          ...item.product,
+          images: typeof item.product.images === 'string' 
+            ? JSON.parse(item.product.images) 
+            : item.product.images,
+          colors: typeof item.product.colors === 'string' 
+            ? JSON.parse(item.product.colors) 
+            : item.product.colors,
+          sizes: typeof item.product.sizes === 'string' 
+            ? JSON.parse(item.product.sizes) 
+            : item.product.sizes
+        }
+      }));
+      
+      res.json(processedItems);
     } catch (error) {
+      console.error("Error fetching cart:", error);
       res.status(500).json({ message: "Failed to fetch cart" });
     }
   });
@@ -192,8 +240,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const orders = await storage.getOrders(req.user.id);
-      res.json(orders);
+      
+      // Process JSON fields in products in order items
+      const processedOrders = orders.map(order => ({
+        ...order,
+        items: order.items.map(item => ({
+          ...item,
+          product: {
+            ...item.product,
+            images: typeof item.product.images === 'string' 
+              ? JSON.parse(item.product.images) 
+              : item.product.images,
+            colors: typeof item.product.colors === 'string' 
+              ? JSON.parse(item.product.colors) 
+              : item.product.colors,
+            sizes: typeof item.product.sizes === 'string' 
+              ? JSON.parse(item.product.sizes) 
+              : item.product.sizes
+          }
+        }))
+      }));
+      
+      res.json(processedOrders);
     } catch (error) {
+      console.error("Error fetching orders:", error);
       res.status(500).json({ message: "Failed to fetch orders" });
     }
   });
@@ -218,8 +288,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
       
-      res.json(order);
+      // Process JSON fields in products in order items
+      const processedOrder = {
+        ...order,
+        items: order.items.map(item => ({
+          ...item,
+          product: {
+            ...item.product,
+            images: typeof item.product.images === 'string' 
+              ? JSON.parse(item.product.images) 
+              : item.product.images,
+            colors: typeof item.product.colors === 'string' 
+              ? JSON.parse(item.product.colors) 
+              : item.product.colors,
+            sizes: typeof item.product.sizes === 'string' 
+              ? JSON.parse(item.product.sizes) 
+              : item.product.sizes
+          }
+        }))
+      };
+      
+      res.json(processedOrder);
     } catch (error) {
+      console.error("Error fetching order details:", error);
       res.status(500).json({ message: "Failed to fetch order details" });
     }
   });
@@ -361,7 +452,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // @ts-ignore - Chúng ta biết phương thức này tồn tại
       const orders = await storage._populateOrdersWithItems(userShopOrders);
       
-      res.json(orders);
+      // Process JSON fields in products in order items
+      const processedOrders = orders.map(order => ({
+        ...order,
+        items: order.items.map(item => ({
+          ...item,
+          product: {
+            ...item.product,
+            images: typeof item.product.images === 'string' 
+              ? JSON.parse(item.product.images) 
+              : item.product.images,
+            colors: typeof item.product.colors === 'string' 
+              ? JSON.parse(item.product.colors) 
+              : item.product.colors,
+            sizes: typeof item.product.sizes === 'string' 
+              ? JSON.parse(item.product.sizes) 
+              : item.product.sizes
+          }
+        }))
+      }));
+      
+      res.json(processedOrders);
     } catch (error) {
       console.error("Error fetching seller orders:", error);
       res.status(500).json({ message: "Failed to fetch seller orders" });
