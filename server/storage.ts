@@ -1312,16 +1312,21 @@ export class MemStorage implements IStorage {
 
 // Lớp lưu trữ cơ sở dữ liệu
 export class DatabaseStorage implements IStorage {
-  // Giữ lại Map orders để tương thích với IStorage
+  // Giữ lại Map orders và sellers để tương thích với IStorage
   public orders: Map<number, Order>;
+  public sellers: Map<number, Seller>; // Thêm Map sellers để tương thích với routes.ts
   public sessionStore: session.Store;
 
   constructor() {
     this.orders = new Map();
+    this.sellers = new Map(); // Khởi tạo map sellers
     this.sessionStore = new PostgresSessionStore({ 
       pool,
       createTableIfMissing: true
     });
+    
+    // Đồng bộ sellers map từ cơ sở dữ liệu
+    this._syncSellersMap();
   }
 
   // User methods
@@ -1426,12 +1431,33 @@ export class DatabaseStorage implements IStorage {
   }
   
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
-    const [product] = await db.insert(products).values({
+    // Đảm bảo các trường là mảng được chuyển đổi thành chuỗi JSON
+    const dataToInsert = {
       ...insertProduct,
       rating: 0,
       reviewCount: 0,
       soldCount: 0,
-    }).returning();
+    };
+    
+    // Chuyển đổi các trường mảng thành chuỗi JSON
+    if (dataToInsert.images && Array.isArray(dataToInsert.images)) {
+      dataToInsert.images = JSON.stringify(dataToInsert.images);
+    }
+    
+    if (dataToInsert.colors && Array.isArray(dataToInsert.colors)) {
+      dataToInsert.colors = JSON.stringify(dataToInsert.colors);
+    }
+    
+    if (dataToInsert.sizes && Array.isArray(dataToInsert.sizes)) {
+      dataToInsert.sizes = JSON.stringify(dataToInsert.sizes);
+    }
+    
+    console.log("Đang lưu sản phẩm mới với dữ liệu:", {
+      ...dataToInsert,
+      images: dataToInsert.images ? `${typeof dataToInsert.images} với độ dài ${dataToInsert.images.length}` : 'Không có hình ảnh',
+    });
+    
+    const [product] = await db.insert(products).values(dataToInsert).returning();
     
     // Update seller product count
     await db.update(sellers)
@@ -1445,11 +1471,34 @@ export class DatabaseStorage implements IStorage {
   }
   
   async updateProduct(id: number, productUpdate: Partial<Product>): Promise<Product> {
+    // Đảm bảo các trường là mảng được chuyển đổi thành chuỗi JSON
+    const dataToUpdate = {
+      ...productUpdate,
+      updatedAt: new Date()
+    };
+    
+    // Chuyển đổi các trường mảng thành chuỗi JSON
+    if (dataToUpdate.images && Array.isArray(dataToUpdate.images)) {
+      dataToUpdate.images = JSON.stringify(dataToUpdate.images);
+    }
+    
+    if (dataToUpdate.colors && Array.isArray(dataToUpdate.colors)) {
+      dataToUpdate.colors = JSON.stringify(dataToUpdate.colors);
+    }
+    
+    if (dataToUpdate.sizes && Array.isArray(dataToUpdate.sizes)) {
+      dataToUpdate.sizes = JSON.stringify(dataToUpdate.sizes);
+    }
+    
+    console.log("Đang cập nhật sản phẩm với dữ liệu:", {
+      ...dataToUpdate,
+      images: dataToUpdate.images 
+        ? `${typeof dataToUpdate.images} với độ dài ${dataToUpdate.images.length}` 
+        : 'Không thay đổi hình ảnh',
+    });
+    
     const [product] = await db.update(products)
-      .set({ 
-        ...productUpdate,
-        updatedAt: new Date()
-      })
+      .set(dataToUpdate)
       .where(eq(products.id, id))
       .returning();
       
@@ -1512,7 +1561,32 @@ export class DatabaseStorage implements IStorage {
   }
   
   async getSellers(): Promise<Seller[]> {
-    return db.select().from(sellers);
+    const sellersList = await db.select().from(sellers);
+    
+    // Cập nhật Map sellers
+    this._syncSellersFromList(sellersList);
+    
+    return sellersList;
+  }
+  
+  // Phương thức riêng để đồng bộ hóa Map sellers từ cơ sở dữ liệu
+  async _syncSellersMap(): Promise<void> {
+    try {
+      const sellersList = await db.select().from(sellers);
+      this._syncSellersFromList(sellersList);
+      console.log(`Đã đồng bộ ${sellersList.length} sellers từ cơ sở dữ liệu vào Map`);
+    } catch (error) {
+      console.error("Lỗi khi đồng bộ sellers map:", error);
+    }
+  }
+  
+  // Tiện ích để cập nhật Map sellers từ danh sách
+  _syncSellersFromList(sellersList: Seller[]): void {
+    // Xóa Map hiện tại và thêm lại từ danh sách
+    this.sellers.clear();
+    for (const seller of sellersList) {
+      this.sellers.set(seller.id, seller);
+    }
   }
 
   // Cart methods
@@ -1653,9 +1727,23 @@ export class DatabaseStorage implements IStorage {
           .where(eq(products.id, item.productId));
           
         if (product) {
+          // Xử lý các trường JSON của sản phẩm
+          const processedProduct = {
+            ...product,
+            images: typeof product.images === 'string' 
+              ? JSON.parse(product.images) 
+              : product.images,
+            colors: typeof product.colors === 'string' 
+              ? JSON.parse(product.colors) 
+              : product.colors,
+            sizes: typeof product.sizes === 'string' 
+              ? JSON.parse(product.sizes) 
+              : product.sizes
+          };
+          
           itemsWithProducts.push({
             ...item,
-            product
+            product: processedProduct
           });
         }
       }
