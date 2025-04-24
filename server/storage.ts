@@ -12,7 +12,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPg from "connect-pg-simple";
 import { db, pool } from "./db";
-import { eq, and, like, desc, asc, or, isNull, isNotNull } from "drizzle-orm";
+import { eq, and, like, desc, asc, or, isNull, isNotNull, gt, sql } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
 const PostgresSessionStore = connectPg(session);
@@ -1367,7 +1367,7 @@ export class DatabaseStorage implements IStorage {
     
     // Default: only show products in stock
     if (!filters?.showOutOfStock) {
-      conditions.push(products.stock.gt(0));
+      conditions.push(gt(products.stock, 0));
     }
     
     if (filters) {
@@ -1436,7 +1436,7 @@ export class DatabaseStorage implements IStorage {
     // Update seller product count
     await db.update(sellers)
       .set({ 
-        productCount: db.sql`${sellers.productCount} + 1`,
+        productCount: sql`${sellers.productCount} + 1`,
         updatedAt: new Date()
       })
       .where(eq(sellers.id, insertProduct.sellerId));
@@ -1475,7 +1475,7 @@ export class DatabaseStorage implements IStorage {
     // Update seller product count
     await db.update(sellers)
       .set({ 
-        productCount: db.sql`GREATEST(0, ${sellers.productCount} - 1)`,
+        productCount: sql`GREATEST(0, ${sellers.productCount} - 1)`,
         updatedAt: new Date()
       })
       .where(eq(sellers.id, product.sellerId));
