@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Header } from "@/components/common/Header";
@@ -13,9 +13,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 import { 
   ChevronLeft, Clock, Package, Truck, ShoppingBag, CheckCircle, 
-  XCircle, RefreshCw, AlertCircle, MapPin, Phone, CreditCard, Star
+  XCircle, RefreshCw, AlertCircle, MapPin, Phone, CreditCard, Star,
+  Upload, Camera
 } from "lucide-react";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -183,10 +189,76 @@ export default function OrderDetailPage() {
   const { toast } = useToast();
   const orderId = params?.id;
   
-  const { data: order, isLoading, error } = useQuery({
+  // State cho dialog yêu cầu trả hàng
+  const [isReturnDialogOpen, setIsReturnDialogOpen] = useState(false);
+  const [returnReason, setReturnReason] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  
+  // State cho dialog xác nhận đã nhận hàng
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  
+  const { data: order, isLoading, error, refetch } = useQuery({
     queryKey: [`/api/orders/${orderId}`],
     enabled: !!user && !!orderId,
   });
+  
+  // Mutation để yêu cầu trả hàng
+  const returnMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", `/api/orders/${orderId}/return`, {
+        reason: returnReason,
+        photoUrl: photoFile ? "photo-confirmation-submitted" : undefined
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: "Yêu cầu trả hàng đã được gửi",
+        description: "Chúng tôi sẽ xem xét yêu cầu của bạn và liên hệ lại sau.",
+      });
+      setIsReturnDialogOpen(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "Không thể gửi yêu cầu trả hàng",
+        description: (error as Error).message || "Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation để xác nhận đã nhận hàng
+  const confirmDeliveryMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", `/api/orders/${orderId}/confirm-delivery`, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: "Xác nhận thành công",
+        description: "Cảm ơn bạn đã xác nhận đã nhận được hàng.",
+      });
+      setIsConfirmDialogOpen(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "Không thể xác nhận",
+        description: (error as Error).message || "Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Hàm xử lý khi người dùng tải lên ảnh
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setPhotoFile(e.target.files[0]);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -248,6 +320,131 @@ export default function OrderDetailPage() {
             <h1 className="text-2xl font-bold ml-2">Chi tiết đơn hàng #{order.id}</h1>
           </div>
           
+          {/* Dialog yêu cầu trả hàng */}
+          <Dialog open={isReturnDialogOpen} onOpenChange={setIsReturnDialogOpen}>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>Yêu cầu trả hàng</DialogTitle>
+                <DialogDescription>
+                  Vui lòng cung cấp lý do trả hàng và gửi ảnh xác nhận sản phẩm (nếu có)
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="return-reason">Lý do trả hàng</Label>
+                  <Textarea 
+                    id="return-reason" 
+                    placeholder="Vui lòng mô tả lý do bạn muốn trả sản phẩm"
+                    value={returnReason}
+                    onChange={(e) => setReturnReason(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="photo-upload">Ảnh xác nhận sản phẩm (tùy chọn)</Label>
+                  <div className="flex items-center gap-4">
+                    <div className="border border-input rounded-md px-3 py-2 flex-1">
+                      <label 
+                        htmlFor="photo-upload" 
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <Camera className="h-5 w-5 text-muted-foreground" />
+                        <span className="text-sm">
+                          {photoFile ? photoFile.name : "Chọn ảnh"}
+                        </span>
+                      </label>
+                      <input 
+                        id="photo-upload" 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </div>
+                    {photoFile && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setPhotoFile(null)}
+                      >
+                        Xóa
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tải lên ảnh để xác nhận sản phẩm vẫn trong tình trạng tốt
+                  </p>
+                </div>
+              </div>
+              
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsReturnDialogOpen(false)}
+                >
+                  Hủy
+                </Button>
+                <Button 
+                  type="submit" 
+                  onClick={() => returnMutation.mutate()}
+                  disabled={!returnReason.trim() || returnMutation.isPending}
+                >
+                  {returnMutation.isPending ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Đang gửi...
+                    </>
+                  ) : (
+                    "Gửi yêu cầu"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
+          {/* Dialog xác nhận đã nhận hàng */}
+          <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Xác nhận đã nhận hàng</DialogTitle>
+                <DialogDescription>
+                  Bạn có chắc chắn đã nhận được đơn hàng này?
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="py-4">
+                <p>
+                  Sau khi xác nhận, đơn hàng sẽ được đánh dấu là đã hoàn thành và bạn có thể đánh giá sản phẩm.
+                </p>
+              </div>
+              
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsConfirmDialogOpen(false)}
+                >
+                  Hủy
+                </Button>
+                <Button 
+                  type="submit" 
+                  onClick={() => confirmDeliveryMutation.mutate()}
+                  disabled={confirmDeliveryMutation.isPending}
+                >
+                  {confirmDeliveryMutation.isPending ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Đang xác nhận...
+                    </>
+                  ) : (
+                    "Xác nhận"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
           <div className="flex flex-col gap-6 md:flex-row">
             <div className="md:w-2/3 space-y-6">
               {/* Trạng thái đơn hàng */}
@@ -292,10 +489,18 @@ export default function OrderDetailPage() {
                   
                   {order.status === "delivered" && !order.isRated && !order.returnRequested && (
                     <>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setIsReturnDialogOpen(true)}
+                      >
                         Yêu cầu trả hàng
                       </Button>
-                      <Button variant="default" size="sm">
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => setIsConfirmDialogOpen(true)}
+                      >
                         Đã nhận hàng
                       </Button>
                     </>
