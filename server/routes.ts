@@ -72,14 +72,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const validatedData = insertProductSchema.parse({
+      // Nếu images được gửi lên dưới dạng mảng các base64, chúng ta giữ nguyên
+      // Nếu images được gửi lên dưới dạng mảng URL, chúng ta vẫn giữ nguyên 
+      // (trong trường hợp người dùng muốn nhập link trực tiếp)
+      
+      console.log("Nhận dữ liệu sản phẩm:", {
+        ...req.body,
+        images: req.body.images ? `Nhận ${req.body.images.length} hình ảnh` : 'Không có hình ảnh',
+      });
+      
+      // Lưu ý: images nên đã là một mảng, được chuyển đổi thành JSON string để lưu vào DB
+      const productData = {
         ...req.body,
         sellerId: req.user.id,
-      });
+      };
+
+      const validatedData = insertProductSchema.parse(productData);
       const product = await storage.createProduct(validatedData);
-      res.status(201).json(product);
+      
+      // Parse JSON fields for the response
+      const processedProduct = {
+        ...product,
+        images: typeof product.images === 'string' 
+          ? JSON.parse(product.images) 
+          : product.images,
+        colors: typeof product.colors === 'string' 
+          ? JSON.parse(product.colors) 
+          : product.colors,
+        sizes: typeof product.sizes === 'string' 
+          ? JSON.parse(product.sizes) 
+          : product.sizes
+      };
+      
+      res.status(201).json(processedProduct);
     } catch (error) {
-      res.status(400).json({ message: "Invalid product data" });
+      console.error("Lỗi khi tạo sản phẩm:", error);
+      res.status(400).json({ message: "Invalid product data", error: (error as Error).message });
     }
   });
 
@@ -149,6 +177,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching seller products:", error);
       res.status(500).json({ message: "Failed to fetch seller products" });
+    }
+  });
+  
+  // API endpoint cho người bán cập nhật sản phẩm của họ
+  app.put("/api/seller/products/:id", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.role !== "seller") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      // Kiểm tra xem sản phẩm có thuộc về người bán này không
+      const product = await storage.getProduct(parseInt(req.params.id));
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // Lấy tất cả các seller thuộc về user này
+      const userSellers = Array.from(storage.sellers.values())
+        .filter(s => s.userId === req.user.id);
+      
+      // Lấy tất cả ID của các shop thuộc về user này
+      const userSellerIds = userSellers.map(s => s.id);
+      
+      // Kiểm tra xem sản phẩm có thuộc về các shop của user này không
+      if (!userSellerIds.includes(product.sellerId)) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      console.log("Cập nhật sản phẩm:", {
+        ...req.body,
+        images: req.body.images ? `Nhận ${req.body.images.length} hình ảnh` : 'Không có hình ảnh',
+      });
+
+      // Hình ảnh sẽ ở dạng mảng và được chuyển đổi thành JSON string trong storage
+      const updatedProduct = await storage.updateProduct(parseInt(req.params.id), req.body);
+      
+      // Parse JSON fields for the response
+      const processedProduct = {
+        ...updatedProduct,
+        images: typeof updatedProduct.images === 'string' 
+          ? JSON.parse(updatedProduct.images) 
+          : updatedProduct.images,
+        colors: typeof updatedProduct.colors === 'string' 
+          ? JSON.parse(updatedProduct.colors) 
+          : updatedProduct.colors,
+        sizes: typeof updatedProduct.sizes === 'string' 
+          ? JSON.parse(updatedProduct.sizes) 
+          : updatedProduct.sizes
+      };
+      
+      res.json(processedProduct);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật sản phẩm:", error);
+      res.status(400).json({ 
+        message: "Failed to update product", 
+        error: (error as Error).message 
+      });
     }
   });
 
