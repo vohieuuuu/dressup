@@ -5,12 +5,17 @@ import {
   CartItem, InsertCartItem, 
   Order, InsertOrder, 
   OrderItem, InsertOrderItem,
-  Category, InsertCategory 
+  Category, InsertCategory,
+  users, products, sellers, cartItems, orders, orderItems, categories
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
+import { db, pool } from "./db";
+import { eq, and, like, desc, asc, or, isNull, isNotNull } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   sessionStore: session.SessionStore;
@@ -1305,4 +1310,906 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Lớp lưu trữ cơ sở dữ liệu
+export class DatabaseStorage implements IStorage {
+  // Giữ lại Map orders để tương thích với IStorage
+  public orders: Map<number, Order>;
+  public sessionStore: session.Store;
+
+  constructor() {
+    this.orders = new Map();
+    this.sessionStore = new PostgresSessionStore({ 
+      pool,
+      createTableIfMissing: true
+    });
+  }
+
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+  
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values({
+      ...insertUser,
+      avatar: insertUser.avatar || null
+    }).returning();
+    return user;
+  }
+  
+  async updateUserRole(userId: number, role: string): Promise<void> {
+    await db.update(users)
+      .set({ role, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+  
+  async getUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
+
+  // Product methods
+  async getProducts(filters?: { category?: string, search?: string, flashSale?: boolean, featured?: boolean, showOutOfStock?: boolean }): Promise<Product[]> {
+    let selectQuery = db.select().from(products);
+    
+    // Tạo một mảng các điều kiện
+    const conditions: any[] = [];
+    
+    // Default: only show products in stock
+    if (!filters?.showOutOfStock) {
+      conditions.push(products.stock.gt(0));
+    }
+    
+    if (filters) {
+      if (filters.category) {
+        // Get category by slug
+        const categoriesResult = await db.select()
+          .from(categories)
+          .where(eq(categories.slug, filters.category));
+          
+        if (categoriesResult.length > 0) {
+          // Match by category name
+          conditions.push(eq(products.category, categoriesResult[0].name));
+        } else {
+          // Try direct category match or subcategory match
+          conditions.push(
+            or(
+              eq(products.category, filters.category),
+              like(products.category, `%${filters.category}%`),
+              like(products.subcategory, `%${filters.category}%`)
+            )
+          );
+        }
+      }
+      
+      if (filters.search) {
+        conditions.push(
+          or(
+            like(products.name, `%${filters.search}%`),
+            like(products.description, `%${filters.search}%`)
+          )
+        );
+      }
+      
+      if (filters.flashSale) {
+        conditions.push(eq(products.isFlashSale, true));
+      }
+      
+      if (filters.featured) {
+        conditions.push(eq(products.isFeatured, true));
+      }
+    }
+    
+    // Áp dụng tất cả các điều kiện
+    if (conditions.length > 0) {
+      for (const condition of conditions) {
+        selectQuery = selectQuery.where(condition);
+      }
+    }
+    
+    return selectQuery;
+  }
+  
+  async getProduct(id: number): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product;
+  }
+  
+  async createProduct(insertProduct: InsertProduct): Promise<Product> {
+    const [product] = await db.insert(products).values({
+      ...insertProduct,
+      rating: 0,
+      reviewCount: 0,
+      soldCount: 0,
+    }).returning();
+    
+    // Update seller product count
+    await db.update(sellers)
+      .set({ 
+        productCount: db.sql`${sellers.productCount} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(sellers.id, insertProduct.sellerId));
+      
+    return product;
+  }
+  
+  async updateProduct(id: number, productUpdate: Partial<Product>): Promise<Product> {
+    const [product] = await db.update(products)
+      .set({ 
+        ...productUpdate,
+        updatedAt: new Date()
+      })
+      .where(eq(products.id, id))
+      .returning();
+      
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    
+    return product;
+  }
+  
+  async deleteProduct(id: number): Promise<void> {
+    const [product] = await db.select()
+      .from(products)
+      .where(eq(products.id, id));
+      
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    
+    await db.delete(products)
+      .where(eq(products.id, id));
+      
+    // Update seller product count
+    await db.update(sellers)
+      .set({ 
+        productCount: db.sql`GREATEST(0, ${sellers.productCount} - 1)`,
+        updatedAt: new Date()
+      })
+      .where(eq(sellers.id, product.sellerId));
+  }
+  
+  async getProductsBySeller(sellerId: number): Promise<Product[]> {
+    return db.select()
+      .from(products)
+      .where(eq(products.sellerId, sellerId));
+  }
+
+  // Seller methods
+  async getSeller(id: number): Promise<Seller | undefined> {
+    const [seller] = await db.select().from(sellers).where(eq(sellers.id, id));
+    return seller;
+  }
+  
+  async getSellerByUserId(userId: number): Promise<Seller | undefined> {
+    const [seller] = await db.select()
+      .from(sellers)
+      .where(eq(sellers.userId, userId));
+    return seller;
+  }
+  
+  async createSeller(insertSeller: InsertSeller): Promise<Seller> {
+    const [seller] = await db.insert(sellers).values({
+      ...insertSeller,
+      isVerified: false,
+      rating: 0,
+      reviewCount: 0,
+      productCount: 0,
+    }).returning();
+    return seller;
+  }
+  
+  async getSellers(): Promise<Seller[]> {
+    return db.select().from(sellers);
+  }
+
+  // Cart methods
+  async getCartItems(userId: number): Promise<(CartItem & { product: Product })[]> {
+    const items = await db.select()
+      .from(cartItems)
+      .where(eq(cartItems.userId, userId));
+      
+    const result = [];
+    
+    for (const item of items) {
+      const [product] = await db.select()
+        .from(products)
+        .where(eq(products.id, item.productId));
+        
+      if (product) {
+        result.push({
+          ...item,
+          product
+        });
+      }
+    }
+    
+    return result;
+  }
+  
+  async addToCart(insertCartItem: InsertCartItem): Promise<CartItem> {
+    // Check if product exists
+    const [product] = await db.select()
+      .from(products)
+      .where(eq(products.id, insertCartItem.productId));
+      
+    if (!product) {
+      throw new Error("Product not found");
+    }
+    
+    // Check if already in cart with same color/size
+    const [existingItem] = await db.select()
+      .from(cartItems)
+      .where(and(
+        eq(cartItems.userId, insertCartItem.userId),
+        eq(cartItems.productId, insertCartItem.productId),
+        eq(cartItems.color || null, insertCartItem.color || null),
+        eq(cartItems.size || null, insertCartItem.size || null)
+      ));
+      
+    if (existingItem) {
+      // Update quantity
+      const [updated] = await db.update(cartItems)
+        .set({ 
+          quantity: existingItem.quantity + insertCartItem.quantity,
+          updatedAt: new Date()
+        })
+        .where(eq(cartItems.id, existingItem.id))
+        .returning();
+        
+      return updated;
+    }
+    
+    // Add new item
+    const [cartItem] = await db.insert(cartItems)
+      .values(insertCartItem)
+      .returning();
+      
+    return cartItem;
+  }
+  
+  async updateCartItem(id: number, userId: number, quantity: number): Promise<CartItem> {
+    const [cartItem] = await db.update(cartItems)
+      .set({ quantity, updatedAt: new Date() })
+      .where(and(
+        eq(cartItems.id, id),
+        eq(cartItems.userId, userId)
+      ))
+      .returning();
+      
+    if (!cartItem) {
+      throw new Error("Cart item not found");
+    }
+    
+    return cartItem;
+  }
+  
+  async removeFromCart(id: number, userId: number): Promise<void> {
+    const result = await db.delete(cartItems)
+      .where(and(
+        eq(cartItems.id, id),
+        eq(cartItems.userId, userId)
+      ));
+      
+    if (!result) {
+      throw new Error("Cart item not found");
+    }
+  }
+
+  // Order methods
+  async getOrders(userId: number): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
+    const results = await db.select()
+      .from(orders)
+      .where(eq(orders.userId, userId));
+      
+    return this._populateOrdersWithItems(results);
+  }
+  
+  async getOrdersBySeller(sellerId: number): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
+    const results = await db.select()
+      .from(orders)
+      .where(eq(orders.sellerId, sellerId));
+      
+    return this._populateOrdersWithItems(results);
+  }
+  
+  async getOrder(id: number): Promise<(Order & { items: (OrderItem & { product: Product })[] }) | undefined> {
+    const [order] = await db.select()
+      .from(orders)
+      .where(eq(orders.id, id));
+      
+    if (!order) return undefined;
+    
+    const populatedOrders = await this._populateOrdersWithItems([order]);
+    return populatedOrders[0];
+  }
+  
+  // Helper method to populate orders with their items
+  async _populateOrdersWithItems(orders: Order[]): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
+    const result = [];
+    
+    for (const order of orders) {
+      const items = await db.select()
+        .from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+        
+      const itemsWithProducts = [];
+      
+      for (const item of items) {
+        const [product] = await db.select()
+          .from(products)
+          .where(eq(products.id, item.productId));
+          
+        if (product) {
+          itemsWithProducts.push({
+            ...item,
+            product
+          });
+        }
+      }
+      
+      result.push({
+        ...order,
+        items: itemsWithProducts
+      });
+    }
+    
+    return result;
+  }
+  
+  async createOrder(
+    insertOrder: InsertOrder, 
+    items: { productId: number, quantity: number, price?: number, color?: string, size?: string }[]
+  ): Promise<Order> {
+    if (items.length === 0) {
+      throw new Error("Order must have at least one item");
+    }
+    
+    // Create order in transaction
+    return await db.transaction(async (tx) => {
+      // Insert order
+      const [order] = await tx.insert(orders).values({
+        ...insertOrder,
+        status: "pending",
+        paymentStatus: insertOrder.paymentStatus || "pending",
+        recipientName: insertOrder.recipientName || "",
+        recipientPhone: insertOrder.recipientPhone || "",
+        notes: insertOrder.notes || "",
+        shippingFee: insertOrder.shippingFee || 30000,
+        trackingNumber: null,
+        shippingMethod: insertOrder.shippingMethod || "Standard",
+        estimatedDelivery: null,
+        actualDelivery: null,
+        isRated: false,
+        returnRequested: false,
+        returnReason: null,
+        returnStatus: null
+      }).returning();
+      
+      // Insert order items and update product stock
+      for (const item of items) {
+        const [product] = await tx.select()
+          .from(products)
+          .where(eq(products.id, item.productId));
+          
+        if (!product) {
+          throw new Error(`Product with ID ${item.productId} not found`);
+        }
+        
+        // Check stock
+        if (product.stock < item.quantity) {
+          throw new Error(`Không đủ hàng tồn kho cho sản phẩm: ${product.name}`);
+        }
+        
+        // Create order item
+        await tx.insert(orderItems).values({
+          orderId: order.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: product.discountPrice || product.price,
+          color: item.color || null,
+          size: item.size || null,
+          isReviewed: false,
+          rating: null,
+          reviewText: null,
+          reviewDate: null
+        });
+        
+        // Update product stock and sold count
+        await tx.update(products)
+          .set({ 
+            stock: product.stock - item.quantity,
+            soldCount: (product.soldCount || 0) + item.quantity,
+            updatedAt: new Date()
+          })
+          .where(eq(products.id, item.productId));
+      }
+      
+      // Update order status to "pending" in case it wasn't set
+      await tx.update(orders)
+        .set({ status: "pending" })
+        .where(eq(orders.id, order.id));
+        
+      // Add the order to the memory map for compatibility
+      this.orders.set(order.id, order);
+        
+      return order;
+    });
+  }
+  
+  async updateOrderStatus(id: number, status: string): Promise<Order> {
+    const statusMap: { [key: string]: { [key: string]: Date | null } } = {
+      "confirmed": { confirmedAt: new Date() },
+      "processing": { processingAt: new Date() },
+      "shipped": { shippedAt: new Date() },
+      "delivered": { deliveredAt: new Date() },
+      "completed": { completedAt: new Date() },
+      "canceled": { canceledAt: new Date() }
+    };
+    
+    const additionalFields = statusMap[status] || {};
+    
+    const [order] = await db.update(orders)
+      .set({ 
+        status,
+        updatedAt: new Date(),
+        ...additionalFields
+      })
+      .where(eq(orders.id, id))
+      .returning();
+      
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    // Update in-memory map
+    this.orders.set(order.id, order);
+    
+    return order;
+  }
+  
+  async updatePaymentStatus(id: number, status: string): Promise<Order> {
+    const [order] = await db.update(orders)
+      .set({ 
+        paymentStatus: status,
+        updatedAt: new Date()
+      })
+      .where(eq(orders.id, id))
+      .returning();
+      
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    // Update in-memory map
+    this.orders.set(order.id, order);
+    
+    return order;
+  }
+  
+  async updateTrackingInfo(id: number, data: { trackingNumber?: string, shippingMethod?: string, estimatedDelivery?: Date }): Promise<Order> {
+    const [order] = await db.update(orders)
+      .set({ 
+        ...data,
+        updatedAt: new Date()
+      })
+      .where(eq(orders.id, id))
+      .returning();
+      
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    // Update in-memory map
+    this.orders.set(order.id, order);
+    
+    return order;
+  }
+  
+  async markOrderDelivered(id: number): Promise<Order> {
+    const [order] = await db.update(orders)
+      .set({ 
+        status: "delivered",
+        actualDelivery: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(orders.id, id))
+      .returning();
+      
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    // Update in-memory map
+    this.orders.set(order.id, order);
+    
+    return order;
+  }
+  
+  async confirmOrderDelivery(id: number): Promise<Order> {
+    const [order] = await db.update(orders)
+      .set({ 
+        status: "completed",
+        completedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(orders.id, id))
+      .returning();
+      
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    // Update in-memory map
+    this.orders.set(order.id, order);
+    
+    return order;
+  }
+  
+  async requestReturn(orderId: number, reason: string): Promise<Order> {
+    const [order] = await db.update(orders)
+      .set({ 
+        returnRequested: true,
+        returnReason: reason,
+        returnStatus: "pending",
+        updatedAt: new Date()
+      })
+      .where(eq(orders.id, orderId))
+      .returning();
+      
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    // Update in-memory map
+    this.orders.set(order.id, order);
+    
+    return order;
+  }
+  
+  async processReturn(orderId: number, status: string): Promise<Order> {
+    const [order] = await db.update(orders)
+      .set({ 
+        returnStatus: status,
+        updatedAt: new Date()
+      })
+      .where(eq(orders.id, orderId))
+      .returning();
+      
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    
+    // Update in-memory map
+    this.orders.set(order.id, order);
+    
+    return order;
+  }
+  
+  async addReview(orderItemId: number, data: { rating: number, reviewText: string }): Promise<OrderItem> {
+    const [orderItem] = await db.update(orderItems)
+      .set({ 
+        isReviewed: true,
+        rating: data.rating,
+        reviewText: data.reviewText,
+        reviewDate: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(orderItems.id, orderItemId))
+      .returning();
+      
+    if (!orderItem) {
+      throw new Error("Order item not found");
+    }
+    
+    // Update product rating
+    const [product] = await db.select()
+      .from(products)
+      .where(eq(products.id, orderItem.productId));
+      
+    if (product) {
+      const reviews = await db.select()
+        .from(orderItems)
+        .where(and(
+          eq(orderItems.productId, product.id),
+          isNotNull(orderItems.rating)
+        ));
+        
+      const totalRating = reviews.reduce((sum, item) => sum + (item.rating || 0), 0);
+      const newRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+      
+      await db.update(products)
+        .set({ 
+          rating: newRating,
+          reviewCount: reviews.length,
+          updatedAt: new Date()
+        })
+        .where(eq(products.id, product.id));
+    }
+    
+    // Update order rating status
+    const [orderData] = await db.select()
+      .from(orders)
+      .where(eq(orders.id, orderItem.orderId));
+      
+    if (orderData) {
+      // Check if all items are reviewed
+      const orderItems = await db.select()
+        .from(orderItems)
+        .where(eq(orderItems.orderId, orderData.id));
+        
+      const allReviewed = orderItems.every(item => item.isReviewed);
+      
+      if (allReviewed) {
+        await db.update(orders)
+          .set({ 
+            isRated: true,
+            updatedAt: new Date()
+          })
+          .where(eq(orders.id, orderData.id));
+      }
+    }
+    
+    return orderItem;
+  }
+
+  // Category methods
+  async getCategories(): Promise<Category[]> {
+    return db.select().from(categories);
+  }
+  
+  // Demo data
+  async initDemoData(): Promise<void> {
+    // Check if we already have data
+    const existingUsers = await db.select().from(users);
+    if (existingUsers.length > 0) {
+      console.log('Demo data already exists, skipping initialization');
+      return;
+    }
+    
+    console.log('Initializing demo data...');
+    
+    // Implement the same demo data as in MemStorage
+    // 1. Add users
+    const usersList = [
+      { username: "admin", password: "$2b$10$X3EB9gO7ptzLbJY6HEXw4euoF0AEAx89bHgSCQl78kzMKMnMOtvVa", email: "admin@example.com", phone: "0123456789", fullName: "Admin User", role: "admin", avatar: "https://randomuser.me/api/portraits/men/1.jpg" },
+      { username: "khachhang", password: "$2b$10$X3EB9gO7ptzLbJY6HEXw4euoF0AEAx89bHgSCQl78kzMKMnMOtvVa", email: "khachhang@example.com", phone: "0987654321", fullName: "Nguyễn Văn A", role: "buyer", avatar: "https://randomuser.me/api/portraits/men/2.jpg" },
+      { username: "fashionparadise", password: "$2b$10$X3EB9gO7ptzLbJY6HEXw4euoF0AEAx89bHgSCQl78kzMKMnMOtvVa", email: "fashionparadise@example.com", phone: "0123456789", fullName: "Trần Thị B", role: "seller", avatar: "https://randomuser.me/api/portraits/women/1.jpg" },
+      { username: "shoeshop", password: "$2b$10$X3EB9gO7ptzLbJY6HEXw4euoF0AEAx89bHgSCQl78kzMKMnMOtvVa", email: "shoeshop@example.com", phone: "0123456789", fullName: "Lê Văn C", role: "seller", avatar: "https://randomuser.me/api/portraits/men/3.jpg" },
+    ];
+    
+    for (const userData of usersList) {
+      await db.insert(users).values(userData);
+    }
+    
+    // 2. Add categories
+    const categoriesList = [
+      { name: "Áo thun", slug: "ao-thun", image: "https://cf.shopee.vn/file/sg-11134201-22090-lw2pxm7hkxhv1b" },
+      { name: "Áo sơ mi", slug: "ao-so-mi", image: "https://cf.shopee.vn/file/sg-11134201-22120-87zxn914wrlved" },
+      { name: "Áo khoác", slug: "ao-khoac", image: "https://cf.shopee.vn/file/sg-11134201-22120-89iaiyx4erlv35" },
+      { name: "Quần jean", slug: "quan-jean", image: "https://cf.shopee.vn/file/sg-11134201-22120-5y9v2r97wrlve1" },
+      { name: "Quần tây", slug: "quan-tay", image: "https://cf.shopee.vn/file/vn-11134207-7qukw-lh2stlz08q8r94" },
+      { name: "Váy đầm", slug: "vay-dam", image: "https://cf.shopee.vn/file/sg-11134201-23010-1g7i2llmdxlvc7" },
+      { name: "Giày nam", slug: "giay-nam", image: "https://cf.shopee.vn/file/f070316ffc41dfa88c74f4caf63cbe43" },
+      { name: "Giày nữ", slug: "giay-nu", image: "https://cf.shopee.vn/file/vn-11134207-7qukw-lfhlfh2clxo294" }
+    ];
+    
+    for (const categoryData of categoriesList) {
+      await db.insert(categories).values(categoryData);
+    }
+    
+    // 3. Add sellers
+    // Get seller users
+    const sellerUsers = await db.select()
+      .from(users)
+      .where(eq(users.role, "seller"));
+      
+    const sellersData = [
+      {
+        userId: sellerUsers[0].id,
+        shopName: "Fashion Paradise",
+        shopType: "small-business",
+        shopLogo: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?ixlib=rb-4.0.3",
+        shopBanner: "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3",
+        shopDescription: "Chuyên đầm, váy, áo kiểu nữ",
+        mainCategory: "Thời trang nữ",
+        address: "123 Fashion Street, Hanoi",
+        phone: "0987654321",
+        rating: 5, // Chuyển từ 4.9 sang 5 vì schema yêu cầu số nguyên
+        reviewCount: 156,
+        productCount: 0,
+        isVerified: true
+      },
+      {
+        userId: sellerUsers[1].id,
+        shopName: "Urban Shoes",
+        shopType: "small-business",
+        shopLogo: "https://images.unsplash.com/photo-1512374382149-233c42b6a83b?ixlib=rb-4.0.3",
+        shopBanner: "https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3",
+        shopDescription: "Chuyên các loại giày thể thao, giày nam nữ",
+        mainCategory: "Giày dép",
+        address: "456 Shoe Avenue, HCMC",
+        phone: "0123456789",
+        rating: 5, // Chuyển từ 4.7 sang 5 vì schema yêu cầu số nguyên
+        reviewCount: 98,
+        productCount: 0,
+        isVerified: true
+      }
+    ];
+    
+    for (const sellerData of sellersData) {
+      await db.insert(sellers).values(sellerData);
+    }
+    
+    // 4. Add products
+    // Get all sellers
+    const existingSellers = await db.select().from(sellers);
+    
+    // Add 10 products for each seller
+    for (const seller of existingSellers) {
+      // Example products for Fashion Paradise (thời trang nữ)
+      if (seller.shopName === "Fashion Paradise") {
+        const fashionProducts = [
+          {
+            name: "Áo sơ mi nữ tay dài",
+            description: "Áo sơ mi nữ tay dài, chất liệu lụa mềm, thoáng mát",
+            price: 250000,
+            discountPrice: 199000,
+            category: "Áo sơ mi",
+            subcategory: "Áo sơ mi nữ",
+            sellerId: seller.id,
+            images: JSON.stringify([
+              "https://cf.shopee.vn/file/sg-11134201-22100-bzi2jpm7tziv4b",
+              "https://cf.shopee.vn/file/sg-11134201-22100-4x9aohm7tzive8"
+            ]),
+            colors: JSON.stringify(["Trắng", "Đen", "Hồng"]),
+            sizes: JSON.stringify(["S", "M", "L", "XL"]),
+            stock: 100,
+            isFeatured: true,
+            isFlashSale: true,
+            flashSaleDiscount: 20
+          },
+          {
+            name: "Váy đầm suông trơn",
+            description: "Váy đầm suông trơn, kiểu dáng thanh lịch, trẻ trung",
+            price: 350000,
+            discountPrice: 299000,
+            category: "Váy đầm",
+            subcategory: "Váy đầm suông",
+            sellerId: seller.id,
+            images: JSON.stringify([
+              "https://cf.shopee.vn/file/sg-11134201-23010-1g7i2llmdxlvc7",
+              "https://cf.shopee.vn/file/sg-11134201-23010-yacwxmlmdxlva4"
+            ]),
+            colors: JSON.stringify(["Đen", "Xanh navy", "Đỏ"]),
+            sizes: JSON.stringify(["S", "M", "L", "XL"]),
+            stock: 80,
+            isFeatured: true,
+            isFlashSale: false,
+            flashSaleDiscount: null
+          },
+          {
+            name: "Áo thun nữ form rộng",
+            description: "Áo thun nữ form rộng, chất liệu cotton 100%, in họa tiết",
+            price: 150000,
+            discountPrice: 129000,
+            category: "Áo thun",
+            subcategory: "Áo thun nữ",
+            sellerId: seller.id,
+            images: JSON.stringify([
+              "https://cf.shopee.vn/file/sg-11134201-22090-lw2pxm7hkxhv1b",
+              "https://cf.shopee.vn/file/sg-11134201-22090-v44kzm7hkxhvee"
+            ]),
+            colors: JSON.stringify(["Trắng", "Đen", "Hồng", "Xanh"]),
+            sizes: JSON.stringify(["Free size"]),
+            stock: 150,
+            isFeatured: false,
+            isFlashSale: true,
+            flashSaleDiscount: 15
+          }
+        ];
+        
+        // Add more products as needed
+        for (const product of fashionProducts) {
+          await db.insert(products).values(product);
+        }
+      }
+      
+      // Example products for Urban Shoes (giày dép)
+      if (seller.shopName === "Urban Shoes") {
+        const shoeProducts = [
+          {
+            name: "Giày thể thao nam",
+            description: "Giày thể thao nam, đế cao su chống trơn trượt, thiết kế hiện đại",
+            price: 450000,
+            discountPrice: 399000,
+            category: "Giày nam",
+            subcategory: "Giày thể thao",
+            sellerId: seller.id,
+            images: JSON.stringify([
+              "https://cf.shopee.vn/file/f070316ffc41dfa88c74f4caf63cbe43",
+              "https://cf.shopee.vn/file/sg-11134201-22120-5ykf9poy0blvd3"
+            ]),
+            colors: JSON.stringify(["Đen", "Trắng", "Xám"]),
+            sizes: JSON.stringify(["39", "40", "41", "42", "43"]),
+            stock: 70,
+            isFeatured: true,
+            isFlashSale: false,
+            flashSaleDiscount: null
+          },
+          {
+            name: "Giày cao gót nữ",
+            description: "Giày cao gót nữ, gót nhọn 7cm, kiểu dáng thanh lịch",
+            price: 350000,
+            discountPrice: 299000,
+            category: "Giày nữ",
+            subcategory: "Giày cao gót",
+            sellerId: seller.id,
+            images: JSON.stringify([
+              "https://cf.shopee.vn/file/vn-11134207-7qukw-lh2stlz08q8r94",
+              "https://cf.shopee.vn/file/vn-11134207-7qukw-lfhlfh2clxo294"
+            ]),
+            colors: JSON.stringify(["Đen", "Nude", "Trắng"]),
+            sizes: JSON.stringify(["35", "36", "37", "38", "39"]),
+            stock: 90,
+            isFeatured: true,
+            isFlashSale: true,
+            flashSaleDiscount: 15
+          },
+          {
+            name: "Giày lười nam công sở",
+            description: "Giày lười nam công sở, chất liệu da bò, đế cao su êm ái",
+            price: 550000,
+            discountPrice: 499000,
+            category: "Giày nam",
+            subcategory: "Giày lười",
+            sellerId: seller.id,
+            images: JSON.stringify([
+              "https://cf.shopee.vn/file/sg-11134201-23010-xwnrvtgwsxlvda",
+              "https://cf.shopee.vn/file/sg-11134201-23010-rnifotfwsxlvcc"
+            ]),
+            colors: JSON.stringify(["Đen", "Nâu"]),
+            sizes: JSON.stringify(["39", "40", "41", "42", "43"]),
+            stock: 60,
+            isFeatured: false,
+            isFlashSale: false,
+            flashSaleDiscount: null
+          }
+        ];
+        
+        // Add more products as needed
+        for (const product of shoeProducts) {
+          await db.insert(products).values(product);
+        }
+      }
+    }
+    
+    // Update product counts for sellers
+    for (const seller of existingSellers) {
+      const productCount = await db.select({ count: db.count() })
+        .from(products)
+        .where(eq(products.sellerId, seller.id));
+        
+      await db.update(sellers)
+        .set({ productCount: productCount[0].count })
+        .where(eq(sellers.id, seller.id));
+    }
+    
+    console.log('Demo data initialized successfully');
+  }
+}
+
+// Sử dụng lớp lưu trữ cơ sở dữ liệu
+export const storage = new DatabaseStorage();
