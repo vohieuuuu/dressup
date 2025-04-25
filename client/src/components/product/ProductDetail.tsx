@@ -117,7 +117,9 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
                 style={{
                   backgroundImage: `url(${
                     mainImage 
-                      ? `https://images.weserv.nl/?url=${encodeURIComponent(mainImage)}&default=error&output=jpg`
+                      ? mainImage.startsWith('@assets/')
+                        ? mainImage.replace('@assets/', '/attached_assets/')
+                        : mainImage
                       : ''
                   })`
                 }}

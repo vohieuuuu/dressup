@@ -118,8 +118,10 @@ export function ProductCard({
             className={`w-full h-full bg-contain bg-center bg-no-repeat transition duration-300 ${isHovered ? 'scale-105' : ''}`}
             style={{
               backgroundImage: `url(${Array.isArray(product.images) && product.images.length > 0 ? 
-                // Sử dụng proxy để tránh CORS
-                `https://images.weserv.nl/?url=${encodeURIComponent(product.images[0])}&default=error&output=jpg` 
+                // Sử dụng hình ảnh từ thư mục assets
+                product.images[0].startsWith('@assets/') 
+                  ? product.images[0].replace('@assets/', '/attached_assets/') 
+                  : product.images[0]
                 : ''
               })`
             }}
