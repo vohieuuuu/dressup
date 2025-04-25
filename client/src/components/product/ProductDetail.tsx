@@ -138,7 +138,9 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
                     className="w-full h-full bg-cover bg-center bg-no-repeat"
                     style={{
                       backgroundImage: `url(${image 
-                        ? `https://images.weserv.nl/?url=${encodeURIComponent(image)}&default=error&output=jpg&width=80&height=80` 
+                        ? image.startsWith('@assets/')
+                          ? image.replace('@assets/', '/attached_assets/')
+                          : image
                         : ''
                       })`
                     }}

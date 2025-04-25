@@ -113,7 +113,7 @@ export function ProductCard({
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative aspect-[3/4] overflow-hidden">
-          {console.log("Rendering image src:", Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : 'No image')}
+          {/* Hide debug logs in production */}
           <div 
             className={`w-full h-full bg-contain bg-center bg-no-repeat transition duration-300 ${isHovered ? 'scale-105' : ''}`}
             style={{
