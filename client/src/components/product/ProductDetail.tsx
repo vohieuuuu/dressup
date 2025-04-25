@@ -20,13 +20,15 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
   const { user } = useAuth();
   const { toast } = useToast();
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
-    product.colors && product.colors.length > 0 ? product.colors[0] : undefined
+    product.colors && Array.isArray(product.colors) && product.colors.length > 0 ? product.colors[0] : undefined
   );
   const [selectedSize, setSelectedSize] = useState<string | undefined>(
-    product.sizes && product.sizes.length > 0 ? product.sizes[0] : undefined
+    product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0 ? product.sizes[0] : undefined
   );
   const [quantity, setQuantity] = useState(1);
-  const [mainImage, setMainImage] = useState(product.images[0]);
+  const [mainImage, setMainImage] = useState<string>(
+    Array.isArray(product.images) && product.images.length > 0 ? product.images[0] : ''
+  );
   const [sellerInfo, setSellerInfo] = useState<any>(null);
   
   useEffect(() => {
@@ -128,7 +130,7 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
               ></div>
             </div>
             <div className="flex space-x-2 overflow-x-auto">
-              {product.images.map((image, index) => (
+              {Array.isArray(product.images) && product.images.map((image: string, index: number) => (
                 <button 
                   key={index}
                   className={`w-20 h-20 flex-shrink-0 rounded-md overflow-hidden ${
@@ -217,11 +219,11 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
             </div>
 
             {/* Color Selection */}
-            {product.colors && product.colors.length > 0 && (
+            {Array.isArray(product.colors) && product.colors.length > 0 && (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Màu sắc</label>
                 <div className="flex space-x-2">
-                  {product.colors.map((color) => (
+                  {product.colors.map((color: string) => (
                     <button
                       key={color}
                       className={`w-10 h-10 rounded-full bg-white border-2 ${
@@ -244,11 +246,11 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
             )}
 
             {/* Size Selection */}
-            {product.sizes && product.sizes.length > 0 && (
+            {Array.isArray(product.sizes) && product.sizes.length > 0 && (
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Kích thước</label>
                 <div className="flex flex-wrap gap-2">
-                  {product.sizes.map((size) => (
+                  {product.sizes.map((size: string) => (
                     <button
                       key={size}
                       className={`px-4 py-2 border-2 ${
@@ -328,8 +330,8 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
               <ul className="list-disc pl-5 space-y-1 text-gray-600">
                 <li>Danh mục: {product.category}</li>
                 {product.subcategory && <li>Phân loại: {product.subcategory}</li>}
-                {product.colors && <li>Màu sắc: {product.colors.join(', ')}</li>}
-                {product.sizes && <li>Kích thước: {product.sizes.join(', ')}</li>}
+                {Array.isArray(product.colors) && product.colors.length > 0 && <li>Màu sắc: {product.colors.join(', ')}</li>}
+                {Array.isArray(product.sizes) && product.sizes.length > 0 && <li>Kích thước: {product.sizes.join(', ')}</li>}
               </ul>
             </TabsContent>
             <TabsContent value="reviews" className="py-4">

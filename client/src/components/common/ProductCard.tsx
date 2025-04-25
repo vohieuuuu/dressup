@@ -100,10 +100,7 @@ export function ProductCard({
     }).format(price);
   };
 
-  // Debug hiển thị thông tin về images
-  console.log("ProductCard - product images: ", product.images);
-  console.log("ProductCard - product images type: ", typeof product.images);
-  console.log("ProductCard - is array: ", Array.isArray(product.images));
+  // Không hiển thị debug logs trong production
   
   return (
     <Link href={`/product/${product.id}`}>
