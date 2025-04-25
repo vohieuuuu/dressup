@@ -117,9 +117,11 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
                 style={{
                   backgroundImage: `url(${
                     mainImage 
-                      ? mainImage.startsWith('@assets/')
+                      ? mainImage.includes('@assets/')
                         ? mainImage.replace('@assets/', '/attached_assets/')
-                        : mainImage
+                        : mainImage.includes('image_')
+                          ? `/attached_assets/${mainImage}`
+                          : mainImage
                       : ''
                   })`
                 }}
@@ -138,9 +140,11 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
                     className="w-full h-full bg-cover bg-center bg-no-repeat"
                     style={{
                       backgroundImage: `url(${image 
-                        ? image.startsWith('@assets/')
+                        ? image.includes('@assets/')
                           ? image.replace('@assets/', '/attached_assets/')
-                          : image
+                          : image.includes('image_')
+                            ? `/attached_assets/${image}`
+                            : image
                         : ''
                       })`
                     }}
