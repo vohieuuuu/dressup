@@ -8,11 +8,13 @@ import { ProductCard } from "@/components/common/ProductCard";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star, ShoppingBag, Heart, Share2, Minus, Plus } from "lucide-react";
+import { Star, ShoppingBag, Heart, Share2, Minus, Plus, Calendar } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +24,9 @@ export default function ProductPage() {
   
   const [selectedColor, setSelectedColor] = useState<string | undefined>();
   const [selectedSize, setSelectedSize] = useState<string | undefined>();
+  const [selectedRentalPeriod, setSelectedRentalPeriod] = useState<string>('day');
+  const [rentalStartDate, setRentalStartDate] = useState<Date | null>(null);
+  const [rentalEndDate, setRentalEndDate] = useState<Date | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showProductDetail, setShowProductDetail] = useState(false);
@@ -74,12 +79,25 @@ export default function ProductPage() {
     
     if (!product) return;
     
+    if (!rentalStartDate || !rentalEndDate) {
+      toast({
+        title: "Chưa chọn thời gian thuê",
+        description: "Vui lòng chọn ngày bắt đầu và kết thúc thuê",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       await apiRequest("POST", "/api/cart", {
         productId: product.id,
         quantity,
         color: selectedColor,
         size: selectedSize,
+        rentalStartDate,
+        rentalEndDate,
+        rentalDuration: calculateRentalDays(),
+        rentalPeriodType: selectedRentalPeriod
       });
       
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
@@ -97,7 +115,45 @@ export default function ProductPage() {
     }
   };
   
+  const calculateRentalDays = (): number => {
+    if (!rentalStartDate || !rentalEndDate) return 0;
+    
+    // Tính số ngày giữa hai ngày
+    const diffTime = Math.abs(rentalEndDate.getTime() - rentalStartDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 1; // Tối thiểu 1 ngày
+  };
+  
+  const calculateRentalCost = (): number => {
+    if (!product || !rentalStartDate || !rentalEndDate) return 0;
+    
+    const days = calculateRentalDays();
+    let totalCost = 0;
+    
+    if (selectedRentalPeriod === 'day') {
+      const dailyRate = product.discountPrice || product.rentalPricePerDay;
+      totalCost = dailyRate * days;
+    } else if (selectedRentalPeriod === 'week' && product.rentalPricePerWeek) {
+      const weeks = Math.ceil(days / 7);
+      totalCost = product.rentalPricePerWeek * weeks;
+    } else if (selectedRentalPeriod === 'month' && product.rentalPricePerMonth) {
+      const months = Math.ceil(days / 30);
+      totalCost = product.rentalPricePerMonth * months;
+    }
+    
+    return totalCost;
+  };
+
   const handleBuyNow = async () => {
+    if (!rentalStartDate || !rentalEndDate) {
+      toast({
+        title: "Chưa chọn thời gian thuê",
+        description: "Vui lòng chọn ngày bắt đầu và kết thúc thuê",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       await handleAddToCart();
       // Navigate to cart page
@@ -246,14 +302,29 @@ export default function ProductPage() {
               <div className="text-3xl font-semibold text-primary">
                 {product.discountPrice 
                   ? `${product.discountPrice.toLocaleString()}đ` 
-                  : `${product.price.toLocaleString()}đ`}
+                  : product.rentalPricePerDay 
+                    ? `${product.rentalPricePerDay.toLocaleString()}đ` 
+                    : "Liên hệ"}                    
+                <span className="text-sm text-gray-500 ml-1">/ ngày</span>
               </div>
-              {product.discountPrice && (
+              {product.discountPrice && product.rentalPricePerDay && (
                 <div className="text-xl text-gray-500 line-through">
-                  {product.price.toLocaleString()}đ
+                  {product.rentalPricePerDay.toLocaleString()}đ
                 </div>
               )}
             </div>
+            
+            {/* Tiền đặt cọc */}
+            {product.depositAmount && (
+              <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-md">
+                <div className="text-base font-medium text-orange-800">
+                  Đặt cọc: {product.depositAmount.toLocaleString()}đ
+                </div>
+                <p className="text-sm text-orange-700 mt-1">
+                  Khoản đặt cọc sẽ được hoàn trả khi bạn trả sản phẩm trong tình trạng tốt.
+                </p>
+              </div>
+            )}
             
             {/* Color Selection */}
             {product.colors && product.colors.length > 0 && (
@@ -306,6 +377,86 @@ export default function ProductPage() {
               </div>
             )}
             
+            {/* Rental Period */}
+            <div className="mb-6">
+              <h3 className="text-sm font-medium mb-3">Thời gian thuê</h3>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <button
+                  className={`px-4 py-2 border-2 rounded font-medium ${selectedRentalPeriod === 'day' ? 'border-primary text-primary' : 'border-gray-200 hover:border-primary hover:text-primary'}`}
+                  onClick={() => setSelectedRentalPeriod('day')}
+                >
+                  Theo ngày
+                  {product.rentalPricePerDay && <div className="text-sm">{product.rentalPricePerDay.toLocaleString()}đ/ngày</div>}
+                </button>
+                <button
+                  className={`px-4 py-2 border-2 rounded font-medium ${selectedRentalPeriod === 'week' ? 'border-primary text-primary' : 'border-gray-200 hover:border-primary hover:text-primary'}`}
+                  onClick={() => setSelectedRentalPeriod('week')}
+                  disabled={!product.rentalPricePerWeek}
+                >
+                  Theo tuần
+                  {product.rentalPricePerWeek && <div className="text-sm">{product.rentalPricePerWeek.toLocaleString()}đ/tuần</div>}
+                </button>
+                <button
+                  className={`px-4 py-2 border-2 rounded font-medium ${selectedRentalPeriod === 'month' ? 'border-primary text-primary' : 'border-gray-200 hover:border-primary hover:text-primary'}`}
+                  onClick={() => setSelectedRentalPeriod('month')}
+                  disabled={!product.rentalPricePerMonth}
+                >
+                  Theo tháng
+                  {product.rentalPricePerMonth && <div className="text-sm">{product.rentalPricePerMonth.toLocaleString()}đ/tháng</div>}
+                </button>
+              </div>
+              
+              {/* Date Selection */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Ngày bắt đầu
+                  </label>
+                  <div className="relative">
+                    <DatePicker
+                      selected={rentalStartDate}
+                      onChange={(date) => setRentalStartDate(date)}
+                      selectsStart
+                      startDate={rentalStartDate}
+                      endDate={rentalEndDate}
+                      minDate={new Date()}
+                      placeholderText="Chọn ngày"
+                      dateFormat="dd/MM/yyyy"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">
+                    Ngày kết thúc
+                  </label>
+                  <div className="relative">
+                    <DatePicker
+                      selected={rentalEndDate}
+                      onChange={(date) => setRentalEndDate(date)}
+                      selectsEnd
+                      startDate={rentalStartDate}
+                      endDate={rentalEndDate}
+                      minDate={rentalStartDate || new Date()}
+                      placeholderText="Chọn ngày"
+                      dateFormat="dd/MM/yyyy"
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                    />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Rental Summary */}
+              {rentalStartDate && rentalEndDate && (
+                <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-md">
+                  <p className="text-sm font-medium">Tổng thời gian thuê: {calculateRentalDays()} ngày</p>
+                  <p className="text-sm mt-1">Tổng tiền thuê: <span className="font-semibold">{calculateRentalCost().toLocaleString()}đ</span></p>
+                </div>
+              )}
+            </div>
+            
             {/* Quantity */}
             <div className="mb-6">
               <h3 className="text-sm font-medium mb-3">Số lượng</h3>
@@ -342,13 +493,13 @@ export default function ProductPage() {
                 onClick={handleAddToCart}
               >
                 <ShoppingBag className="h-5 w-5 mr-2" />
-                Thêm vào giỏ hàng
+                Đặt thuê
               </Button>
               <Button 
                 className="flex-1 bg-primary text-white hover:bg-primary/90"
                 onClick={handleBuyNow}
               >
-                Mua ngay
+                Thuê ngay
               </Button>
             </div>
             
