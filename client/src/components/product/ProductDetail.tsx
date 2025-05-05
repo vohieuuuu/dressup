@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Product } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { formatPrice } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -209,14 +210,43 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
 
             <div className="text-2xl font-semibold text-primary mb-6">
               {product.discountPrice 
-                ? `${product.discountPrice.toLocaleString()}đ` 
-                : `${product.price.toLocaleString()}đ`}
-              {product.discountPrice && (
+                ? formatPrice(product.discountPrice) 
+                : formatPrice(product.rentalPricePerDay) || 'Liên hệ'}
+              <span className="text-sm text-gray-500 ml-1">/ ngày</span>
+              {product.discountPrice && product.rentalPricePerDay && (
                 <span className="text-base text-gray-500 line-through ml-2">
-                  {product.price.toLocaleString()}đ
+                  {formatPrice(product.rentalPricePerDay)}
                 </span>
               )}
             </div>
+            
+            {/* Hiển thị giá theo tuần và tháng */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="border border-gray-200 rounded-md p-3 text-center">
+                <div className="text-sm font-medium">Theo ngày</div>
+                <div className="text-primary font-semibold">{formatPrice(product.rentalPricePerDay) || '-'}</div>
+              </div>
+              <div className="border border-gray-200 rounded-md p-3 text-center">
+                <div className="text-sm font-medium">Theo tuần</div>
+                <div className="text-primary font-semibold">{formatPrice(product.rentalPricePerWeek) || '-'}</div>
+              </div>
+              <div className="border border-gray-200 rounded-md p-3 text-center">
+                <div className="text-sm font-medium">Theo tháng</div>
+                <div className="text-primary font-semibold">{formatPrice(product.rentalPricePerMonth) || '-'}</div>
+              </div>
+            </div>
+            
+            {/* Tiền đặt cọc */}
+            {product.depositAmount && (
+              <div className="mb-6 p-3 bg-orange-50 border border-orange-200 rounded-md">
+                <div className="text-base font-medium text-orange-800">
+                  Đặt cọc: {formatPrice(product.depositAmount)}
+                </div>
+                <p className="text-sm text-orange-700 mt-1">
+                  Khoản đặt cọc sẽ được hoàn trả khi bạn trả sản phẩm trong tình trạng tốt.
+                </p>
+              </div>
+            )}
 
             {/* Color Selection */}
             {Array.isArray(product.colors) && product.colors.length > 0 && (
@@ -303,13 +333,13 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
                 onClick={handleAddToCart}
               >
                 <ShoppingBag className="h-5 w-5 mr-2" />
-                Thêm vào giỏ hàng
+                Đặt thuê
               </Button>
               <Button 
                 className="flex-1 bg-primary text-white hover:bg-primary/90"
                 onClick={handleBuyNow}
               >
-                Mua ngay
+                Thuê ngay
               </Button>
             </div>
           </div>

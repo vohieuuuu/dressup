@@ -7,6 +7,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Product } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/lib/utils";
 
 type ProductCardProps = {
   product: Product;
@@ -90,16 +91,7 @@ export function ProductCard({
     });
   };
 
-  // Format price to Vietnamese format
-  const formatPrice = (price: number | null | undefined) => {
-    if (price === null || price === undefined) return "";
-    return new Intl.NumberFormat('vi-VN', { 
-      style: 'currency', 
-      currency: 'VND',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(price);
-  };
+
   
   // Get the rental price to display
   const getRentalPrice = () => {
@@ -165,7 +157,7 @@ export function ProductCard({
                 onClick={handleAddToCart}
               >
                 <ShoppingBag className="h-4 w-4 mr-2" />
-                Thêm vào giỏ
+                Đặt thuê
               </Button>
             </div>
           )}
