@@ -27,16 +27,15 @@ export function Header() {
   };
 
   const categories = [
-    { name: "Trang chủ", path: "/" },
     { name: "Áo thun", path: "/category/ao-thun" },
     { name: "Áo sơ mi", path: "/category/ao-so-mi" },
     { name: "Quần jean", path: "/category/quan-jean" },
     { name: "Váy đầm", path: "/category/vay-dam" },
     { name: "Giày", path: "/category/giay" },
     { name: "Phụ kiện", path: "/category/phu-kien" },
-    { name: "Khuyến mãi", path: "/?sale=true" },
-    { name: "Xu hướng", path: "/?trending=true" },
-    { name: "Mua nhiều", path: "/?bestseller=true" },
+    { name: "Khuyến mãi", path: "/category/khuyen-mai" },
+    { name: "Xu hướng", path: "/category/xu-huong" },
+    { name: "Mua nhiều", path: "/category/mua-nhieu" },
   ];
 
   return (
