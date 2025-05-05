@@ -191,9 +191,9 @@ export default function ProductPage() {
                 className="w-full h-[500px] object-cover"
                 onClick={() => setShowProductDetail(true)}
               />
-              {product.discountPrice && (
+              {product.discountPrice && product.rentalPricePerDay && (
                 <div className="absolute top-4 left-4 bg-primary text-white text-sm font-bold px-2 py-1 rounded">
-                  -{Math.round((1 - product.discountPrice / product.price) * 100)}%
+                  -{Math.round((1 - product.discountPrice / product.rentalPricePerDay) * 100)}%
                 </div>
               )}
             </div>
@@ -237,8 +237,8 @@ export default function ProductPage() {
                   {product.rating ? `${product.rating} (${product.reviewCount} đánh giá)` : 'Chưa có đánh giá'}
                 </span>
               </div>
-              {product.soldCount !== undefined && product.soldCount > 0 && (
-                <span className="text-sm text-gray-500">Đã bán {product.soldCount}</span>
+              {product.timesRented !== undefined && (
+                <span className="text-sm text-gray-500">Đã cho thuê {product.timesRented} lần</span>
               )}
             </div>
             

@@ -91,13 +91,24 @@ export function ProductCard({
   };
 
   // Format price to Vietnamese format
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | null | undefined) => {
+    if (price === null || price === undefined) return "";
     return new Intl.NumberFormat('vi-VN', { 
       style: 'currency', 
       currency: 'VND',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(price);
+  };
+  
+  // Get the rental price to display
+  const getRentalPrice = () => {
+    return product.discountPrice || product.rentalPricePerDay || 0;
+  };
+  
+  // Get the original price (crossed out)
+  const getOriginalPrice = () => {
+    return product.rentalPricePerDay || 0;
   };
 
   // Không hiển thị debug logs trong production
@@ -126,9 +137,9 @@ export function ProductCard({
             }}
           ></div>
           
-          {product.discountPrice && (
+          {product.discountPrice && product.rentalPricePerDay && (
             <div className="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1">
-              -{Math.round((1 - product.discountPrice / product.price) * 100)}%
+              -{Math.round((1 - product.discountPrice / product.rentalPricePerDay) * 100)}%
             </div>
           )}
 
@@ -185,11 +196,12 @@ export function ProductCard({
               <span className="text-red-600 font-semibold">
                 {product.discountPrice 
                   ? formatPrice(product.discountPrice)
-                  : formatPrice(product.price)}
+                  : formatPrice(product.rentalPricePerDay)}
+                <span className="text-xs text-gray-500 ml-1">/ ngày</span>
               </span>
-              {product.discountPrice && (
+              {product.discountPrice && product.rentalPricePerDay && (
                 <span className="text-xs text-gray-400 line-through ml-2">
-                  {formatPrice(product.price)}
+                  {formatPrice(product.rentalPricePerDay)}
                 </span>
               )}
             </div>
@@ -199,7 +211,7 @@ export function ProductCard({
                 <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />
                 <span className="ml-0.5">{product.rating || "5.0"}</span>
               </div>
-              <span>Đã bán {product.soldCount || Math.floor(Math.random() * 1000)}</span>
+              <span>Đã thuê {product.timesRented || 0} lần</span>
             </div>
           </div>
         </div>
