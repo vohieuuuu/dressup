@@ -128,18 +128,24 @@ export const cartItems = pgTable("cart_items", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const insertCartItemSchema = createInsertSchema(cartItems).pick({
-  userId: true,
-  productId: true,
-  quantity: true,
-  color: true,
-  size: true,
-  // Thêm trường thuê
-  rentalStartDate: true,
-  rentalEndDate: true,
-  rentalDuration: true,
-  rentalPeriodType: true,
-});
+export const insertCartItemSchema = createInsertSchema(cartItems)
+  .pick({
+    userId: true,
+    productId: true,
+    quantity: true,
+    color: true,
+    size: true,
+    // Thêm trường thuê
+    rentalStartDate: true,
+    rentalEndDate: true,
+    rentalDuration: true,
+    rentalPeriodType: true,
+  })
+  // Override cho phép rentalStartDate và rentalEndDate là null
+  .extend({
+    rentalStartDate: z.date().nullable(),
+    rentalEndDate: z.date().nullable(),
+  });
 
 // Order schema - Chỉnh sửa cho mô hình thuê đồ
 export const orders = pgTable("orders", {

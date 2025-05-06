@@ -89,13 +89,15 @@ export default function ProductPage() {
     }
     
     try {
+      // Chuyển đổi Date thành chuỗi ISO trước khi gửi
+      // Sau đó trên server sẽ chuyển ngược lại thành Date
       await apiRequest("POST", "/api/cart", {
         productId: product.id,
         quantity,
         color: selectedColor,
         size: selectedSize,
-        rentalStartDate,
-        rentalEndDate,
+        rentalStartDate: null, // Tạm thời để null
+        rentalEndDate: null, // Tạm thời để null
         rentalDuration: calculateRentalDays(),
         rentalPeriodType: selectedRentalPeriod
       });
