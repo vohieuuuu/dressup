@@ -9,7 +9,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Minus, Plus, ShoppingBag, Star, X } from "lucide-react";
+import { Minus, Plus, ShoppingBag, Star, X, Calendar } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 interface ProductDetailProps {
   product: Product;
@@ -358,6 +360,64 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
                   <Plus className="h-4 w-4" />
                 </button>
                 <span className="ml-3 text-sm text-gray-500">Còn {product.stock} sản phẩm</span>
+              </div>
+            </div>
+
+            {/* Rental Period Type */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium mb-2">Thuê theo</label>
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  className={`px-4 py-2 border ${selectedRentalPeriod === 'day' ? 'border-primary text-primary' : 'border-gray-200'} rounded-md`}
+                  onClick={() => setSelectedRentalPeriod('day')}
+                >
+                  Ngày
+                </button>
+                <button
+                  type="button"
+                  className={`px-4 py-2 border ${selectedRentalPeriod === 'week' ? 'border-primary text-primary' : 'border-gray-200'} rounded-md`}
+                  onClick={() => setSelectedRentalPeriod('week')}
+                >
+                  Tuần
+                </button>
+                <button
+                  type="button"
+                  className={`px-4 py-2 border ${selectedRentalPeriod === 'month' ? 'border-primary text-primary' : 'border-gray-200'} rounded-md`}
+                  onClick={() => setSelectedRentalPeriod('month')}
+                >
+                  Tháng
+                </button>
+              </div>
+            </div>
+            
+            {/* Date Selection */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium mb-2">Ngày bắt đầu</label>
+                <div className="border border-gray-300 rounded-md overflow-hidden">
+                  <DatePicker
+                    selected={rentalStartDate}
+                    onChange={(date) => setRentalStartDate(date)}
+                    minDate={new Date()}
+                    dateFormat="dd/MM/yyyy"
+                    className="w-full p-2 focus:outline-none"
+                    placeholderText="Chọn ngày bắt đầu"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Ngày kết thúc</label>
+                <div className="border border-gray-300 rounded-md overflow-hidden">
+                  <DatePicker
+                    selected={rentalEndDate}
+                    onChange={(date) => setRentalEndDate(date)}
+                    minDate={rentalStartDate || new Date()}
+                    dateFormat="dd/MM/yyyy"
+                    className="w-full p-2 focus:outline-none"
+                    placeholderText="Chọn ngày kết thúc"
+                  />
+                </div>
               </div>
             </div>
 
