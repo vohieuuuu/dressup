@@ -30,12 +30,17 @@ export default function CartPage() {
   
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = item.product.discountPrice || item.product.price;
+    const price = item.product.discountPrice || item.product.rentalPricePerDay || 0;
     return sum + (price * item.quantity);
   }, 0);
   
-  const shippingFee = subtotal > 0 ? 30000 : 0; // Free shipping for orders above 500,000
-  const total = subtotal + shippingFee;
+  // Calculate total deposit amount
+  const depositAmount = cartItems.reduce((sum, item) => {
+    if (!item.product.depositAmount) return sum;
+    return sum + (item.product.depositAmount * item.quantity);
+  }, 0);
+  
+  const total = subtotal + depositAmount; // Tổng cộng là tiền thuê + tiền cọc
   
   // Update cart item quantity
   const handleUpdateQuantity = async (id: number, currentQuantity: number, delta: number) => {
@@ -161,7 +166,12 @@ export default function CartPage() {
       const items = cartItems.map(item => ({
         productId: item.product.id,
         quantity: item.quantity,
-        price: item.product.discountPrice || item.product.price,
+        price: item.product.discountPrice || item.product.rentalPricePerDay || 0,
+        depositAmount: item.product.depositAmount || 0,
+        rentalDuration: item.rentalDuration || 1,
+        rentalPeriodType: item.rentalPeriodType || 'day',
+        rentalStartDate: item.rentalStartDate,
+        rentalEndDate: item.rentalEndDate,
         color: item.color,
         size: item.size
       }));
@@ -176,11 +186,11 @@ export default function CartPage() {
       // Prepare order data
       const orderData = {
         totalAmount: total,
+        depositAmount: depositAmount,
         shippingAddress,
         recipientName,
         recipientPhone,
         notes,
-        shippingFee,
         paymentMethod,
         paymentStatus: paymentMethod === "cod" ? "pending" : "pending",
         items,
@@ -307,12 +317,12 @@ export default function CartPage() {
               
               <div className="space-y-3 mb-4">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tạm tính</span>
+                  <span className="text-gray-600">Tạm tính (tiền thuê)</span>
                   <span>{subtotal.toLocaleString()}đ</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Phí vận chuyển</span>
-                  <span>{shippingFee.toLocaleString()}đ</span>
+                  <span className="text-gray-600">Tiền đặt cọc</span>
+                  <span>{depositAmount.toLocaleString()}đ</span>
                 </div>
               </div>
               

@@ -46,8 +46,13 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
     return sum + (price * item.quantity);
   }, 0);
   
-  const shippingFee = subtotal > 0 ? 30000 : 0; // Shipping fee if cart is not empty
-  const total = subtotal + shippingFee;
+  // Calculate total deposit amount
+  const depositAmount = cartItems.reduce((sum, item) => {
+    if (!item || !item.product || !item.product.depositAmount) return sum;
+    return sum + (item.product.depositAmount * item.quantity);
+  }, 0);
+  
+  const total = subtotal + depositAmount; // Tổng cộng là tiền thuê + tiền cọc
   
   // Update cart item quantity
   const updateCartMutation = useMutation({
@@ -216,12 +221,12 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
               
               <div className="pt-4 border-t border-gray-200">
                 <div className="flex justify-between mb-2">
-                  <span className="text-gray-600">Tạm tính:</span>
+                  <span className="text-gray-600">Tạm tính (tiền thuê):</span>
                   <span className="font-medium">{subtotal.toLocaleString()}đ</span>
                 </div>
                 <div className="flex justify-between mb-4">
-                  <span className="text-gray-600">Phí vận chuyển:</span>
-                  <span className="font-medium">{shippingFee.toLocaleString()}đ</span>
+                  <span className="text-gray-600">Tiền đặt cọc:</span>
+                  <span className="font-medium">{depositAmount.toLocaleString()}đ</span>
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg font-semibold mb-6">
