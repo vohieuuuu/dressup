@@ -28,17 +28,18 @@ export default function CartPage() {
     enabled: !!user, // Only run query if user is logged in
   });
   
-  // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => {
+  // Calculate totals with proper null checks
+  const subtotal = cartItems && cartItems.length > 0 ? cartItems.reduce((sum, item) => {
+    if (!item || !item.product) return sum;
     const price = item.product.discountPrice || item.product.rentalPricePerDay || 0;
-    return sum + (price * item.quantity);
-  }, 0);
+    return sum + (price * (item.quantity || 1));
+  }, 0) : 0;
   
-  // Calculate total deposit amount
-  const depositAmount = cartItems.reduce((sum, item) => {
-    if (!item.product.depositAmount) return sum;
-    return sum + (item.product.depositAmount * item.quantity);
-  }, 0);
+  // Calculate total deposit amount with proper null checks
+  const depositAmount = cartItems && cartItems.length > 0 ? cartItems.reduce((sum, item) => {
+    if (!item || !item.product || !item.product.depositAmount) return sum;
+    return sum + (item.product.depositAmount * (item.quantity || 1));
+  }, 0) : 0;
   
   const total = subtotal + depositAmount; // Tổng cộng là tiền thuê + tiền cọc
   
@@ -282,7 +283,8 @@ export default function CartPage() {
                       </div>
                       <div className="flex items-center justify-between mt-4">
                         <div className="text-primary font-semibold">
-                          {(item.product.discountPrice || item.product.price).toLocaleString()}đ
+                          {(item.product.discountPrice || item.product.rentalPricePerDay || 0).toLocaleString()}đ
+                          <div className="text-xs text-gray-500">Giá thuê mỗi ngày</div>
                         </div>
                         <div className="flex items-center">
                           <button 
