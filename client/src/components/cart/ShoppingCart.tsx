@@ -30,9 +30,19 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
     enabled: !!user, // Only run query if user is logged in
   });
   
+  // Log cartItems to see structure
+  useEffect(() => {
+    console.log("Shopping Cart Items:", cartItems);
+  }, [cartItems]);
+
   // Calculate total amount
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = item.product.discountPrice || item.product.price;
+    // Check if the product exists and has price fields
+    if (!item || !item.product) return sum;
+    
+    // Always use daily price since we don't have period type yet in the existing cart items
+    const price = item.product.discountPrice || item.product.rentalPricePerDay || 0;
+    
     return sum + (price * item.quantity);
   }, 0);
   
@@ -162,8 +172,17 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                         {item.size && <span>/ Size {item.size}</span>}
                       </div>
                       <div className="flex items-center justify-between mt-2">
-                        <div className="text-primary font-medium">
-                          {(item.product.discountPrice || item.product.price).toLocaleString()}đ
+                        <div className="text-primary font-medium flex flex-col">
+                          {item.product && (
+                            <>
+                              {item.product.rentalPricePerDay && (
+                                <>
+                                  {(item.product.discountPrice || item.product.rentalPricePerDay).toLocaleString()}đ
+                                  <span className="text-xs text-gray-500">giá thuê mỗi ngày</span>
+                                </>
+                              )}
+                            </>
+                          )}
                         </div>
                         <div className="flex items-center">
                           <button 
