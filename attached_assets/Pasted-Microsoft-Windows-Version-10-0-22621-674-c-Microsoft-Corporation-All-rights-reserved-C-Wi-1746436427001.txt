@@ -1,0 +1,956 @@
+Microsoft Windows [Version 10.0.22621.674]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Windows\System32>cd E:\chanestore\chanestore-main
+
+C:\Windows\System32>e:
+
+E:\chanestore\chanestore-main>python main.py
+INFO:capture:Windows-specific modules imported successfully. Running in Windows mode.
+INFO:__main__:Windows detected - Attempting to automatically inject DLL on startup
+INFO:security:Found payload source at E:\chanestore\chanestore-main\dll_source\payload_core.cpp
+INFO:security:Running compile script: E:\chanestore\chanestore-main\dll_source\compile_payload.bat
+Static MinGW DLL created successfully at ..\temp_output\current.dll
+INFO:security:Found compiler: C:\msys64\mingw64\bin\g++.exe (type: g++)
+INFO:security:Copying payload from E:\chanestore\chanestore-main\dll_source\payload_core.cpp to E:\chanestore\chanestore-main\temp_hfxgjuzj\payload_core.cpp
+INFO:security:File copied successfully to E:\chanestore\chanestore-main\temp_hfxgjuzj\payload_core.cpp
+INFO:security:Compiling file E:\chanestore\chanestore-main\temp_hfxgjuzj\payload_core.cpp with C:\msys64\mingw64\bin\g++.exe
+INFO:security:Successfully compiled advanced payload: E:\chanestore\chanestore-main\temp_hfxgjuzj\module_hfxgjuzj.dll
+INFO:security:Saved DLL path to C:\Users\admin\AppData\Local\Temp\current_module_path.txt
+INFO:security:Saved DLL path to E:\chanestore\chanestore-main\temp_output\current_module_path.txt
+DEBUG:security:DLL info - Size: 91010, ImageBase: 0x2F6C30000, EntryPoint: 0x1200
+DEBUG:security:Sections: 19, Import Dir: {'rva': 36864, 'size': 1176}, Reloc Dir: {'rva': 45056, 'size': 72}
+DEBUG:security:Before allocation, last error: 5
+DEBUG:security:Allocation result address: 12729909248
+DEBUG:security:After allocation, last error: 5
+DEBUG:security:Allocated memory at 0x2F6C30000 for DLL image (size: 126976)
+DEBUG:security:Writing PE header to 0x2F6C30000 (size: 1536)
+DEBUG:security:Mapped section '.text' to 0x2F6C31000 (size: 6656, protection: 32)
+DEBUG:security:Mapped section '.data' to 0x2F6C33000 (size: 512, protection: 4)
+DEBUG:security:Mapped section '.rdata' to 0x2F6C34000 (size: 2048, protection: 2)
+DEBUG:security:Mapped section '.pdata' to 0x2F6C35000 (size: 512, protection: 2)
+DEBUG:security:Mapped section '.xdata' to 0x2F6C36000 (size: 512, protection: 2)
+DEBUG:security:Mapped section '.bss' to 0x2F6C37000 (size: 0, protection: 4)
+DEBUG:security:Mapped section '.edata' to 0x2F6C38000 (size: 512, protection: 2)
+DEBUG:security:Mapped section '.idata' to 0x2F6C39000 (size: 1536, protection: 2)
+DEBUG:security:Mapped section '.tls' to 0x2F6C3A000 (size: 512, protection: 4)
+DEBUG:security:Mapped section '.reloc' to 0x2F6C3B000 (size: 512, protection: 2)
+DEBUG:security:Mapped section '/4' to 0x2F6C3C000 (size: 1024, protection: 2)
+DEBUG:security:Mapped section '/19' to 0x2F6C3D000 (size: 29696, protection: 2)
+DEBUG:security:Mapped section '/31' to 0x2F6C45000 (size: 5632, protection: 2)
+DEBUG:security:Mapped section '/45' to 0x2F6C47000 (size: 6144, protection: 2)
+DEBUG:security:Mapped section '/57' to 0x2F6C49000 (size: 2048, protection: 2)
+DEBUG:security:Mapped section '/70' to 0x2F6C4A000 (size: 512, protection: 2)
+DEBUG:security:Mapped section '/81' to 0x2F6C4B000 (size: 3584, protection: 2)
+DEBUG:security:Mapped section '/97' to 0x2F6C4C000 (size: 4608, protection: 2)
+DEBUG:security:Mapped section '/113' to 0x2F6C4E000 (size: 512, protection: 2)
+DEBUG:security:Processing imports at RVA 0x9000
+DEBUG:security:Loading imported DLL: KERNEL32.dll
+DEBUG:security:Loading library: KERNEL32.dll
+DEBUG:security:Loaded DLL KERNEL32.dll at address: 0x7FFB6EC20000
+DEBUG:security:Loaded DLL: KERNEL32.dll at 0x7FFB6EC20000
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'CloseHandle' to 0x7FFB6EC3FF00
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'CreateThread' to 0x7FFB6EC34380
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'CreateToolhelp32Snapshot' to 0x7FFB6EC43540
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'DeleteCriticalSection' to 0x7FFB7004DC90
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'DisableThreadLibraryCalls' to 0x7FFB6EC38750
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'EnterCriticalSection' to 0x7FFB70011D10
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'GetLastError' to 0x7FFB6EC30CC0
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'InitializeCriticalSection' to 0x7FFB7004CFE0
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'LeaveCriticalSection' to 0x7FFB700171B0
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'Process32FirstW' to 0x7FFB6EC389D0
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'Process32NextW' to 0x7FFB6EC34420
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'Sleep' to 0x7FFB6EC38370
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'TlsGetValue' to 0x7FFB6EC30C00
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'VirtualProtect' to 0x7FFB6EC35340
+DEBUG:security:Calling GetProcAddress with module_handle=140717871726592 (<class 'int'>)
+DEBUG:security:Resolved import by name 'VirtualQuery' to 0x7FFB6EC35360
+DEBUG:security:Loading imported DLL: msvcrt.dll
+DEBUG:security:Loading library: msvcrt.dll
+DEBUG:security:Loaded DLL msvcrt.dll at address: 0x7FFB6E410000
+DEBUG:security:Loaded DLL: msvcrt.dll at 0x7FFB6E410000
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name '__iob_func' to 0x7FFB6E450690
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name '_amsg_exit' to 0x7FFB6E44D800
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name '_initterm' to 0x7FFB6E44DB90
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name '_lock' to 0x7FFB6E44E720
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name '_unlock' to 0x7FFB6E44E970
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'abort' to 0x7FFB6E442540
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'calloc' to 0x7FFB6E42CA70
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'fprintf' to 0x7FFB6E45B180
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'free' to 0x7FFB6E42CAC0
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'memcpy' to 0x7FFB6E489580
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'realloc' to 0x7FFB6E42CBF0
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'strlen' to 0x7FFB6E472040
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'strncmp' to 0x7FFB6E4723D0
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'vfprintf' to 0x7FFB6E45E010
+DEBUG:security:Calling GetProcAddress with module_handle=140717863272448 (<class 'int'>)
+DEBUG:security:Resolved import by name 'wcscmp' to 0x7FFB6E472D60
+DEBUG:security:No relocations to apply
+DEBUG:security:Processing TLS callbacks
+DEBUG:security:Found 2 TLS callbacks
+DEBUG:security:SKIPPING TLS callback at RVA 0x1960 for Chrome stability
+DEBUG:security:SKIPPING TLS callback at RVA 0x1940 for Chrome stability
+DEBUG:security:SKIPPING entry point at RVA 0x1200 for Chrome stability
+DEBUG:security:Successfully skipped entry point execution for stability
+DEBUG:security:Successfully hid PE header
+DEBUG:security:Cleanup completed successfully
+INFO:security:Successfully injected DLL into Chrome process at 0x2F6C30000
+INFO:__main__:Successfully injected DLL at startup
+INFO:__main__:Debug keys created: DEBUG, TEST
+Available keys for testing: ['DEBUG', 'TEST']
+ * Serving Flask app 'main'
+ * Debug mode: off
+INFO:werkzeug:WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.2.22:5000
+INFO:werkzeug:Press CTRL+C to quit
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:27] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:27] "GET /static/css/tailwind.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:27] "GET /static/css/main.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:28] "GET /static/js/components/Sidebar.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:28] "GET /static/js/app.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:28] "GET /static/js/components/ConfigPanel.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:28] "GET /static/js/components/Dashboard.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:28] "GET /get_config HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:10:28] "GET /static/purple_ramp.svg HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:11:17] "POST /save_config HTTP/1.1" 200 -
+INFO:capture:[WINDOWS] Starting capture loop on Windows system
+INFO:driver:Required Windows libraries available
+INFO:driver:Starting driver thread
+INFO:werkzeug:127.0.0.1 - - [05/May/2025 16:12:59] "POST /start HTTP/1.1" 200 -
+INFO:capture:[WINDOWS] System info: Windows-10-10.0.22621-SP0
+INFO:capture:[WINDOWS] Display resolution: 1920
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+INFO:capture:[WINDOWS] Searching for Valorant window...
+ERROR:capture:Valorant window not found!
+WARNING:capture:[WINDOWS] Valorant window not found. Is the game running?
+INFO:capture:[WINDOWS] Searching for Valorant window...
+INFO:capture:[WINDOWS] Valorant window found! HWND: 46534646, Position: (0, 0, 1920, 1080)
+DEBUG:capture:[WINDOWS] Capture loop running. Average FPS: 0.0
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Processing frame: 120x120, FOV radius: 60
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Found 0 potential targets
+DEBUG:capture:[WINDOWS] Capture loop running. Average FPS: 30.0
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:driver:Driver loop active: aimbot=inactive, trigger=inactive
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+DEBUG:capture:[WINDOWS] Captured image size: (120, 120, 4)
+DEBUG:capture:[WINDOWS] Purple detection with tolerance: 33
+DEBUG:capture:[WINDOWS] Using light purple range: H:132-140, S:60, V:156
+DEBUG:capture:[WINDOWS] Capturing screen region: {'left': 900, 'top': 480, 'width': 120, 'height': 120}
+D

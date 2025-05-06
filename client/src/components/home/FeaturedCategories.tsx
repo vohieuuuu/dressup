@@ -27,11 +27,17 @@ export function FeaturedCategories() {
           {displayCategories.map((category) => (
             <Link key={category.id} href={`/category/${category.slug}`} className="group">
                 <div className="bg-neutral-100 rounded-lg overflow-hidden aspect-square relative">
-                  <img 
-                    src={category.image} 
-                    alt={category.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                  />
+                  {category.image ? (
+                    <img 
+                      src={category.image} 
+                      alt={category.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-200 group-hover:bg-gray-300 transition duration-300">
+                      <span className="text-gray-500 font-medium">{category.name}</span>
+                    </div>
+                  )}
                 </div>
                 <p className="mt-2 text-center font-medium">{category.name}</p>
             </Link>
