@@ -56,6 +56,20 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
     setQuantity(newQuantity);
   };
 
+  // Add state for rental dates and period
+  const [rentalStartDate, setRentalStartDate] = useState<Date | null>(null);
+  const [rentalEndDate, setRentalEndDate] = useState<Date | null>(null);
+  const [selectedRentalPeriod, setSelectedRentalPeriod] = useState<string>('day');
+
+  const calculateRentalDays = (): number => {
+    if (!rentalStartDate || !rentalEndDate) return 1; // Default to 1 day
+    
+    // Calculate days between two dates
+    const diffTime = Math.abs(rentalEndDate.getTime() - rentalStartDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 1; // Minimum 1 day
+  };
+
   const handleAddToCart = async () => {
     if (!user) {
       toast({
@@ -66,12 +80,33 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
       return;
     }
 
+    // Set default dates if not selected
+    const startDate = rentalStartDate || new Date();
+    const endDate = rentalEndDate || new Date(startDate.getTime() + 24*60*60*1000); // Default +1 day
+    
     try {
+      const rentalPeriod = selectedRentalPeriod || 'day';
+      
+      console.log("Sending cart data:", {
+        productId: product.id,
+        quantity,
+        color: selectedColor,
+        size: selectedSize,
+        rentalStartDate: startDate,
+        rentalEndDate: endDate,
+        rentalDuration: calculateRentalDays(),
+        rentalPeriodType: rentalPeriod
+      });
+      
       await apiRequest("POST", "/api/cart", {
         productId: product.id,
         quantity,
         color: selectedColor,
         size: selectedSize,
+        rentalStartDate: startDate,
+        rentalEndDate: endDate,
+        rentalDuration: calculateRentalDays(),
+        rentalPeriodType: rentalPeriod
       });
       
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
@@ -83,6 +118,7 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
       
       onClose();
     } catch (error) {
+      console.error("Error adding to cart:", error);
       toast({
         title: "Lỗi",
         description: "Không thể thêm sản phẩm vào giỏ hàng.",
