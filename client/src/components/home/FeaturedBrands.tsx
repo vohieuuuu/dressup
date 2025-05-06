@@ -16,14 +16,14 @@ export function FeaturedBrands() {
   const brands = officialBrands.length > 0 ? officialBrands.map(seller => ({
     id: seller.id,
     name: seller.shopName,
-    logo: seller.shopLogo || "https://via.placeholder.com/150x50?text=Brand+Logo"
+    logo: seller.shopLogo || "https://picsum.photos/seed/brand-" + seller.id + "/150"
   })) : [
-    { id: 1, name: "Brand 1", logo: "https://via.placeholder.com/150x50?text=Brand+Logo" },
-    { id: 2, name: "Brand 2", logo: "https://via.placeholder.com/150x50?text=Brand+Logo" },
-    { id: 3, name: "Brand 3", logo: "https://via.placeholder.com/150x50?text=Brand+Logo" },
-    { id: 4, name: "Brand 4", logo: "https://via.placeholder.com/150x50?text=Brand+Logo" },
-    { id: 5, name: "Brand 5", logo: "https://via.placeholder.com/150x50?text=Brand+Logo" },
-    { id: 6, name: "Brand 6", logo: "https://via.placeholder.com/150x50?text=Brand+Logo" },
+    { id: 1, name: "Brand 1", logo: "https://picsum.photos/seed/brand-1/150" },
+    { id: 2, name: "Brand 2", logo: "https://picsum.photos/seed/brand-2/150" },
+    { id: 3, name: "Brand 3", logo: "https://picsum.photos/seed/brand-3/150" },
+    { id: 4, name: "Brand 4", logo: "https://picsum.photos/seed/brand-4/150" },
+    { id: 5, name: "Brand 5", logo: "https://picsum.photos/seed/brand-5/150" },
+    { id: 6, name: "Brand 6", logo: "https://picsum.photos/seed/brand-6/150" },
   ];
 
   return (
@@ -33,7 +33,7 @@ export function FeaturedBrands() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {brands.map(brand => (
             <Link key={brand.id} href={`/seller/${brand.id}`}>
-              <a className="flex flex-col items-center justify-center border border-neutral-200 rounded-lg p-4 h-24 hover:shadow-md transition">
+              <div className="flex flex-col items-center justify-center border border-neutral-200 rounded-lg p-4 h-24 hover:shadow-md transition">
                 {brand.logo && (
                   <img 
                     src={brand.logo} 
@@ -44,7 +44,7 @@ export function FeaturedBrands() {
                 <div className="text-center font-medium text-sm">
                   {brand.name}
                 </div>
-              </a>
+              </div>
             </Link>
           ))}
         </div>
