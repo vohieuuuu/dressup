@@ -241,7 +241,11 @@ export default function ProductPage() {
             <div className="bg-gray-100 rounded-lg overflow-hidden mb-4 relative">
               <img 
                 src={Array.isArray(product.images) && product.images.length > 0 
-                  ? product.images[currentImageIndex] 
+                  ? product.images[currentImageIndex].includes('@assets/') 
+                    ? product.images[currentImageIndex].replace('@assets/', '/attached_assets/') 
+                    : product.images[currentImageIndex].includes('image_')
+                      ? `/attached_assets/${product.images[currentImageIndex]}` 
+                      : product.images[currentImageIndex]
                   : ''} 
                 alt={product.name} 
                 className="w-full h-[500px] object-cover"
@@ -263,7 +267,11 @@ export default function ProductPage() {
                   onClick={() => setCurrentImageIndex(index)}
                 >
                   <img 
-                    src={image} 
+                    src={image.includes('@assets/') 
+                      ? image.replace('@assets/', '/attached_assets/') 
+                      : image.includes('image_')
+                        ? `/attached_assets/${image}` 
+                        : image} 
                     alt={`${product.name} - ảnh ${index + 1}`} 
                     className="w-full h-full object-cover"
                   />
