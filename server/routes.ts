@@ -276,6 +276,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
+      console.log("Cart item data:", req.body); // Log the cart data to debug
       const validatedData = insertCartItemSchema.parse({
         ...req.body,
         userId: req.user.id,
@@ -283,7 +284,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const cartItem = await storage.addToCart(validatedData);
       res.status(201).json(cartItem);
     } catch (error) {
-      res.status(400).json({ message: "Invalid cart data" });
+      console.error("Cart validation error:", error); // Log the detailed error
+      res.status(400).json({ message: "Invalid cart data", error: error.toString() });
     }
   });
 
