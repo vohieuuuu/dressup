@@ -224,7 +224,7 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="border border-gray-200 rounded-md p-3 text-center">
                 <div className="text-sm font-medium">Theo ngày</div>
-                <div className="text-primary font-semibold">{formatPrice(product.rentalPricePerDay) || '-'}</div>
+                <div className="text-primary font-semibold">{product.discountPrice ? formatPrice(product.discountPrice) : formatPrice(product.rentalPricePerDay) || '-'}</div>
               </div>
               <div className="border border-gray-200 rounded-md p-3 text-center">
                 <div className="text-sm font-medium">Theo tuần</div>

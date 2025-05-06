@@ -394,7 +394,7 @@ export default function ProductPage() {
                   onClick={() => setSelectedRentalPeriod('day')}
                 >
                   Theo ngày
-                  {product.rentalPricePerDay && <div className="text-sm">{product.rentalPricePerDay.toLocaleString()}đ/ngày</div>}
+                  {<div className="text-sm">{(product.discountPrice ? product.discountPrice : product.rentalPricePerDay || 0).toLocaleString()}đ/ngày</div>}
                 </button>
                 <button
                   className={`px-4 py-2 border-2 rounded font-medium ${selectedRentalPeriod === 'week' ? 'border-primary text-primary' : 'border-gray-200 hover:border-primary hover:text-primary'}`}
