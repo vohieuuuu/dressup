@@ -283,7 +283,7 @@ export default function CartPage() {
                       </div>
                       <div className="flex items-center justify-between mt-4">
                         <div className="text-primary font-semibold">
-                          {(item.product.discountPrice || item.product.rentalPricePerDay || 0).toLocaleString()}đ
+                          {((item.product.discountPrice || item.product.rentalPricePerDay || 0)).toLocaleString()}đ
                           <div className="text-xs text-gray-500">Giá thuê mỗi ngày</div>
                         </div>
                         <div className="flex items-center">
@@ -320,7 +320,7 @@ export default function CartPage() {
               <div className="space-y-3 mb-4">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tạm tính (tiền thuê)</span>
-                  <span>{subtotal.toLocaleString()}đ</span>
+                  <span>{subtotal ? subtotal.toLocaleString() : '0'}đ</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tiền đặt cọc</span>

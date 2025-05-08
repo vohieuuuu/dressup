@@ -385,12 +385,12 @@ export default function SellerDashboard() {
                               <div className="flex flex-col">
                                 <span className="font-medium">
                                   {product.discountPrice 
-                                    ? `${product.discountPrice.toLocaleString()}đ` 
-                                    : `${product.price.toLocaleString()}đ`}
+                                    ? `${product.discountPrice ? product.discountPrice.toLocaleString() : 0}đ` 
+                                    : `${product.price ? product.price.toLocaleString() : 0}đ`}
                                 </span>
                                 {product.discountPrice && (
                                   <span className="text-xs text-gray-500 line-through">
-                                    {product.price.toLocaleString()}đ
+                                    {product.price ? product.price.toLocaleString() : '0'}đ
                                   </span>
                                 )}
                               </div>
@@ -522,7 +522,7 @@ export default function SellerDashboard() {
                               {new Date(order.createdAt).toLocaleDateString('vi-VN')}
                             </TableCell>
                             <TableCell className="font-medium">
-                              {order.totalAmount.toLocaleString()}đ
+                              {order.totalAmount ? order.totalAmount.toLocaleString() : '0'}đ
                             </TableCell>
                             <TableCell>
                               {order.status === 'pending' && <Badge variant="outline">Chờ xác nhận</Badge>}
