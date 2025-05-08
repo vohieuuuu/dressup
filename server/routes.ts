@@ -371,9 +371,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if the user is allowed to access this order
-      if (order.userId !== req.user.id && 
-          order.sellerId !== req.user.id && 
-          req.user.role !== "admin") {
+      if (req.user.role === "admin") {
+        // Admin can access all orders
+      } else if (order.userId === req.user.id) {
+        // User can access their own orders
+      } else if (req.user.role === "seller") {
+        // Lấy tất cả các seller thuộc về user này
+        const userSellers = Array.from(storage.sellers.values())
+          .filter(s => s.userId === req.user.id);
+        
+        // Lấy tất cả ID của các shop thuộc về user này
+        const userSellerIds = userSellers.map(s => s.id);
+        
+        // Kiểm tra xem đơn hàng có thuộc về các shop của user này không
+        if (!userSellerIds.includes(order.sellerId)) {
+          return res.status(403).json({ message: "Access denied" });
+        }
+      } else {
         return res.status(403).json({ message: "Access denied" });
       }
       
