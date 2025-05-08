@@ -1835,6 +1835,7 @@ export class DatabaseStorage implements IStorage {
     // Create order in transaction
     return await db.transaction(async (tx) => {
       // Create a clean object with only columns that exist in the database
+      // Make sure we only use columns that actually exist in the database table
       const orderValues = {
         user_id: insertOrder.userId,
         seller_id: insertOrder.sellerId,
@@ -1852,7 +1853,7 @@ export class DatabaseStorage implements IStorage {
         rental_start_date: insertOrder.rentalStartDate,
         rental_end_date: insertOrder.rentalEndDate, 
         rental_period_type: insertOrder.rentalPeriodType,
-        rental_duration: insertOrder.rentalDuration
+        // Don't include columns that don't exist in the table
       };
 
       console.log("Order values for insertion:", JSON.stringify(orderValues, null, 2));
@@ -1878,7 +1879,7 @@ export class DatabaseStorage implements IStorage {
           throw new Error(`Không đủ hàng tồn kho cho sản phẩm: ${product.name}`);
         }
         
-        // Create order item with explicitly named columns
+        // Create order item with explicitly named columns that exist in the database
         await tx.insert(orderItems).values({
           order_id: order.id,
           product_id: item.productId,
@@ -1897,12 +1898,12 @@ export class DatabaseStorage implements IStorage {
           review_date: null
         });
         
-        // Update product stock and sold count
+        // Update product stock
         await tx.update(products)
           .set({ 
             stock: product.stock - item.quantity,
-            soldCount: (product.soldCount || 0) + item.quantity,
-            updatedAt: new Date()
+            // Note: soldCount is not in the database schema
+            updated_at: new Date()
           })
           .where(eq(products.id, item.productId));
       }
@@ -2067,11 +2068,11 @@ export class DatabaseStorage implements IStorage {
   async addReview(orderItemId: number, data: { rating: number, reviewText: string }): Promise<OrderItem> {
     const [orderItem] = await db.update(orderItems)
       .set({ 
-        isReviewed: true,
+        is_reviewed: true,
         rating: data.rating,
-        reviewText: data.reviewText,
-        reviewDate: new Date(),
-        updatedAt: new Date()
+        review_text: data.reviewText,
+        review_date: new Date(),
+        updated_at: new Date()
       })
       .where(eq(orderItems.id, orderItemId))
       .returning();
@@ -2121,8 +2122,8 @@ export class DatabaseStorage implements IStorage {
       if (allReviewed) {
         await db.update(orders)
           .set({ 
-            isRated: true,
-            updatedAt: new Date()
+            is_rated: true,
+            updated_at: new Date()
           })
           .where(eq(orders.id, orderData.id));
       }
