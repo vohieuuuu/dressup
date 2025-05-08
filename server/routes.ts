@@ -391,9 +391,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
       
+      // Lấy thông tin người bán từ sellerId
+      const seller = await storage.getSeller(order.sellerId);
+      
       // Process JSON fields in products in order items
       const processedOrder = {
         ...order,
+        seller: seller, // Thêm thông tin người bán
         items: order.items.map(item => ({
           ...item,
           product: {
