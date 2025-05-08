@@ -263,7 +263,6 @@ export default function OrderDetailPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col">
-        <Header />
         <main className="flex-1 container mx-auto py-8 px-4">
           <div className="flex items-center justify-center min-h-[50vh]">
             <div className="animate-spin mr-2">
@@ -272,7 +271,6 @@ export default function OrderDetailPage() {
             <span>Đang tải thông tin đơn hàng...</span>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -281,7 +279,6 @@ export default function OrderDetailPage() {
     // Không hiển thị toast trong render để tránh vòng lặp vô hạn
     return (
       <div className="flex min-h-screen flex-col">
-        <Header />
         <main className="flex-1 container mx-auto py-8 px-4">
           <div className="flex flex-col items-center justify-center min-h-[50vh]">
             <AlertCircle className="h-12 w-12 text-destructive mb-4" />
@@ -292,7 +289,6 @@ export default function OrderDetailPage() {
             </Button>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -302,7 +298,6 @@ export default function OrderDetailPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
       <main className="flex-1 container mx-auto py-8 px-4">
         <div className="space-y-6">
           <div className="flex items-center mb-6">
@@ -765,7 +760,6 @@ export default function OrderDetailPage() {
         </div>
       </main>
       
-      <Footer />
     </div>
   );
 }
