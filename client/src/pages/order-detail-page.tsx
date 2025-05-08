@@ -197,6 +197,9 @@ export default function OrderDetailPage() {
   // State cho dialog xác nhận đã nhận hàng
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   
+  // State cho dialog xác nhận đơn hàng bởi người bán
+  const [isSellerConfirmDialogOpen, setIsSellerConfirmDialogOpen] = useState(false);
+  
   const { data: order, isLoading, error, refetch } = useQuery({
     queryKey: [`/api/orders/${orderId}`],
     enabled: !!user && !!orderId,
@@ -247,6 +250,33 @@ export default function OrderDetailPage() {
     onError: (error) => {
       toast({
         title: "Không thể xác nhận",
+        description: (error as Error).message || "Vui lòng thử lại sau.",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation để người bán xác nhận đơn hàng
+  const sellerConfirmOrderMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", `/api/orders/${orderId}/status`, {
+        status: "confirmed"
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+      toast({
+        title: "Xác nhận đơn hàng thành công",
+        description: "Đơn hàng đã được xác nhận và sẽ được chuẩn bị để giao cho khách hàng.",
+      });
+      setIsSellerConfirmDialogOpen(false);
+      refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "Không thể xác nhận đơn hàng",
         description: (error as Error).message || "Vui lòng thử lại sau.",
         variant: "destructive",
       });
@@ -429,6 +459,47 @@ export default function OrderDetailPage() {
                     </>
                   ) : (
                     "Xác nhận"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
+          {/* Dialog xác nhận đơn hàng bởi người bán */}
+          <Dialog open={isSellerConfirmDialogOpen} onOpenChange={setIsSellerConfirmDialogOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Xác nhận đơn hàng</DialogTitle>
+                <DialogDescription>
+                  Bạn có chắc chắn muốn xác nhận đơn hàng này?
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="py-4">
+                <p>
+                  Sau khi xác nhận, đơn hàng sẽ được chuyển sang trạng thái "Đã xác nhận" và bạn sẽ cần chuẩn bị hàng để giao cho khách.
+                </p>
+              </div>
+              
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsSellerConfirmDialogOpen(false)}
+                >
+                  Hủy
+                </Button>
+                <Button 
+                  type="submit" 
+                  onClick={() => sellerConfirmOrderMutation.mutate()}
+                  disabled={sellerConfirmOrderMutation.isPending}
+                >
+                  {sellerConfirmOrderMutation.isPending ? (
+                    <>
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                      Đang xác nhận...
+                    </>
+                  ) : (
+                    "Xác nhận đơn hàng"
                   )}
                 </Button>
               </DialogFooter>
@@ -628,11 +699,22 @@ export default function OrderDetailPage() {
                       </div>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full mt-4" asChild>
-                    <Link href={`/sellers/${seller?.id}`}>
-                      Xem cửa hàng
-                    </Link>
-                  </Button>
+                  {/* Hiển thị nút xác nhận cho người bán khi đơn hàng ở trạng thái chờ xác nhận */}
+                  {user?.id === seller?.userId && order.status === "pending" ? (
+                    <Button 
+                      size="sm" 
+                      className="w-full mt-4"
+                      onClick={() => setIsSellerConfirmDialogOpen(true)}
+                    >
+                      Xác nhận đơn hàng
+                    </Button>
+                  ) : (
+                    <Button variant="outline" size="sm" className="w-full mt-4" asChild>
+                      <Link href={`/sellers/${seller?.id}`}>
+                        Xem cửa hàng
+                      </Link>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
               
