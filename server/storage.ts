@@ -1964,50 +1964,94 @@ export class DatabaseStorage implements IStorage {
   }
   
   async updateOrderStatus(id: number, status: string): Promise<Order> {
-    // Lấy dữ liệu hiện tại của order
-    const [existingOrder] = await db.select().from(orders).where(eq(orders.id, id));
-    if (!existingOrder) {
+    // Vì API chúng ta đang sử dụng direct SQL nên chúng ta sẽ thực hiện truy vấn trực tiếp
+    console.log(`Updating order ${id} status to: ${status}`);
+    
+    // Lấy dữ liệu hiện tại của order sử dụng direct SQL
+    const existingOrderQuery = await pool.query(
+      `SELECT * FROM orders WHERE id = $1`,
+      [id]
+    );
+    
+    if (existingOrderQuery.rows.length === 0) {
       throw new Error("Order not found");
     }
     
-    // Set trạng thái và thời gian cập nhật 
-    const updateData: any = { 
-      status,
-      updated_at: new Date()
-    };
+    const existingOrder = existingOrderQuery.rows[0];
+    console.log(`Current order status: ${existingOrder.status}`);
+    
+    // Chuẩn bị dữ liệu cập nhật
+    const updateFields = [
+      `status = $1`,
+      `updated_at = NOW()`
+    ];
+    
+    const updateValues = [status];
+    let paramIndex = 2; // Bắt đầu từ tham số thứ 2
     
     // Thêm timestamp phù hợp với trạng thái mới
     if (status === "confirmed" && existingOrder.status === "pending") {
-      updateData.confirmed_at = new Date();
+      updateFields.push(`confirmed_at = NOW()`);
     } else if (status === "processing" && ["pending", "confirmed"].includes(existingOrder.status)) {
-      updateData.processing_at = new Date();
+      updateFields.push(`processing_at = NOW()`);
     } else if (status === "shipped" && ["pending", "confirmed", "processing"].includes(existingOrder.status)) {
-      updateData.shipped_at = new Date();
+      updateFields.push(`shipped_at = NOW()`);
     } else if (status === "delivered" && ["pending", "confirmed", "processing", "shipped"].includes(existingOrder.status)) {
-      updateData.actual_delivery = new Date();
+      updateFields.push(`actual_delivery = NOW()`);
     } else if (status === "completed") {
-      updateData.completed_at = new Date();
+      updateFields.push(`completed_at = NOW()`);
     } else if (status === "canceled") {
-      updateData.canceled_at = new Date();
+      updateFields.push(`canceled_at = NOW()`);
     }
     
-    // Cập nhật trong database
-    const [order] = await db.update(orders)
-      .set(updateData)
-      .where(eq(orders.id, id))
-      .returning();
-      
-    if (!order) {
+    // Tạo câu lệnh SQL update và thực thi
+    const updateQuery = `
+      UPDATE orders 
+      SET ${updateFields.join(', ')} 
+      WHERE id = $${paramIndex}
+      RETURNING *
+    `;
+    
+    updateValues.push(id);
+    
+    console.log(`Executing SQL: ${updateQuery}`);
+    console.log(`With values: ${updateValues}`);
+    
+    const updateResult = await pool.query(updateQuery, updateValues);
+    
+    if (updateResult.rows.length === 0) {
       throw new Error("Failed to update order");
     }
     
+    const order = updateResult.rows[0];
+    console.log(`Order updated successfully. New status: ${order.status}`);
+    
     // Cập nhật bản đồ in-memory map
+    const orderObj: Order = {
+      id: order.id,
+      userId: order.user_id,
+      sellerId: order.seller_id,
+      status: order.status,
+      totalAmount: order.total_amount,
+      shippingFee: order.shipping_fee,
+      shippingAddress: order.shipping_address,
+      recipientName: order.recipient_name,
+      recipientPhone: order.recipient_phone,
+      paymentMethod: order.payment_method,
+      paymentStatus: order.payment_status,
+      // Các trường khác tương tự
+      createdAt: order.created_at,
+      updatedAt: order.updated_at,
+      confirmedAt: order.confirmed_at,
+      // ... chuyển đổi dữ liệu snake_case khác sang camelCase
+    } as Order;
+    
     if (this.orders.has(order.id)) {
       const currentOrder = this.orders.get(order.id)!;
-      this.orders.set(order.id, { ...currentOrder, ...order });
+      this.orders.set(order.id, { ...currentOrder, ...orderObj });
     }
     
-    return order;
+    return orderObj;
   }
   
   async updatePaymentStatus(id: number, status: string): Promise<Order> {
