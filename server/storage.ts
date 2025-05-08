@@ -1964,23 +1964,48 @@ export class DatabaseStorage implements IStorage {
   }
   
   async updateOrderStatus(id: number, status: string): Promise<Order> {
-    // Trạng thái không cần lưu timestamps riêng trong bảng orders,
-    // chỉ cập nhật trạng thái status và updated_at
+    // Lấy dữ liệu hiện tại của order
+    const [existingOrder] = await db.select().from(orders).where(eq(orders.id, id));
+    if (!existingOrder) {
+      throw new Error("Order not found");
+    }
     
+    // Set trạng thái và thời gian cập nhật 
+    const updateData: any = { 
+      status,
+      updated_at: new Date()
+    };
+    
+    // Thêm timestamp phù hợp với trạng thái mới
+    if (status === "confirmed" && existingOrder.status === "pending") {
+      updateData.confirmed_at = new Date();
+    } else if (status === "processing" && ["pending", "confirmed"].includes(existingOrder.status)) {
+      updateData.processing_at = new Date();
+    } else if (status === "shipped" && ["pending", "confirmed", "processing"].includes(existingOrder.status)) {
+      updateData.shipped_at = new Date();
+    } else if (status === "delivered" && ["pending", "confirmed", "processing", "shipped"].includes(existingOrder.status)) {
+      updateData.actual_delivery = new Date();
+    } else if (status === "completed") {
+      updateData.completed_at = new Date();
+    } else if (status === "canceled") {
+      updateData.canceled_at = new Date();
+    }
+    
+    // Cập nhật trong database
     const [order] = await db.update(orders)
-      .set({ 
-        status,
-        updated_at: new Date()
-      })
+      .set(updateData)
       .where(eq(orders.id, id))
       .returning();
       
     if (!order) {
-      throw new Error("Order not found");
+      throw new Error("Failed to update order");
     }
     
-    // Update in-memory map
-    this.orders.set(order.id, order);
+    // Cập nhật bản đồ in-memory map
+    if (this.orders.has(order.id)) {
+      const currentOrder = this.orders.get(order.id)!;
+      this.orders.set(order.id, { ...currentOrder, ...order });
+    }
     
     return order;
   }

@@ -263,16 +263,34 @@ export default function OrderDetailPage() {
         status: "confirmed"
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+    onSuccess: (data) => {
+      // Optimistically update the order status in the UI
+      if (order) {
+        const updatedOrder = {
+          ...order,
+          status: "confirmed",
+          confirmedAt: new Date().toISOString()
+        };
+        
+        // Update cache immediately
+        queryClient.setQueryData([`/api/orders/${orderId}`], updatedOrder);
+        
+        // Then invalidate to get fresh data from server
+        queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
+        queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+      }
+      
       toast({
         title: "Xác nhận đơn hàng thành công",
         description: "Đơn hàng đã được xác nhận và sẽ được chuẩn bị để giao cho khách hàng.",
       });
+      
       setIsSellerConfirmDialogOpen(false);
-      refetch();
+      // Use a timeout to ensure UI updates before refetching
+      setTimeout(() => {
+        refetch();
+      }, 500);
     },
     onError: (error) => {
       toast({
@@ -705,8 +723,16 @@ export default function OrderDetailPage() {
                       size="sm" 
                       className="w-full mt-4"
                       onClick={() => setIsSellerConfirmDialogOpen(true)}
+                      disabled={sellerConfirmOrderMutation.isPending}
                     >
-                      Xác nhận đơn hàng
+                      {sellerConfirmOrderMutation.isPending ? (
+                        <>
+                          <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                          Đang xác nhận...
+                        </>
+                      ) : (
+                        "Xác nhận đơn hàng"
+                      )}
                     </Button>
                   ) : (
                     <Button variant="outline" size="sm" className="w-full mt-4" asChild>
