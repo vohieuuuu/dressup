@@ -4,6 +4,7 @@ import { Express } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
+import bcrypt from "bcryptjs";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 
@@ -16,9 +17,16 @@ declare global {
 const scryptAsync = promisify(scrypt);
 
 async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${buf.toString("hex")}.${salt}`;
+  // Sử dụng bcrypt thay vì scrypt
+  try {
+    return await bcrypt.hash(password, 10);
+  } catch (error) {
+    console.error("Error hashing password with bcrypt:", error);
+    // Fallback để tránh lỗi
+    const salt = randomBytes(16).toString("hex");
+    const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+    return `${buf.toString("hex")}.${salt}`;
+  }
 }
 
 async function comparePasswords(supplied: string, stored: string) {
@@ -30,8 +38,14 @@ async function comparePasswords(supplied: string, stored: string) {
     
     // Hỗ trợ định dạng bcrypt (bắt đầu với $2b$)
     if (stored.startsWith('$2b$')) {
-      // Trong trường hợp này, direct compare với password123 khi ở development mode
-      return process.env.NODE_ENV === "development" && supplied === "password123";
+      try {
+        // Sử dụng bcrypt.compare để kiểm tra mật khẩu với bcrypt hash
+        return await bcrypt.compare(supplied, stored);
+      } catch (bcryptError) {
+        console.error("Error comparing with bcrypt:", bcryptError);
+        // Fallback cho môi trường development
+        return process.env.NODE_ENV === "development" && supplied === "password123";
+      }
     }
     
     // Định dạng custom: hashed.salt
