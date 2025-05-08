@@ -411,11 +411,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Creating order with data:", JSON.stringify(req.body, null, 2));
       
-      // Validate the order data
+      // Validate the order data and ensure userId is properly set
       const validatedData = insertOrderSchema.parse({
         ...req.body,
         userId: req.user.id,
       });
+      
+      console.log("User ID from session:", req.user.id);
+      console.log("Validated order data:", JSON.stringify(validatedData, null, 2));
       
       // Create the order
       const order = await storage.createOrder(validatedData, req.body.items);
