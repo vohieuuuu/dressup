@@ -541,32 +541,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      // Lấy tất cả các seller thuộc về user này
-      const sellers = Array.from(storage.sellers.values())
-        .filter(s => s.userId === req.user.id);
+      // Lấy tất cả các seller thuộc về user này từ database
+      const userSellers = await db.select()
+        .from(sellers)
+        .where(eq(sellers.userId, req.user.id));
       
-      if (sellers.length === 0) {
+      if (userSellers.length === 0) {
         return res.status(404).json({ message: "Seller not found for this user" });
       }
       
       // Log thông tin cho debug
       console.log("User ID:", req.user.id);
-      console.log("User Sellers:", sellers.map(s => ({ id: s.id, name: s.shopName })));
+      console.log("User Sellers:", userSellers.map(s => ({ id: s.id, name: s.shopName })));
       
       // Lấy tất cả ID của các shop thuộc về user này
-      const sellerIds = sellers.map(s => s.id);
+      const sellerIds = userSellers.map(s => s.id);
       console.log("Seller IDs:", sellerIds);
       
-      // Lấy tất cả các đơn hàng thuộc về bất kỳ shop nào của user này
-      const allOrders = Array.from(storage.orders.values());
-      const userShopOrders = allOrders.filter(order => sellerIds.includes(order.sellerId));
+      // Lấy các đơn hàng từ cơ sở dữ liệu
+      let allSellerOrders: Order[] = [];
       
-      console.log("All Orders:", allOrders.map(o => ({ id: o.id, sellerId: o.sellerId })));
-      console.log("User's Shop Orders:", userShopOrders.map(o => ({ id: o.id, sellerId: o.sellerId })));
+      // Truy vấn tất cả đơn hàng từ sellers của user
+      // Sử dụng SQL thô để có thể dùng IN
+      const orderQueryResult = await pool.query(
+        `SELECT * FROM orders WHERE seller_id = ANY($1)`,
+        [sellerIds]
+      );
+      
+      console.log("DB order query result count:", orderQueryResult.rows.length);
+      
+      if (orderQueryResult.rows.length > 0) {
+        allSellerOrders = orderQueryResult.rows;
+      }
       
       // Sử dụng phương thức nội bộ để thêm thông tin sản phẩm vào đơn hàng
       // @ts-ignore - Chúng ta biết phương thức này tồn tại
-      const orders = await storage._populateOrdersWithItems(userShopOrders);
+      const orders = await storage._populateOrdersWithItems(allSellerOrders);
       
       // Process JSON fields in products in order items
       const processedOrders = orders.map(order => ({
@@ -603,27 +613,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const orderId = parseInt(req.params.id);
-      const order = await storage.getOrder(orderId);
       
-      if (!order) {
+      // Lấy đơn hàng từ database
+      const orderResult = await pool.query(
+        `SELECT * FROM orders WHERE id = $1`,
+        [orderId]
+      );
+      
+      if (!orderResult.rows.length) {
         return res.status(404).json({ message: "Order not found" });
       }
       
-      // Lấy tất cả các seller thuộc về user này
-      const userSellers = Array.from(storage.sellers.values())
-        .filter(s => s.userId === req.user.id);
+      const order = orderResult.rows[0];
       
-      // Lấy tất cả ID của các shop thuộc về user này
-      const userSellerIds = userSellers.map(s => s.id);
+      // Lấy tất cả các seller thuộc về user này từ database
+      const sellersResult = await pool.query(
+        `SELECT * FROM sellers WHERE user_id = $1`,
+        [req.user.id]
+      );
+      
+      const userSellerIds = sellersResult.rows.map(s => s.id);
       
       // Kiểm tra xem đơn hàng có thuộc về các shop của user này không
-      if (!userSellerIds.includes(order.sellerId)) {
+      if (!userSellerIds.includes(order.seller_id)) {
         return res.status(403).json({ message: "Access denied" });
       }
       
       const updatedOrder = await storage.updateOrderStatus(orderId, req.body.status);
       res.json(updatedOrder);
     } catch (error) {
+      console.error("Error updating order status:", error);
       res.status(400).json({ message: "Failed to update order status" });
     }
   });
