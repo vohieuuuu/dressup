@@ -522,7 +522,7 @@ export default function SellerDashboard() {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => window.open(`/order/${order.id}`, '_blank')}
+                            onClick={() => window.open(`/orders/${order.id}`, '_blank')}
                           >
                             Chi tiết
                           </Button>
