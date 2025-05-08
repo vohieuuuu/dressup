@@ -278,12 +278,7 @@ export default function OrderDetailPage() {
   }
   
   if (error || !order) {
-    toast({
-      title: "Lỗi",
-      description: "Không thể tải thông tin đơn hàng. Vui lòng thử lại sau.",
-      variant: "destructive",
-    });
-    
+    // Không hiển thị toast trong render để tránh vòng lặp vô hạn
     return (
       <div className="flex min-h-screen flex-col">
         <Header />
