@@ -259,27 +259,51 @@ export default function OrderDetailPage() {
   // Mutation để người bán xác nhận đơn hàng
   const sellerConfirmOrderMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("POST", `/api/orders/${orderId}/status`, {
+      const response = await apiRequest("POST", `/api/orders/${orderId}/status`, {
         status: "confirmed"
       });
+      
+      if (!response.ok) {
+        throw new Error("Không thể xác nhận đơn hàng, vui lòng thử lại.");
+      }
+      
+      return await response.json();
     },
-    onSuccess: (data) => {
-      // Optimistically update the order status in the UI
+    onMutate: async () => {
+      // Hủy bỏ các yêu cầu đang chờ xử lý để tránh ghi đè lên cập nhật của chúng ta
+      await queryClient.cancelQueries({ queryKey: [`/api/orders/${orderId}`] });
+      
+      // Lưu trữ trạng thái trước đó
+      const previousOrder = queryClient.getQueryData([`/api/orders/${orderId}`]);
+      
+      // Cập nhật tức thời UI ngay khi bắt đầu mutation
       if (order) {
-        const updatedOrder = {
+        const optimisticOrder = {
           ...order,
           status: "confirmed",
           confirmedAt: new Date().toISOString()
         };
         
-        // Update cache immediately
-        queryClient.setQueryData([`/api/orders/${orderId}`], updatedOrder);
-        
-        // Then invalidate to get fresh data from server
-        queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
-        queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
+        queryClient.setQueryData([`/api/orders/${orderId}`], optimisticOrder);
       }
+      
+      return { previousOrder };
+    },
+    onSuccess: (data) => {
+      console.log("Xác nhận đơn hàng thành công:", data);
+      
+      // Cập nhật cache với dữ liệu thực tế từ server
+      queryClient.setQueryData([`/api/orders/${orderId}`], {
+        ...order,
+        ...data,
+        status: "confirmed",
+        confirmedAt: data.confirmed_at || new Date().toISOString()
+      });
+      
+      // Sau đó invalidate để đảm bảo dữ liệu luôn mới nhất
+      queryClient.invalidateQueries({ queryKey: [`/api/orders/${orderId}`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
       
       toast({
         title: "Xác nhận đơn hàng thành công",
@@ -287,18 +311,25 @@ export default function OrderDetailPage() {
       });
       
       setIsSellerConfirmDialogOpen(false);
-      // Use a timeout to ensure UI updates before refetching
-      setTimeout(() => {
-        refetch();
-      }, 500);
     },
-    onError: (error) => {
+    onError: (error, _, context) => {
+      console.error("Lỗi xác nhận đơn hàng:", error);
+      
+      // Khôi phục trạng thái trước đó nếu xảy ra lỗi
+      if (context?.previousOrder) {
+        queryClient.setQueryData([`/api/orders/${orderId}`], context.previousOrder);
+      }
+      
       toast({
         title: "Không thể xác nhận đơn hàng",
         description: (error as Error).message || "Vui lòng thử lại sau.",
         variant: "destructive",
       });
     },
+    onSettled: () => {
+      // Luôn refetch sau khi hoàn thành để đảm bảo dữ liệu đồng bộ
+      refetch();
+    }
   });
 
   // Hàm xử lý khi người dùng tải lên ảnh
