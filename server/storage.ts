@@ -1866,14 +1866,33 @@ export class DatabaseStorage implements IStorage {
         updated_at: new Date()
       }, null, 2));
       
+      // Sử dụng cách tiếp cận khác để chèn dữ liệu - chèn trực tiếp với các giá trị
+      // thay vì thông qua đối tượng trải rộng
       const [order] = await tx
         .insert(orders)
         .values({
-          ...orderValues,
+          user_id: orderValues.user_id,
+          seller_id: orderValues.seller_id,
+          status: orderValues.status,
+          total_amount: orderValues.total_amount,
+          deposit_amount: orderValues.deposit_amount,
+          shipping_address: orderValues.shipping_address,
+          recipient_name: orderValues.recipient_name,
+          recipient_phone: orderValues.recipient_phone,
+          notes: orderValues.notes,
+          payment_method: orderValues.payment_method,
+          payment_status: orderValues.payment_status,
+          shipping_fee: orderValues.shipping_fee,
+          shipping_method: orderValues.shipping_method,
+          rental_start_date: orderValues.rental_start_date,
+          rental_end_date: orderValues.rental_end_date,
+          rental_period_type: orderValues.rental_period_type,
           created_at: new Date(),
           updated_at: new Date()
         })
         .returning();
+        
+      console.log("Created order:", JSON.stringify(order, null, 2));
       
       // Insert order items and update product stock
       for (const item of items) {
