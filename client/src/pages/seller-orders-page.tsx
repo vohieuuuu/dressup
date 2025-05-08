@@ -415,6 +415,17 @@ export default function SellerOrdersPage() {
                                     <DropdownMenuItem onClick={() => handleViewDetails(order)}>
                                       Xem chi tiết
                                     </DropdownMenuItem>
+                                    {order.status === "pending" && (
+                                      <DropdownMenuItem onClick={() => {
+                                        setSelectedOrder(order);
+                                        setNewStatus("confirmed");
+                                        updateStatusMutation.mutate({ orderId: order.id, status: "confirmed" });
+                                      }}>
+                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                        Xác nhận đơn hàng
+                                      </DropdownMenuItem>
+                                    )}
+
                                     <DropdownMenuItem onClick={() => handleStatusUpdate(order)}>
                                       Cập nhật trạng thái
                                     </DropdownMenuItem>
