@@ -1830,31 +1830,38 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Order must have at least one item");
     }
     
+    console.log("Creating order with insertOrder data:", JSON.stringify(insertOrder, null, 2));
+    
     // Create order in transaction
     return await db.transaction(async (tx) => {
-      // Insert order
-      const [order] = await tx.insert(orders).values({
-        ...insertOrder,
+      // Create a clean object with only columns that exist in the database
+      const orderValues = {
+        user_id: insertOrder.userId,
+        seller_id: insertOrder.sellerId,
         status: "pending",
-        paymentStatus: insertOrder.paymentStatus || "pending",
-        recipientName: insertOrder.recipientName || "",
-        recipientPhone: insertOrder.recipientPhone || "",
+        total_amount: insertOrder.totalAmount,
+        deposit_amount: insertOrder.depositAmount || 0,
+        shipping_address: insertOrder.shippingAddress,
+        recipient_name: insertOrder.recipientName || "",
+        recipient_phone: insertOrder.recipientPhone || "",
         notes: insertOrder.notes || "",
-        shippingFee: insertOrder.shippingFee || 30000,
-        trackingNumber: null,
-        shippingMethod: insertOrder.shippingMethod || "Standard",
-        estimatedDelivery: null,
-        actualDelivery: null,
-        rentalDuration: insertOrder.rentalDuration,
-        rentalPeriodType: insertOrder.rentalPeriodType,
-        rentalStartDate: insertOrder.rentalStartDate,
-        rentalEndDate: insertOrder.rentalEndDate,
-        depositAmount: insertOrder.depositAmount || 0,
-        isRated: false,
-        returnRequested: false,
-        returnReason: null,
-        returnStatus: null
-      }).returning();
+        payment_method: insertOrder.paymentMethod,
+        payment_status: insertOrder.paymentStatus || "pending",
+        shipping_fee: insertOrder.shippingFee || 30000,
+        shipping_method: insertOrder.shippingMethod || "Standard",
+        rental_start_date: insertOrder.rentalStartDate,
+        rental_end_date: insertOrder.rentalEndDate, 
+        rental_period_type: insertOrder.rentalPeriodType,
+        rental_duration: insertOrder.rentalDuration
+      };
+
+      console.log("Order values for insertion:", JSON.stringify(orderValues, null, 2));
+      
+      // Insert order with explicitly named columns
+      const [order] = await tx
+        .insert(orders)
+        .values(orderValues)
+        .returning();
       
       // Insert order items and update product stock
       for (const item of items) {
