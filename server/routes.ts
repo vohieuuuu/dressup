@@ -734,27 +734,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
       
-      // Chuẩn bị dữ liệu cập nhật
+      // Chuẩn bị dữ liệu cập nhật với chỉ các cột đã tồn tại trong DB
       const status = req.body.status;
       const updateFields = [
         `status = $1`,
         `updated_at = NOW()`
       ];
       
-      // Thêm timestamp phù hợp với trạng thái mới
-      if (status === "confirmed" && order.status === "pending") {
-        updateFields.push(`confirmed_at = NOW()`);
-      } else if (status === "processing" && ["pending", "confirmed"].includes(order.status)) {
-        updateFields.push(`processing_at = NOW()`);
-      } else if (status === "shipped" && ["pending", "confirmed", "processing"].includes(order.status)) {
-        updateFields.push(`shipped_at = NOW()`);
-      } else if (status === "delivered" && ["pending", "confirmed", "processing", "shipped"].includes(order.status)) {
-        updateFields.push(`actual_delivery = NOW()`);
-      } else if (status === "completed") {
-        updateFields.push(`completed_at = NOW()`);
-      } else if (status === "canceled") {
-        updateFields.push(`canceled_at = NOW()`);
-      }
+      // Không cập nhật các timestamp phụ vì chúng không tồn tại trong schema DB
+      console.log(`API: Chỉ cập nhật status thành ${status} và updated_at thành thời gian hiện tại`);
       
       // Tạo và thực thi câu lệnh SQL
       const updateQuery = `
