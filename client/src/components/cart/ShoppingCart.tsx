@@ -182,7 +182,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                             <>
                               {item.product.rentalPricePerDay && (
                                 <>
-                                  {(item.product.discountPrice || item.product.rentalPricePerDay).toLocaleString()}đ
+                                  {(item.product.discountPrice || item.product.rentalPricePerDay || 0).toLocaleString()}đ
                                   <span className="text-xs text-gray-500">giá thuê mỗi ngày</span>
                                 </>
                               )}
@@ -222,16 +222,16 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
               <div className="pt-4 border-t border-gray-200">
                 <div className="flex justify-between mb-2">
                   <span className="text-gray-600">Tạm tính (tiền thuê):</span>
-                  <span className="font-medium">{subtotal.toLocaleString()}đ</span>
+                  <span className="font-medium">{subtotal ? subtotal.toLocaleString() : '0'}đ</span>
                 </div>
                 <div className="flex justify-between mb-4">
                   <span className="text-gray-600">Tiền đặt cọc:</span>
-                  <span className="font-medium">{depositAmount.toLocaleString()}đ</span>
+                  <span className="font-medium">{depositAmount ? depositAmount.toLocaleString() : '0'}đ</span>
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between text-lg font-semibold mb-6">
                   <span>Tổng cộng:</span>
-                  <span className="text-primary">{total.toLocaleString()}đ</span>
+                  <span className="text-primary">{total ? total.toLocaleString() : '0'}đ</span>
                 </div>
                 
                 <Button 

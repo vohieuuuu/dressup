@@ -324,7 +324,7 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tiền đặt cọc</span>
-                  <span>{depositAmount.toLocaleString()}đ</span>
+                  <span>{depositAmount ? depositAmount.toLocaleString() : '0'}đ</span>
                 </div>
               </div>
               
@@ -332,7 +332,7 @@ export default function CartPage() {
               
               <div className="flex justify-between text-lg font-semibold mb-6">
                 <span>Tổng cộng</span>
-                <span className="text-primary">{total.toLocaleString()}đ</span>
+                <span className="text-primary">{total ? total.toLocaleString() : '0'}đ</span>
               </div>
             </div>
             
