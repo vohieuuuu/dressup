@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { SellerRegisterModal } from "@/components/seller/SellerRegisterModal";
 import { ShoppingCart } from "@/components/cart/ShoppingCart";
-import logoSrc from "../../../src/assets/logo-new.svg";
+
+const LOGO_URL = "https://colormedia.vn/public/upload/N%E1%BB%99i%20dung%20%C4%91o%E1%BA%A1n%20v%C4%83n%20b%E1%BA%A3n%20c%E1%BB%A7a%20b%E1%BA%A1n.png";
 
 export function Header() {
   const [location] = useLocation();
@@ -87,7 +88,7 @@ export function Header() {
         {/* Main Header */}
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center">
-            <img src={logoSrc} alt="DressUp Logo" className="h-16 w-auto" />
+            <img src={LOGO_URL} alt="DressUp Logo" className="h-16 w-auto" />
           </Link>
           
           {/* Search Bar */}
