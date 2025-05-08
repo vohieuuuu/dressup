@@ -1859,9 +1859,20 @@ export class DatabaseStorage implements IStorage {
       console.log("Order values for insertion:", JSON.stringify(orderValues, null, 2));
       
       // Insert order with explicitly named columns
+      // Make sure all required fields are being included
+      console.log("Final order values being inserted:", JSON.stringify({
+        ...orderValues,
+        created_at: new Date(),
+        updated_at: new Date()
+      }, null, 2));
+      
       const [order] = await tx
         .insert(orders)
-        .values(orderValues)
+        .values({
+          ...orderValues,
+          created_at: new Date(),
+          updated_at: new Date()
+        })
         .returning();
       
       // Insert order items and update product stock
@@ -1880,7 +1891,7 @@ export class DatabaseStorage implements IStorage {
         }
         
         // Create order item with explicitly named columns that exist in the database
-        await tx.insert(orderItems).values({
+        const orderItemValues = {
           order_id: order.id,
           product_id: item.productId,
           quantity: item.quantity,
@@ -1895,8 +1906,14 @@ export class DatabaseStorage implements IStorage {
           is_reviewed: false,
           rating: null,
           review_text: null,
-          review_date: null
-        });
+          review_date: null,
+          created_at: new Date(),
+          updated_at: new Date()
+        };
+        
+        console.log(`Order item values for product ${item.productId}:`, JSON.stringify(orderItemValues, null, 2));
+        
+        await tx.insert(orderItems).values(orderItemValues);
         
         // Update product stock
         await tx.update(products)
