@@ -247,29 +247,27 @@ export function ProductDetail({ product, isOpen, onClose }: ProductDetailProps) 
             </div>
 
             <div className="text-2xl font-semibold text-primary mb-6">
-              {product.discountPrice 
-                ? formatPrice(product.discountPrice) 
-                : formatPrice(product.rentalPricePerDay) || 'Liên hệ'}
+              {formatPrice(product.rentalPricePerDay) || 'Liên hệ'}
               <span className="text-sm text-gray-500 ml-1">/ ngày</span>
-              {product.discountPrice && product.rentalPricePerDay && (
+              {product.discountPrice && product.discountPrice < product.rentalPricePerDay && (
                 <span className="text-base text-gray-500 line-through ml-2">
-                  {formatPrice(product.rentalPricePerDay)}
+                  {formatPrice(product.discountPrice)}
                 </span>
               )}
             </div>
             
-            {/* Hiển thị giá theo tuần và tháng */}
+            {/* Hiển thị giá theo ngày, tuần và tháng */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="border border-gray-200 rounded-md p-3 text-center">
-                <div className="text-sm font-medium">Theo ngày</div>
-                <div className="text-primary font-semibold">{product.discountPrice ? formatPrice(product.discountPrice) : formatPrice(product.rentalPricePerDay) || '-'}</div>
+                <div className="text-sm font-medium">Giá thuê theo ngày</div>
+                <div className="text-primary font-semibold">{formatPrice(product.rentalPricePerDay) || '-'}</div>
               </div>
               <div className="border border-gray-200 rounded-md p-3 text-center">
-                <div className="text-sm font-medium">Theo tuần</div>
+                <div className="text-sm font-medium">Giá thuê theo tuần</div>
                 <div className="text-primary font-semibold">{formatPrice(product.rentalPricePerWeek) || '-'}</div>
               </div>
               <div className="border border-gray-200 rounded-md p-3 text-center">
-                <div className="text-sm font-medium">Theo tháng</div>
+                <div className="text-sm font-medium">Giá thuê theo tháng</div>
                 <div className="text-primary font-semibold">{formatPrice(product.rentalPricePerMonth) || '-'}</div>
               </div>
             </div>
