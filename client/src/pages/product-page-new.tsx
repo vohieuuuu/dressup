@@ -213,15 +213,15 @@ export default function ProductPage() {
           <div className="space-y-4">
             <div className="bg-white p-4 rounded-lg shadow-sm h-96 flex items-center justify-center overflow-hidden">
               <img 
-                src={product.imageUrls && product.imageUrls[currentImageIndex] || '/placeholder-image.jpg'} 
+                src={product.images && product.images[currentImageIndex] || '/placeholder-image.jpg'} 
                 alt={product.name}
                 className="max-h-full max-w-full object-contain"
               />
             </div>
             
-            {product.imageUrls && product.imageUrls.length > 1 && (
+            {product.images && product.images.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
-                {product.imageUrls.map((img, index) => (
+                {product.images.map((img, index) => (
                   <div 
                     key={index}
                     className={`border rounded-md cursor-pointer p-1 ${index === currentImageIndex ? 'border-primary ring-2 ring-primary-light' : 'border-gray-200'}`}
