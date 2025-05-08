@@ -2,7 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertProductSchema, insertCartItemSchema, insertOrderSchema, insertSellerSchema } from "@shared/schema";
+import { insertProductSchema, insertCartItemSchema, insertOrderSchema, insertSellerSchema, sellers, orders } from "@shared/schema";
+import { pool } from "./db";
+import { eq } from "drizzle-orm";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication routes
@@ -542,9 +544,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       // Lấy tất cả các seller thuộc về user này từ database
-      const userSellers = await db.select()
-        .from(sellers)
-        .where(eq(sellers.userId, req.user.id));
+      const sellersQuery = await pool.query(
+        `SELECT * FROM sellers WHERE user_id = $1`,
+        [req.user.id]
+      );
+      
+      const userSellers = sellersQuery.rows;
       
       if (userSellers.length === 0) {
         return res.status(404).json({ message: "Seller not found for this user" });
@@ -552,15 +557,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Log thông tin cho debug
       console.log("User ID:", req.user.id);
-      console.log("User Sellers:", userSellers.map(s => ({ id: s.id, name: s.shopName })));
+      console.log("User Sellers:", userSellers.map(s => ({ id: s.id, name: s.shop_name })));
       
       // Lấy tất cả ID của các shop thuộc về user này
       const sellerIds = userSellers.map(s => s.id);
       console.log("Seller IDs:", sellerIds);
       
       // Lấy các đơn hàng từ cơ sở dữ liệu
-      let allSellerOrders: Order[] = [];
-      
       // Truy vấn tất cả đơn hàng từ sellers của user
       // Sử dụng SQL thô để có thể dùng IN
       const orderQueryResult = await pool.query(
@@ -570,33 +573,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log("DB order query result count:", orderQueryResult.rows.length);
       
-      if (orderQueryResult.rows.length > 0) {
-        allSellerOrders = orderQueryResult.rows;
+      if (orderQueryResult.rows.length === 0) {
+        return res.json([]);
       }
       
-      // Sử dụng phương thức nội bộ để thêm thông tin sản phẩm vào đơn hàng
-      // @ts-ignore - Chúng ta biết phương thức này tồn tại
-      const orders = await storage._populateOrdersWithItems(allSellerOrders);
+      // Lấy ID của tất cả đơn hàng
+      const orderIds = orderQueryResult.rows.map(order => order.id);
       
-      // Process JSON fields in products in order items
-      const processedOrders = orders.map(order => ({
-        ...order,
-        items: order.items.map(item => ({
-          ...item,
-          product: {
-            ...item.product,
-            images: typeof item.product.images === 'string' 
-              ? JSON.parse(item.product.images) 
-              : item.product.images,
-            colors: typeof item.product.colors === 'string' 
-              ? JSON.parse(item.product.colors) 
-              : item.product.colors,
-            sizes: typeof item.product.sizes === 'string' 
-              ? JSON.parse(item.product.sizes) 
-              : item.product.sizes
-          }
-        }))
-      }));
+      // Lấy các order_items cho các đơn hàng
+      const orderItemsQuery = await pool.query(
+        `SELECT oi.*, p.* 
+         FROM order_items oi
+         JOIN products p ON oi.product_id = p.id
+         WHERE oi.order_id = ANY($1)`,
+        [orderIds]
+      );
+      
+      console.log("Order items count:", orderItemsQuery.rows.length);
+      
+      // Gán các items vào từng đơn hàng
+      const ordersWithItems = orderQueryResult.rows.map(order => {
+        const items = orderItemsQuery.rows
+          .filter(item => item.order_id === order.id)
+          .map(item => {
+            // Tách thông tin sản phẩm và order item
+            const product = {
+              id: item.id,
+              name: item.name,
+              description: item.description,
+              category: item.category,
+              seller_id: item.seller_id,
+              images: typeof item.images === 'string' ? JSON.parse(item.images) : item.images,
+              colors: typeof item.colors === 'string' ? JSON.parse(item.colors) : item.colors,
+              sizes: typeof item.sizes === 'string' ? JSON.parse(item.sizes) : item.sizes,
+              stock: item.stock,
+              // Thêm các trường khác của sản phẩm nếu cần
+            };
+            
+            return {
+              id: item.id,
+              order_id: item.order_id,
+              product_id: item.product_id,
+              quantity: item.quantity,
+              color: item.color,
+              size: item.size,
+              rental_start_date: item.rental_start_date,
+              rental_end_date: item.rental_end_date,
+              // Thêm các trường khác của order item nếu cần
+              product: product
+            };
+          });
+          
+        return {
+          ...order,
+          items: items
+        };
+      });
+      
+      // Chuyển đổi snake_case sang camelCase cho client
+      const processedOrders = ordersWithItems.map(order => {
+        return {
+          id: order.id,
+          userId: order.user_id,
+          sellerId: order.seller_id,
+          status: order.status,
+          totalAmount: order.total_amount,
+          depositAmount: order.deposit_amount,
+          shippingFee: order.shipping_fee,
+          shippingAddress: order.shipping_address,
+          recipientName: order.recipient_name,
+          recipientPhone: order.recipient_phone,
+          notes: order.notes,
+          paymentMethod: order.payment_method,
+          paymentStatus: order.payment_status,
+          trackingNumber: order.tracking_number,
+          shippingMethod: order.shipping_method,
+          rentalStartDate: order.rental_start_date,
+          rentalEndDate: order.rental_end_date,
+          rentalDuration: order.rental_duration,
+          rentalPeriodType: order.rental_period_type,
+          createdAt: order.created_at,
+          updatedAt: order.updated_at,
+          items: order.items.map(item => ({
+            id: item.id,
+            orderId: item.order_id,
+            productId: item.product_id,
+            quantity: item.quantity,
+            color: item.color,
+            size: item.size,
+            rentalStartDate: item.rental_start_date,
+            rentalEndDate: item.rental_end_date,
+            product: {
+              ...item.product,
+              sellerId: item.product.seller_id
+            }
+          }))
+        };
+      });
       
       res.json(processedOrders);
     } catch (error) {
