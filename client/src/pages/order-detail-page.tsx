@@ -259,15 +259,24 @@ export default function OrderDetailPage() {
   // Mutation để người bán xác nhận đơn hàng
   const sellerConfirmOrderMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", `/api/orders/${orderId}/status`, {
-        status: "confirmed"
-      });
-      
-      if (!response.ok) {
-        throw new Error("Không thể xác nhận đơn hàng, vui lòng thử lại.");
+      try {
+        // Sử dụng API path đúng (PATCH thay vì POST)
+        const response = await apiRequest("PATCH", `/api/seller/orders/${orderId}/status`, {
+          status: "confirmed"
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("API error response:", errorText);
+          throw new Error("Không thể xác nhận đơn hàng, vui lòng thử lại.");
+        }
+        
+        // Cần phải clone response để có thể đọc body nhiều lần
+        return await response.json();
+      } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+        throw error;
       }
-      
-      return await response.json();
     },
     onMutate: async () => {
       // Hủy bỏ các yêu cầu đang chờ xử lý để tránh ghi đè lên cập nhật của chúng ta

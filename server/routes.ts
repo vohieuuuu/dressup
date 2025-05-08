@@ -734,60 +734,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
       
-      // Bypass storage và cập nhật trực tiếp với SQL
+      // Chuẩn bị dữ liệu cập nhật
+      const status = req.body.status;
+      const updateFields = [
+        `status = $1`,
+        `updated_at = NOW()`
+      ];
+      
+      // Thêm timestamp phù hợp với trạng thái mới
+      if (status === "confirmed" && order.status === "pending") {
+        updateFields.push(`confirmed_at = NOW()`);
+      } else if (status === "processing" && ["pending", "confirmed"].includes(order.status)) {
+        updateFields.push(`processing_at = NOW()`);
+      } else if (status === "shipped" && ["pending", "confirmed", "processing"].includes(order.status)) {
+        updateFields.push(`shipped_at = NOW()`);
+      } else if (status === "delivered" && ["pending", "confirmed", "processing", "shipped"].includes(order.status)) {
+        updateFields.push(`actual_delivery = NOW()`);
+      } else if (status === "completed") {
+        updateFields.push(`completed_at = NOW()`);
+      } else if (status === "canceled") {
+        updateFields.push(`canceled_at = NOW()`);
+      }
+      
+      // Tạo và thực thi câu lệnh SQL
+      const updateQuery = `
+        UPDATE orders 
+        SET ${updateFields.join(', ')} 
+        WHERE id = $2
+        RETURNING *
+      `;
+      
+      const updateValues = [status, orderId];
+      
+      console.log(`API: Thực thi SQL: ${updateQuery}`);
+      console.log(`API: Với các giá trị: ${updateValues.join(', ')}`);
+      
       try {
-        // Chuẩn bị dữ liệu cập nhật
-        const status = req.body.status;
-        const updateFields = [
-          `status = $1`,
-          `updated_at = NOW()`
-        ];
-        
-        // Thêm timestamp phù hợp với trạng thái mới
-        if (status === "confirmed" && order.status === "pending") {
-          updateFields.push(`confirmed_at = NOW()`);
-        } else if (status === "processing" && ["pending", "confirmed"].includes(order.status)) {
-          updateFields.push(`processing_at = NOW()`);
-        } else if (status === "shipped" && ["pending", "confirmed", "processing"].includes(order.status)) {
-          updateFields.push(`shipped_at = NOW()`);
-        } else if (status === "delivered" && ["pending", "confirmed", "processing", "shipped"].includes(order.status)) {
-          updateFields.push(`actual_delivery = NOW()`);
-        } else if (status === "completed") {
-          updateFields.push(`completed_at = NOW()`);
-        } else if (status === "canceled") {
-          updateFields.push(`canceled_at = NOW()`);
-        }
-        
-        // Tạo và thực thi câu lệnh SQL
-        const updateQuery = `
-          UPDATE orders 
-          SET ${updateFields.join(', ')} 
-          WHERE id = $2
-          RETURNING *
-        `;
-        
-        const updateValues = [status, orderId];
-        
-        console.log(`API: Thực thi SQL: ${updateQuery}`);
-        console.log(`API: Với các giá trị: ${updateValues.join(', ')}`);
-        
         const updateResult = await pool.query(updateQuery, updateValues);
         
         if (updateResult.rows.length === 0) {
           console.log(`API: Không tìm thấy đơn hàng sau khi cập nhật`);
-          throw new Error("Failed to update order");
+          return res.status(404).json({ message: "Order not found after update" });
         }
         
         const updatedOrder = updateResult.rows[0];
         console.log(`API: Cập nhật thành công. Trạng thái mới: ${updatedOrder.status}`);
         
-        res.json(updatedOrder);
-      } catch (updateError) {
-        console.error("Error in direct SQL update:", updateError);
-        // Fallback to storage method if direct SQL fails
-        console.log("API: Fallback to storage.updateOrderStatus");
-        const updatedOrder = await storage.updateOrderStatus(orderId, req.body.status);
-        res.json(updatedOrder);
+        return res.json(updatedOrder);
+      } catch (sqlError) {
+        console.error("Direct SQL update error:", sqlError);
+        // Không sử dụng fallback nữa để tránh lỗi response đã được gửi
+        return res.status(500).json({ 
+          message: "Database error while updating order status",
+          error: sqlError.message 
+        });
       }
     } catch (error) {
       console.error("Error updating order status:", error);
