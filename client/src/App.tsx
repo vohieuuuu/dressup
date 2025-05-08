@@ -12,7 +12,7 @@ import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import ProductPage from "@/pages/product-page";
 import CartPage from "@/pages/cart-page";
-import SellerDashboard from "@/pages/seller-dashboard";
+import SellerDashboard from "@/pages/seller-dashboard-new";
 import SellerPage from "@/pages/seller-page";
 import AdminDashboard from "@/pages/admin-dashboard";
 import OrderHistoryPage from "@/pages/order-history-page";

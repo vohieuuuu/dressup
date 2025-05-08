@@ -98,15 +98,11 @@ export default function SellerDashboard() {
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   
-  console.log("User info:", user);
-  
   // Get seller by user ID first
   const { data: sellerInfo, isLoading: isLoadingSeller } = useQuery({
     queryKey: ['/api/seller-by-user', user?.id],
     enabled: !!user && user.role === 'seller',
   });
-  
-  console.log("Seller info:", sellerInfo);
   
   // Get seller products once we have the seller info
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
@@ -212,7 +208,6 @@ export default function SellerDashboard() {
   const resetForm = () => {
     // Lấy sản phẩm hiện tại đang chỉnh sửa để điền vào form
     const currentProduct = editingProduct;
-    console.log("Resetting form with product:", currentProduct);
     
     if (currentProduct) {
       form.reset({
@@ -277,19 +272,17 @@ export default function SellerDashboard() {
   // If user is not a seller, show not authorized
   if (!user || user.role !== "seller") {
     return (
-      <div className="min-h-screen flex flex-col">
-        <main className="flex-grow container mx-auto px-4 py-12">
-          <div className="max-w-md mx-auto text-center">
-            <div className="bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <Package className="h-8 w-8 text-primary" />
-            </div>
-            <h1 className="text-2xl font-bold mb-4">Không có quyền truy cập</h1>
-            <p className="text-gray-600 mb-8">
-              Bạn cần đăng ký làm người bán để truy cập trang này
-            </p>
-            <Button onClick={() => window.history.back()}>Quay lại</Button>
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-md mx-auto text-center">
+          <div className="bg-primary/10 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <Package className="h-8 w-8 text-primary" />
           </div>
-        </main>
+          <h1 className="text-2xl font-bold mb-4">Không có quyền truy cập</h1>
+          <p className="text-gray-600 mb-8">
+            Bạn cần đăng ký làm người bán để truy cập trang này
+          </p>
+          <Button onClick={() => window.history.back()}>Quay lại</Button>
+        </div>
       </div>
     );
   }
@@ -318,398 +311,273 @@ export default function SellerDashboard() {
             <Settings className="mr-2 h-4 w-4" /> Cài đặt
           </TabsTrigger>
         </TabsList>
-            
-            {/* Products Tab */}
-            <TabsContent value="products">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quản lý sản phẩm</CardTitle>
-                  <CardDescription>
-                    Xem và quản lý tất cả sản phẩm của bạn
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingProducts ? (
-                    <div className="flex justify-center items-center h-64">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  ) : products.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Không có sản phẩm</h3>
-                      <p className="text-gray-500 mb-6">
-                        Bạn chưa có sản phẩm nào. Hãy thêm sản phẩm đầu tiên của bạn.
-                      </p>
-                      <Button onClick={() => setIsAddingProduct(true)}>
-                        <Plus className="mr-2 h-4 w-4" /> Thêm sản phẩm
-                      </Button>
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableCaption>Danh sách sản phẩm của bạn</TableCaption>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Sản phẩm</TableHead>
-                          <TableHead>Danh mục</TableHead>
-                          <TableHead>Giá</TableHead>
-                          <TableHead>Kho</TableHead>
-                          <TableHead>Trạng thái</TableHead>
-                          <TableHead>Thao tác</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {products.map((product) => (
-                          <TableRow key={product.id}>
-                            <TableCell className="font-medium">
-                              <div className="flex items-center">
-                                <div className="w-12 h-12 mr-3 rounded overflow-hidden flex-shrink-0">
-                                  <img 
-                                    src={Array.isArray(product.images) && product.images.length > 0 
-                                      ? product.images[0] 
-                                      : ''}
-                                    alt={product.name}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                                <div className="truncate max-w-[250px]">
-                                  {product.name}
-                                </div>
-                              </div>
-                            </TableCell>
-                            <TableCell>{product.category}</TableCell>
-                            <TableCell>
-                              <div className="flex flex-col">
-                                <span className="font-medium">
-                                  {product.discountPrice 
-                                    ? `${product.discountPrice ? product.discountPrice.toLocaleString() : 0}đ` 
-                                    : `${product.price ? product.price.toLocaleString() : 0}đ`}
-                                </span>
-                                {product.discountPrice && (
-                                  <span className="text-xs text-gray-500 line-through">
-                                    {product.price ? product.price.toLocaleString() : '0'}đ
-                                  </span>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>{product.stock}</TableCell>
-                            <TableCell>
-                              {product.isFlashSale && (
-                                <Badge className="bg-orange-500 mr-1">Flash Sale</Badge>
-                              )}
-                              {product.isFeatured && (
-                                <Badge className="bg-blue-500">Nổi bật</Badge>
-                              )}
-                              {!product.isFlashSale && !product.isFeatured && (
-                                <Badge variant="outline">Thường</Badge>
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex space-x-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => window.open(`/product/${product.id}`, '_blank')}
-                                >
-                                  <Eye className="h-4 w-4" />
+        
+        {/* Products Tab */}
+        <TabsContent value="products">
+          <Card>
+            <CardHeader>
+              <CardTitle>Quản lý sản phẩm</CardTitle>
+              <CardDescription>
+                Xem và quản lý tất cả sản phẩm của bạn
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingProducts ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : products.length === 0 ? (
+                <div className="text-center py-12">
+                  <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Không có sản phẩm</h3>
+                  <p className="text-gray-500 mb-6">
+                    Bạn chưa có sản phẩm nào. Hãy thêm sản phẩm đầu tiên của bạn.
+                  </p>
+                  <Button onClick={() => setIsAddingProduct(true)}>
+                    <Plus className="mr-2 h-4 w-4" /> Thêm sản phẩm
+                  </Button>
+                </div>
+              ) : (
+                <Table>
+                  <TableCaption>Danh sách sản phẩm của bạn</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Sản phẩm</TableHead>
+                      <TableHead>Danh mục</TableHead>
+                      <TableHead>Giá</TableHead>
+                      <TableHead>Kho</TableHead>
+                      <TableHead>Trạng thái</TableHead>
+                      <TableHead>Thao tác</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.isArray(products) && products.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center">
+                            <div className="w-12 h-12 mr-3 rounded overflow-hidden flex-shrink-0">
+                              <img 
+                                src={Array.isArray(product.images) && product.images.length > 0 
+                                  ? product.images[0] 
+                                  : ''}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="truncate max-w-[250px]">
+                              {product.name}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>{product.category}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {product.discountPrice 
+                                ? `${product.discountPrice ? product.discountPrice.toLocaleString() : 0}đ` 
+                                : `${product.price ? product.price.toLocaleString() : 0}đ`}
+                            </span>
+                            {product.discountPrice && (
+                              <span className="text-xs text-gray-500 line-through">
+                                {product.price ? product.price.toLocaleString() : '0'}đ
+                              </span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>{product.stock}</TableCell>
+                        <TableCell>
+                          {product.isFlashSale && (
+                            <Badge className="bg-orange-500 mr-1">Flash Sale</Badge>
+                          )}
+                          {product.isFeatured && (
+                            <Badge className="bg-blue-500">Nổi bật</Badge>
+                          )}
+                          {!product.isFlashSale && !product.isFeatured && (
+                            <Badge variant="outline">Thường</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => window.open(`/product/${product.id}`, '_blank')}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => {
+                                setEditingProduct(product);
+                                // Sử dụng timeout để đảm bảo editingProduct đã được cập nhật
+                                setTimeout(() => {
+                                  resetForm();
+                                }, 100);
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
+                                  <Trash2 className="h-4 w-4" />
                                 </Button>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => {
-                                    console.log("Editing product:", product);
-                                    setEditingProduct(product);
-                                    // Sử dụng timeout để đảm bảo editingProduct đã được cập nhật
-                                    setTimeout(() => {
-                                      console.log("Timeout callback - editingProduct:", product);
-                                      resetForm();
-                                      console.log("Form reset with values:", form.getValues());
-                                    }, 100);
-                                  }}
-                                >
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button variant="outline" size="sm" className="text-red-500 hover:text-red-700">
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent>
-                                    <DialogHeader>
-                                      <DialogTitle>Xác nhận xóa</DialogTitle>
-                                      <DialogDescription>
-                                        Bạn có chắc chắn muốn xóa sản phẩm "{product.name}"? Hành động này không thể hoàn tác.
-                                      </DialogDescription>
-                                    </DialogHeader>
-                                    <DialogFooter>
-                                      <Button 
-                                        variant="outline" 
-                                        onClick={() => document.querySelector<HTMLButtonElement>('[data-state="open"] button[aria-label="Close"]')?.click()}
-                                      >
-                                        Hủy
-                                      </Button>
-                                      <Button 
-                                        variant="destructive"
-                                        onClick={() => {
-                                          deleteProductMutation.mutate(product.id);
-                                          document.querySelector<HTMLButtonElement>('[data-state="open"] button[aria-label="Close"]')?.click();
-                                        }}
-                                      >
-                                        Xóa
-                                      </Button>
-                                    </DialogFooter>
-                                  </DialogContent>
-                                </Dialog>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Orders Tab */}
-            <TabsContent value="orders">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quản lý đơn hàng</CardTitle>
-                  <CardDescription>
-                    Xem và quản lý đơn hàng từ khách hàng
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingOrders ? (
-                    <div className="flex justify-center items-center h-64">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    </div>
-                  ) : orders.length === 0 ? (
-                    <div className="text-center py-12">
-                      <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Không có đơn hàng</h3>
-                      <p className="text-gray-500">
-                        Bạn chưa có đơn hàng nào. Đơn hàng mới sẽ xuất hiện ở đây.
-                      </p>
-                    </div>
-                  ) : (
-                    <Table>
-                      <TableCaption>Danh sách đơn hàng của bạn</TableCaption>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Mã đơn</TableHead>
-                          <TableHead>Khách hàng</TableHead>
-                          <TableHead>Ngày đặt</TableHead>
-                          <TableHead>Tổng tiền</TableHead>
-                          <TableHead>Trạng thái</TableHead>
-                          <TableHead>Thao tác</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {orders.map((order) => (
-                          <TableRow key={order.id}>
-                            <TableCell className="font-medium">#{order.id}</TableCell>
-                            <TableCell>
-                              {order.recipientName}<br/>
-                              <span className="text-xs text-gray-500">{order.recipientPhone}</span>
-                            </TableCell>
-                            <TableCell>
-                              {new Date(order.createdAt).toLocaleDateString('vi-VN')}
-                            </TableCell>
-                            <TableCell className="font-medium">
-                              {order.totalAmount ? order.totalAmount.toLocaleString() : '0'}đ
-                            </TableCell>
-                            <TableCell>
-                              {order.status === 'pending' && <Badge variant="outline">Chờ xác nhận</Badge>}
-                              {order.status === 'processing' && <Badge variant="secondary">Đang xử lý</Badge>}
-                              {order.status === 'shipped' && <Badge variant="secondary">Đang giao</Badge>}
-                              {order.status === 'delivered' && <Badge className="bg-green-500">Đã giao</Badge>}
-                              {order.status === 'cancelled' && <Badge variant="destructive">Đã hủy</Badge>}
-                              {order.status === 'returned' && <Badge variant="destructive">Đã trả hàng</Badge>}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex space-x-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => window.open(`/order/${order.id}`, '_blank')}
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                                {order.status === 'pending' && (
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Xác nhận xóa</DialogTitle>
+                                  <DialogDescription>
+                                    Bạn có chắc chắn muốn xóa sản phẩm "{product.name}"? Hành động này không thể hoàn tác.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DialogFooter>
                                   <Button 
                                     variant="outline" 
-                                    size="sm"
-                                    className="text-green-500 hover:text-green-700"
-                                    onClick={() => {
-                                      // Gọi API để cập nhật trạng thái đơn hàng
-                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
-                                        status: 'processing'
-                                      })
-                                        .then(() => {
-                                          // Cập nhật lại danh sách đơn hàng
-                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
-                                          toast({
-                                            title: "Thành công",
-                                            description: "Đã xác nhận đơn hàng thành công",
-                                          });
-                                        })
-                                        .catch((error) => {
-                                          toast({
-                                            title: "Lỗi",
-                                            description: "Không thể xác nhận đơn hàng. Vui lòng thử lại sau.",
-                                            variant: "destructive",
-                                          });
-                                        });
-                                    }}
-                                  >
-                                    Xác nhận
-                                  </Button>
-                                )}
-                                {order.status === 'processing' && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    className="text-blue-500 hover:text-blue-700"
-                                    onClick={() => {
-                                      // Gọi API để cập nhật trạng thái đơn hàng
-                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
-                                        status: 'shipped'
-                                      })
-                                        .then(() => {
-                                          // Cập nhật lại danh sách đơn hàng
-                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
-                                          toast({
-                                            title: "Thành công",
-                                            description: "Đã chuyển trạng thái đơn hàng sang đang giao thành công",
-                                          });
-                                        })
-                                        .catch((error) => {
-                                          toast({
-                                            title: "Lỗi",
-                                            description: "Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại sau.",
-                                            variant: "destructive",
-                                          });
-                                        });
-                                    }}
-                                  >
-                                    Giao hàng
-                                  </Button>
-                                )}
-                                {order.status === 'shipped' && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    className="text-purple-500 hover:text-purple-700"
-                                    onClick={() => {
-                                      // Gọi API để cập nhật trạng thái đơn hàng
-                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
-                                        status: 'delivered'
-                                      })
-                                        .then(() => {
-                                          // Cập nhật lại danh sách đơn hàng
-                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
-                                          toast({
-                                            title: "Thành công",
-                                            description: "Đã chuyển trạng thái đơn hàng sang đã giao thành công",
-                                          });
-                                        })
-                                        .catch((error) => {
-                                          toast({
-                                            title: "Lỗi",
-                                            description: "Không thể cập nhật trạng thái đơn hàng. Vui lòng thử lại sau.",
-                                            variant: "destructive",
-                                          });
-                                        });
-                                    }}
-                                  >
-                                    Đã giao
-                                  </Button>
-                                )}
-                                {(order.status === 'pending' || order.status === 'processing') && (
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    className="text-red-500 hover:text-red-700"
-                                    onClick={() => {
-                                      // Gọi API để cập nhật trạng thái đơn hàng
-                                      apiRequest("PATCH", `/api/seller/orders/${order.id}/status`, {
-                                        status: 'cancelled'
-                                      })
-                                        .then(() => {
-                                          // Cập nhật lại danh sách đơn hàng
-                                          queryClient.invalidateQueries({ queryKey: ["/api/seller/orders"] });
-                                          toast({
-                                            title: "Thành công",
-                                            description: "Đã hủy đơn hàng thành công",
-                                          });
-                                        })
-                                        .catch((error) => {
-                                          toast({
-                                            title: "Lỗi",
-                                            description: "Không thể hủy đơn hàng. Vui lòng thử lại sau.",
-                                            variant: "destructive",
-                                          });
-                                        });
-                                    }}
+                                    onClick={() => document.querySelector<HTMLButtonElement>('[data-state="open"] button[aria-label="Close"]')?.click()}
                                   >
                                     Hủy
                                   </Button>
-                                )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Statistics Tab */}
-            <TabsContent value="stats">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Thống kê doanh số</CardTitle>
-                  <CardDescription>
-                    Xem thống kê doanh số và hiệu suất bán hàng
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">Đang phát triển</h3>
-                    <p className="text-gray-500">
-                      Tính năng thống kê đang được phát triển. Vui lòng quay lại sau.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Settings Tab */}
-            <TabsContent value="settings">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Cài đặt cửa hàng</CardTitle>
-                  <CardDescription>
-                    Quản lý thông tin cửa hàng và tài khoản của bạn
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <Settings className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium mb-2">Đang phát triển</h3>
-                    <p className="text-gray-500">
-                      Tính năng cài đặt đang được phát triển. Vui lòng quay lại sau.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                                  <Button 
+                                    variant="destructive"
+                                    onClick={() => {
+                                      deleteProductMutation.mutate(product.id);
+                                      document.querySelector<HTMLButtonElement>('[data-state="open"] button[aria-label="Close"]')?.click();
+                                    }}
+                                  >
+                                    Xóa
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Orders Tab */}
+        <TabsContent value="orders">
+          <Card>
+            <CardHeader>
+              <CardTitle>Quản lý đơn hàng</CardTitle>
+              <CardDescription>
+                Xem và quản lý đơn hàng từ khách hàng
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingOrders ? (
+                <div className="flex justify-center items-center h-64">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : orders.length === 0 ? (
+                <div className="text-center py-12">
+                  <ShoppingBag className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium mb-2">Không có đơn hàng</h3>
+                  <p className="text-gray-500">
+                    Bạn chưa có đơn hàng nào. Đơn hàng mới sẽ xuất hiện ở đây.
+                  </p>
+                </div>
+              ) : (
+                <Table>
+                  <TableCaption>Danh sách đơn hàng của bạn</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Mã đơn</TableHead>
+                      <TableHead>Khách hàng</TableHead>
+                      <TableHead>Ngày đặt</TableHead>
+                      <TableHead>Tổng tiền</TableHead>
+                      <TableHead>Trạng thái</TableHead>
+                      <TableHead>Thao tác</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.isArray(orders) && orders.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell className="font-medium">#{order.id}</TableCell>
+                        <TableCell>
+                          {order.recipientName}<br/>
+                          <span className="text-xs text-gray-500">{order.recipientPhone}</span>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {order.totalAmount ? order.totalAmount.toLocaleString() : '0'}đ
+                        </TableCell>
+                        <TableCell>
+                          {order.status === 'pending' && <Badge>Chờ xử lý</Badge>}
+                          {order.status === 'confirmed' && <Badge variant="outline">Đã xác nhận</Badge>}
+                          {order.status === 'shipped' && <Badge variant="secondary">Đang giao</Badge>}
+                          {order.status === 'delivered' && <Badge className="bg-green-500">Đã giao</Badge>}
+                          {order.status === 'cancelled' && <Badge variant="destructive">Đã hủy</Badge>}
+                          {order.status === 'returned' && <Badge variant="destructive">Đã trả hàng</Badge>}
+                        </TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.open(`/order/${order.id}`, '_blank')}
+                          >
+                            Chi tiết
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Stats Tab */}
+        <TabsContent value="stats">
+          <Card>
+            <CardHeader>
+              <CardTitle>Thống kê bán hàng</CardTitle>
+              <CardDescription>
+                Xem thống kê doanh số và hiệu quả kinh doanh
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <BarChart3 className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Đang phát triển</h3>
+                <p className="text-gray-500">
+                  Tính năng thống kê đang được phát triển. Vui lòng quay lại sau.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        {/* Settings Tab */}
+        <TabsContent value="settings">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cài đặt cửa hàng</CardTitle>
+              <CardDescription>
+                Quản lý thông tin cửa hàng và tài khoản của bạn
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-12">
+                <Settings className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">Đang phát triển</h3>
+                <p className="text-gray-500">
+                  Tính năng cài đặt đang được phát triển. Vui lòng quay lại sau.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       {/* Add Product Dialog */}
       <Dialog 
