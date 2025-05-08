@@ -273,8 +273,8 @@ export default function SellerOrdersPage() {
   };
   
   const handleViewDetails = (order) => {
-    setSelectedOrder(order);
-    setViewDetailsOpen(true);
+    // Chuyển đến trang chi tiết đơn hàng với đường dẫn đúng /orders/:id (không phải /order/:id)
+    window.location.href = `/orders/${order.id}`;
   };
   
   const handleUpdateStatus = () => {

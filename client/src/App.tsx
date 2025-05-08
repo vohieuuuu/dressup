@@ -41,7 +41,7 @@ function Router() {
           {/* Quản lý đơn hàng */}
           <ProtectedRoute path="/orders" component={OrderHistoryPage} />
           <ProtectedRoute path="/orders/:id" component={OrderDetailPage} />
-          <ProtectedRoute path="/review/:id" component={ReviewPage} />
+          <ProtectedRoute path="/reviews/:id" component={ReviewPage} />
           <ProtectedRoute path="/seller-orders" component={SellerOrdersPage} />
           
           <Route component={NotFound} />

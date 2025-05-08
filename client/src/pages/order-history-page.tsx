@@ -233,7 +233,7 @@ export default function OrderHistoryPage() {
                                     <div className="flex items-center">
                                       {order.status === "delivered" && !item.isReviewed && (
                                         <Button size="sm" variant="ghost" asChild>
-                                          <Link href={`/review/${item.id}`}>
+                                          <Link href={`/reviews/${item.id}`}>
                                             <Star className="mr-1 h-3 w-3" />
                                             Đánh giá
                                           </Link>
