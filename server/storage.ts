@@ -1878,23 +1878,23 @@ export class DatabaseStorage implements IStorage {
           throw new Error(`Không đủ hàng tồn kho cho sản phẩm: ${product.name}`);
         }
         
-        // Create order item
+        // Create order item with explicitly named columns
         await tx.insert(orderItems).values({
-          orderId: order.id,
-          productId: item.productId,
+          order_id: order.id,
+          product_id: item.productId,
           quantity: item.quantity,
           price: product.discountPrice || product.rentalPricePerDay,
-          depositAmount: product.depositAmount,
-          rentalDuration: insertOrder.rentalDuration,
-          rentalPeriodType: insertOrder.rentalPeriodType,
-          rentalStartDate: insertOrder.rentalStartDate,
-          rentalEndDate: insertOrder.rentalEndDate,
+          deposit_amount: product.depositAmount,
+          rental_duration: insertOrder.rentalDuration,
+          rental_period_type: insertOrder.rentalPeriodType,
+          rental_start_date: insertOrder.rentalStartDate,
+          rental_end_date: insertOrder.rentalEndDate,
           color: item.color || null,
           size: item.size || null,
-          isReviewed: false,
+          is_reviewed: false,
           rating: null,
-          reviewText: null,
-          reviewDate: null
+          review_text: null,
+          review_date: null
         });
         
         // Update product stock and sold count
@@ -1920,22 +1920,13 @@ export class DatabaseStorage implements IStorage {
   }
   
   async updateOrderStatus(id: number, status: string): Promise<Order> {
-    const statusMap: { [key: string]: { [key: string]: Date | null } } = {
-      "confirmed": { confirmedAt: new Date() },
-      "processing": { processingAt: new Date() },
-      "shipped": { shippedAt: new Date() },
-      "delivered": { deliveredAt: new Date() },
-      "completed": { completedAt: new Date() },
-      "canceled": { canceledAt: new Date() }
-    };
-    
-    const additionalFields = statusMap[status] || {};
+    // Trạng thái không cần lưu timestamps riêng trong bảng orders,
+    // chỉ cập nhật trạng thái status và updated_at
     
     const [order] = await db.update(orders)
       .set({ 
         status,
-        updatedAt: new Date(),
-        ...additionalFields
+        updated_at: new Date()
       })
       .where(eq(orders.id, id))
       .returning();
@@ -1953,8 +1944,8 @@ export class DatabaseStorage implements IStorage {
   async updatePaymentStatus(id: number, status: string): Promise<Order> {
     const [order] = await db.update(orders)
       .set({ 
-        paymentStatus: status,
-        updatedAt: new Date()
+        payment_status: status,
+        updated_at: new Date()
       })
       .where(eq(orders.id, id))
       .returning();
@@ -1970,10 +1961,16 @@ export class DatabaseStorage implements IStorage {
   }
   
   async updateTrackingInfo(id: number, data: { trackingNumber?: string, shippingMethod?: string, estimatedDelivery?: Date }): Promise<Order> {
+    // Chuyển đổi tên trường sang snake_case để khớp với cơ sở dữ liệu
+    const updateData: Record<string, any> = {};
+    if (data.trackingNumber !== undefined) updateData.tracking_number = data.trackingNumber;
+    if (data.shippingMethod !== undefined) updateData.shipping_method = data.shippingMethod;
+    if (data.estimatedDelivery !== undefined) updateData.estimated_delivery = data.estimatedDelivery;
+    
     const [order] = await db.update(orders)
       .set({ 
-        ...data,
-        updatedAt: new Date()
+        ...updateData,
+        updated_at: new Date()
       })
       .where(eq(orders.id, id))
       .returning();
@@ -1992,8 +1989,8 @@ export class DatabaseStorage implements IStorage {
     const [order] = await db.update(orders)
       .set({ 
         status: "delivered",
-        actualDelivery: new Date(),
-        updatedAt: new Date()
+        actual_delivery: new Date(),
+        updated_at: new Date()
       })
       .where(eq(orders.id, id))
       .returning();
@@ -2012,8 +2009,7 @@ export class DatabaseStorage implements IStorage {
     const [order] = await db.update(orders)
       .set({ 
         status: "completed",
-        completedAt: new Date(),
-        updatedAt: new Date()
+        updated_at: new Date()
       })
       .where(eq(orders.id, id))
       .returning();
@@ -2031,10 +2027,10 @@ export class DatabaseStorage implements IStorage {
   async requestReturn(orderId: number, reason: string): Promise<Order> {
     const [order] = await db.update(orders)
       .set({ 
-        returnRequested: true,
-        returnReason: reason,
-        returnStatus: "pending",
-        updatedAt: new Date()
+        return_requested: true,
+        return_reason: reason,
+        return_status: "pending",
+        updated_at: new Date()
       })
       .where(eq(orders.id, orderId))
       .returning();
@@ -2052,8 +2048,8 @@ export class DatabaseStorage implements IStorage {
   async processReturn(orderId: number, status: string): Promise<Order> {
     const [order] = await db.update(orders)
       .set({ 
-        returnStatus: status,
-        updatedAt: new Date()
+        return_status: status,
+        updated_at: new Date()
       })
       .where(eq(orders.id, orderId))
       .returning();
