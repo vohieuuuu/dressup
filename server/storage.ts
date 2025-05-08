@@ -1834,158 +1834,160 @@ export class DatabaseStorage implements IStorage {
     
     // Create order in transaction
     return await db.transaction(async (tx) => {
-      // Create a clean object with only columns that exist in the database
-      // Make sure we only use columns that actually exist in the database table
-      const orderValues = {
-        user_id: insertOrder.userId,
-        seller_id: insertOrder.sellerId,
-        status: "pending",
-        total_amount: insertOrder.totalAmount,
-        deposit_amount: insertOrder.depositAmount || 0,
-        shipping_address: insertOrder.shippingAddress,
-        recipient_name: insertOrder.recipientName || "",
-        recipient_phone: insertOrder.recipientPhone || "",
-        notes: insertOrder.notes || "",
-        payment_method: insertOrder.paymentMethod,
-        payment_status: insertOrder.paymentStatus || "pending",
-        shipping_fee: insertOrder.shippingFee || 30000,
-        shipping_method: insertOrder.shippingMethod || "Standard",
-        rental_start_date: insertOrder.rentalStartDate,
-        rental_end_date: insertOrder.rentalEndDate, 
-        rental_period_type: insertOrder.rentalPeriodType,
-        // Don't include columns that don't exist in the table
-      };
-
-      console.log("Order values for insertion:", JSON.stringify(orderValues, null, 2));
-      
-      // Insert order with explicitly named columns
-      // Make sure all required fields are being included
-      console.log("Final order values being inserted:", JSON.stringify({
-        ...orderValues,
-        created_at: new Date(),
-        updated_at: new Date()
-      }, null, 2));
-      
-      // Trước khi thử lần cuối với Drizzle ORM, hãy thử thực hiện trực tiếp truy vấn SQL
-      console.log("Trying with direct SQL query");
-      
-      // Tạo đối tượng dữ liệu đơn hàng cuối cùng
-      const finalOrderData = {
-        user_id: orderValues.user_id,
-        seller_id: orderValues.seller_id,
-        status: orderValues.status,
-        total_amount: orderValues.total_amount,
-        deposit_amount: orderValues.deposit_amount,
-        shipping_address: orderValues.shipping_address,
-        recipient_name: orderValues.recipient_name,
-        recipient_phone: orderValues.recipient_phone,
-        notes: orderValues.notes,
-        payment_method: orderValues.payment_method,
-        payment_status: orderValues.payment_status,
-        shipping_fee: orderValues.shipping_fee,
-        shipping_method: orderValues.shipping_method,
-        rental_start_date: orderValues.rental_start_date,
-        rental_end_date: orderValues.rental_end_date,
-        rental_period_type: orderValues.rental_period_type,
-        created_at: new Date(),
-        updated_at: new Date()
-      };
-      
-      console.log("Final order data for SQL insertion:", JSON.stringify(finalOrderData, null, 2));
-      
-      // Xác nhận user_id là số nguyên
-      const userId = parseInt(String(orderValues.user_id));
-      const sellerId = parseInt(String(orderValues.seller_id));
-      
-      console.log("Parsed user_id:", userId);
-      console.log("Parsed seller_id:", sellerId);
-      
-      // Sử dụng SQL bản thân Drizzle để debug cấu trúc câu lệnh
-      const insertSql = tx
-        .insert(orders)
-        .values({
-          user_id: userId,
-          seller_id: sellerId,
-          status: "pending",
-          total_amount: orderValues.total_amount,
-          deposit_amount: orderValues.deposit_amount,
-          shipping_address: orderValues.shipping_address,
-          recipient_name: orderValues.recipient_name,
-          recipient_phone: orderValues.recipient_phone,
-          notes: orderValues.notes,
-          payment_method: orderValues.payment_method,
-          payment_status: orderValues.payment_status,
-          shipping_fee: orderValues.shipping_fee,
-          shipping_method: orderValues.shipping_method,
-          created_at: new Date(),
-          updated_at: new Date()
-        })
-        .returning();
-      
-      // Thực hiện truy vấn và nhận kết quả
-      const [order] = await insertSql;
+      try {
+        // Kiểm tra dữ liệu bắt buộc
+        const userId = insertOrder.userId;
+        const sellerId = insertOrder.sellerId;
         
-      console.log("Created order:", JSON.stringify(order, null, 2));
-      
-      // Insert order items and update product stock
-      for (const item of items) {
-        const [product] = await tx.select()
-          .from(products)
-          .where(eq(products.id, item.productId));
+        if (!userId) {
+          throw new Error("User ID is required");
+        }
+        
+        if (!sellerId) {
+          throw new Error("Seller ID is required");
+        }
+        
+        console.log("Using SQL with parameters - userId:", userId, "sellerId:", sellerId);
+        
+        // Tạo SQL query cho đơn hàng
+        const sql = `
+          INSERT INTO orders (
+            user_id, 
+            seller_id,
+            status,
+            total_amount,
+            deposit_amount,
+            shipping_address,
+            recipient_name,
+            recipient_phone,
+            notes,
+            payment_method,
+            payment_status,
+            shipping_fee,
+            shipping_method,
+            rental_start_date,
+            rental_end_date,
+            rental_duration,
+            rental_period_type,
+            created_at,
+            updated_at
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
+          ) RETURNING *
+        `;
+        
+        // Các tham số cho query
+        const orderParams = [
+          userId,                                     // $1: user_id
+          sellerId,                                   // $2: seller_id
+          "pending",                                  // $3: status
+          insertOrder.totalAmount,                    // $4: total_amount
+          insertOrder.depositAmount || null,          // $5: deposit_amount
+          insertOrder.shippingAddress,                // $6: shipping_address
+          insertOrder.recipientName || null,          // $7: recipient_name
+          insertOrder.recipientPhone || null,         // $8: recipient_phone
+          insertOrder.notes || null,                  // $9: notes
+          insertOrder.paymentMethod,                  // $10: payment_method
+          insertOrder.paymentStatus || "pending",     // $11: payment_status
+          insertOrder.shippingFee || 30000,           // $12: shipping_fee
+          insertOrder.shippingMethod || "Standard",   // $13: shipping_method
+          insertOrder.rentalStartDate,                // $14: rental_start_date
+          insertOrder.rentalEndDate,                  // $15: rental_end_date
+          insertOrder.rentalDuration,                 // $16: rental_duration
+          insertOrder.rentalPeriodType,               // $17: rental_period_type
+          new Date(),                                 // $18: created_at
+          new Date()                                  // $19: updated_at
+        ];
+        
+        console.log("SQL parameters for order:", orderParams);
+        
+        // Thực thi SQL để tạo đơn hàng
+        const orderResult = await tx.execute(sql, orderParams);
+        console.log("SQL order creation result:", orderResult);
+        
+        if (!orderResult || orderResult.length === 0 || !orderResult[0]) {
+          throw new Error("Failed to create order");
+        }
+        
+        // Lấy đơn hàng vừa tạo
+        const order = orderResult[0];
+        console.log("Created order:", order);
+        
+        // Thêm vào map để quản lý trong bộ nhớ
+        this.orders.set(order.id, order);
+        
+        // Xử lý các mục đơn hàng
+        for (const item of items) {
+          // Tìm sản phẩm
+          const [product] = await tx.select()
+            .from(products)
+            .where(eq(products.id, item.productId));
+            
+          if (!product) {
+            throw new Error(`Product with ID ${item.productId} not found`);
+          }
           
-        if (!product) {
-          throw new Error(`Product with ID ${item.productId} not found`);
+          // Kiểm tra tồn kho
+          if (product.stock < item.quantity) {
+            throw new Error(`Không đủ hàng tồn kho cho sản phẩm: ${product.name}`);
+          }
+          
+          // Tạo mục đơn hàng bằng SQL
+          const itemSql = `
+            INSERT INTO order_items (
+              order_id,
+              product_id,
+              quantity,
+              price,
+              deposit_amount,
+              rental_duration,
+              rental_period_type,
+              rental_start_date,
+              rental_end_date,
+              color,
+              size,
+              is_reviewed,
+              created_at,
+              updated_at
+            ) VALUES (
+              $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+            )
+          `;
+          
+          const itemParams = [
+            order.id,                                     // $1: order_id
+            item.productId,                               // $2: product_id
+            item.quantity,                                // $3: quantity
+            product.discountPrice || product.rentalPricePerDay, // $4: price
+            product.depositAmount,                        // $5: deposit_amount
+            insertOrder.rentalDuration,                   // $6: rental_duration
+            insertOrder.rentalPeriodType,                 // $7: rental_period_type
+            insertOrder.rentalStartDate,                  // $8: rental_start_date
+            insertOrder.rentalEndDate,                    // $9: rental_end_date
+            item.color || null,                           // $10: color
+            item.size || null,                            // $11: size
+            false,                                        // $12: is_reviewed
+            new Date(),                                   // $13: created_at
+            new Date()                                    // $14: updated_at
+          ];
+          
+          await tx.execute(itemSql, itemParams);
+          
+          // Cập nhật số lượng sản phẩm
+          const updateSql = `
+            UPDATE products
+            SET stock = stock - $1, updated_at = $2
+            WHERE id = $3
+          `;
+          
+          await tx.execute(updateSql, [item.quantity, new Date(), item.productId]);
         }
         
-        // Check stock
-        if (product.stock < item.quantity) {
-          throw new Error(`Không đủ hàng tồn kho cho sản phẩm: ${product.name}`);
-        }
-        
-        // Create order item with explicitly named columns that exist in the database
-        const orderItemValues = {
-          order_id: order.id,
-          product_id: item.productId,
-          quantity: item.quantity,
-          price: product.discountPrice || product.rentalPricePerDay,
-          deposit_amount: product.depositAmount,
-          rental_duration: insertOrder.rentalDuration,
-          rental_period_type: insertOrder.rentalPeriodType,
-          rental_start_date: insertOrder.rentalStartDate,
-          rental_end_date: insertOrder.rentalEndDate,
-          color: item.color || null,
-          size: item.size || null,
-          is_reviewed: false,
-          rating: null,
-          review_text: null,
-          review_date: null,
-          created_at: new Date(),
-          updated_at: new Date()
-        };
-        
-        console.log(`Order item values for product ${item.productId}:`, JSON.stringify(orderItemValues, null, 2));
-        
-        await tx.insert(orderItems).values(orderItemValues);
-        
-        // Update product stock
-        await tx.update(products)
-          .set({ 
-            stock: product.stock - item.quantity,
-            // Note: soldCount is not in the database schema
-            updated_at: new Date()
-          })
-          .where(eq(products.id, item.productId));
+        return order;
+      } catch (error) {
+        console.error("Error creating order:", error);
+        throw error;
       }
-      
-      // Update order status to "pending" in case it wasn't set
-      await tx.update(orders)
-        .set({ status: "pending" })
-        .where(eq(orders.id, order.id));
-        
-      // Add the order to the memory map for compatibility
-      this.orders.set(order.id, order);
-        
-      return order;
     });
   }
   
