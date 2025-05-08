@@ -1833,7 +1833,8 @@ export class DatabaseStorage implements IStorage {
     console.log("Creating order with insertOrder data:", JSON.stringify(insertOrder, null, 2));
     
     try {
-      const dbQueryResult = await db.query(
+      // Sử dụng pool.query thay vì db.query (pool từ @neondatabase/serverless)
+      const dbQueryResult = await pool.query(
         `INSERT INTO orders (
           user_id, 
           seller_id,
@@ -1880,18 +1881,20 @@ export class DatabaseStorage implements IStorage {
         ]
       );
       
-      if (!dbQueryResult || dbQueryResult.length === 0) {
-        throw new Error("Failed to create order");
+      console.log("Database query result:", dbQueryResult);
+      
+      if (!dbQueryResult || !dbQueryResult.rows || dbQueryResult.rows.length === 0) {
+        throw new Error("Failed to create order - no result returned");
       }
       
-      const order = dbQueryResult[0];
+      const order = dbQueryResult.rows[0];
       console.log("Created order:", order);
       
       // Thêm vào map để quản lý trong bộ nhớ
       this.orders.set(order.id, order);
       
       // Create order items
-      await Promise.all(items.map(async (item) => {
+      for (const item of items) {
         // Get product
         const [product] = await db.select()
           .from(products)
@@ -1907,7 +1910,7 @@ export class DatabaseStorage implements IStorage {
         }
         
         // Insert order item
-        await db.query(
+        await pool.query(
           `INSERT INTO order_items (
             order_id,
             product_id,
@@ -1945,13 +1948,13 @@ export class DatabaseStorage implements IStorage {
         );
         
         // Update product stock
-        await db.query(
+        await pool.query(
           `UPDATE products 
            SET stock = stock - $1, updated_at = $2
            WHERE id = $3`,
           [item.quantity, new Date(), item.productId]
         );
-      }));
+      }
       
       return order;
     } catch (error) {
