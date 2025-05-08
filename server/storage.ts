@@ -1866,14 +1866,47 @@ export class DatabaseStorage implements IStorage {
         updated_at: new Date()
       }, null, 2));
       
-      // Sử dụng cách tiếp cận khác để chèn dữ liệu - chèn trực tiếp với các giá trị
-      // thay vì thông qua đối tượng trải rộng
-      const [order] = await tx
+      // Trước khi thử lần cuối với Drizzle ORM, hãy thử thực hiện trực tiếp truy vấn SQL
+      console.log("Trying with direct SQL query");
+      
+      // Tạo đối tượng dữ liệu đơn hàng cuối cùng
+      const finalOrderData = {
+        user_id: orderValues.user_id,
+        seller_id: orderValues.seller_id,
+        status: orderValues.status,
+        total_amount: orderValues.total_amount,
+        deposit_amount: orderValues.deposit_amount,
+        shipping_address: orderValues.shipping_address,
+        recipient_name: orderValues.recipient_name,
+        recipient_phone: orderValues.recipient_phone,
+        notes: orderValues.notes,
+        payment_method: orderValues.payment_method,
+        payment_status: orderValues.payment_status,
+        shipping_fee: orderValues.shipping_fee,
+        shipping_method: orderValues.shipping_method,
+        rental_start_date: orderValues.rental_start_date,
+        rental_end_date: orderValues.rental_end_date,
+        rental_period_type: orderValues.rental_period_type,
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+      
+      console.log("Final order data for SQL insertion:", JSON.stringify(finalOrderData, null, 2));
+      
+      // Xác nhận user_id là số nguyên
+      const userId = parseInt(String(orderValues.user_id));
+      const sellerId = parseInt(String(orderValues.seller_id));
+      
+      console.log("Parsed user_id:", userId);
+      console.log("Parsed seller_id:", sellerId);
+      
+      // Sử dụng SQL bản thân Drizzle để debug cấu trúc câu lệnh
+      const insertSql = tx
         .insert(orders)
         .values({
-          user_id: orderValues.user_id,
-          seller_id: orderValues.seller_id,
-          status: orderValues.status,
+          user_id: userId,
+          seller_id: sellerId,
+          status: "pending",
           total_amount: orderValues.total_amount,
           deposit_amount: orderValues.deposit_amount,
           shipping_address: orderValues.shipping_address,
@@ -1884,13 +1917,13 @@ export class DatabaseStorage implements IStorage {
           payment_status: orderValues.payment_status,
           shipping_fee: orderValues.shipping_fee,
           shipping_method: orderValues.shipping_method,
-          rental_start_date: orderValues.rental_start_date,
-          rental_end_date: orderValues.rental_end_date,
-          rental_period_type: orderValues.rental_period_type,
           created_at: new Date(),
           updated_at: new Date()
         })
         .returning();
+      
+      // Thực hiện truy vấn và nhận kết quả
+      const [order] = await insertSql;
         
       console.log("Created order:", JSON.stringify(order, null, 2));
       

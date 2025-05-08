@@ -411,22 +411,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Creating order with data:", JSON.stringify(req.body, null, 2));
       
-      // Validate the order data and ensure userId is properly set
-      const validatedData = insertOrderSchema.parse({
-        ...req.body,
-        userId: req.user.id,
-      });
+      // Lấy user_id từ session
+      const userId = req.user.id;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
       
-      console.log("User ID from session:", req.user.id);
+      console.log("User ID from session:", userId);
+      console.log("User object from session:", JSON.stringify(req.user, null, 2));
+      
+      // Thêm userId vào dữ liệu đơn hàng
+      const orderData = {
+        ...req.body,
+        userId: userId
+      };
+      
+      // Validate dữ liệu đơn hàng
+      const validatedData = insertOrderSchema.parse(orderData);
       console.log("Validated order data:", JSON.stringify(validatedData, null, 2));
       
-      // Create the order
-      const order = await storage.createOrder(validatedData, req.body.items);
-      
-      // Return the created order
-      res.status(201).json(order);
+      // ===== Lưu trực tiếp vào database để debug ===== 
+      try {
+        // Tạo đơn hàng trong database với transaction thông qua phương thức storage
+        const order = await storage.createOrder(validatedData, req.body.items);
+        
+        // Trả về đơn hàng đã được tạo
+        res.status(201).json(order);
+      } catch (dbError) {
+        console.error("Database error creating order:", dbError);
+        
+        // Log thêm thông tin để debug
+        if (dbError instanceof Error) {
+          console.error("Error message:", dbError.message);
+          console.error("Error stack:", dbError.stack);
+        }
+        
+        res.status(500).json({ 
+          message: "Failed to create order in database", 
+          error: dbError instanceof Error ? dbError.message : String(dbError)
+        });
+      }
     } catch (error) {
-      console.error("Order creation error:", error);
+      console.error("Order validation error:", error);
       res.status(400).json({ 
         message: "Invalid order data", 
         error: (error as Error).message 
